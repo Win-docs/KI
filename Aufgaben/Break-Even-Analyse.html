@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="de">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Break-Even-Analyse – Interaktives Lernmodell</title>
+<style>
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #263238;
+    --muted: #6d7b83;
+    --grid: #e1e6e9;
+    --axis: #455a64;
+
+    --supply: #c97a43;
+    --supply-light: #f7e7dc;
+
+    --demand: #496f8a;
+    --demand-light: #e1ebf1;
+
+    --equilibrium: #4d5a61;
+    --original: #aab4b9;
+
+    --success: #38785a;
+    --success-light: #e4f2ea;
+
+    --error: #a84e4e;
+    --error-light: #f8e8e8;
+
+    --accent: #526e7d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, #ffffff 0%, transparent 32%),
+        var(--bg);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+.page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 26px;
+}
+
+header {
+    margin-bottom: 18px;
+}
+
+h1 {
+    margin: 0 0 6px 0;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 760;
+    letter-spacing: -0.035em;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.progress-area {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.progress-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: #dfe5e8;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width .35s ease;
+}
+
+.progress-text {
+    min-width: 80px;
+    text-align: right;
+    font-size: .83rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(340px, .9fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow:
+        0 2px 6px rgba(35,55,65,.04),
+        0 12px 35px rgba(35,55,65,.07);
+}
+
+.diagram-card {
+    padding: 20px 22px 15px 18px;
+    position: sticky;
+    top: 18px;
+}
+
+#marketGraph {
+    width: 100%;
+    height: 550px;
+    display: block;
+    user-select: none;
+}
+
+/* -------------------------------------------------- */
+/* SVG                                                */
+/* -------------------------------------------------- */
+
+.grid-line {
+    stroke: var(--grid);
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: var(--axis);
+    stroke-width: 2.3;
+}
+
+.axis-label {
+    fill: var(--text);
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.curve {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+.curve-supply {
+    stroke: var(--supply);
+}
+
+.curve-demand {
+    stroke: var(--demand);
+}
+
+.curve-original {
+    opacity: .17;
+    stroke-width: 3;
+    stroke-dasharray: 7 7;
+}
+
+.curve-label {
+    font-size: 20px;
+    font-weight: 760;
+}
+
+.equilibrium-guide {
+    stroke: var(--equilibrium);
+    stroke-width: 1.8;
+    stroke-dasharray: 6 6;
+}
+
+.original-guide {
+    stroke: var(--original);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 6;
+}
+
+.equilibrium-point {
+    fill: var(--equilibrium);
+    stroke: white;
+    stroke-width: 3;
+}
+
+.original-point {
+    fill: white;
+    stroke: var(--original);
+    stroke-width: 2;
+}
+
+.new-axis-marker {
+    fill: var(--equilibrium);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.original-axis-marker {
+    fill: #8c989f;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.legend {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    color: #718087;
+    font-size: .8rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.legend-line {
+    width: 23px;
+    height: 3px;
+    border-radius: 4px;
+}
+
+.legend-original {
+    width: 23px;
+    border-top: 2px dashed var(--original);
+}
+
+/* -------------------------------------------------- */
+/* Rechte Seite                                       */
+/* -------------------------------------------------- */
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* -------------------------------------------------- */
+/* Ereigniskarte                                      */
+/* -------------------------------------------------- */
+
+.challenge-card {
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.challenge-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: var(--accent);
+}
+
+.challenge-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.challenge-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 760;
+    font-size: .72rem;
+}
+
+.market-tag {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #edf1f3;
+    color: #536269;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.challenge-title {
+    margin: 0 0 9px 0;
+    font-size: 1.18rem;
+    line-height: 1.3;
+}
+
+.challenge-text {
+    margin: 0;
+    line-height: 1.58;
+    color: #45545c;
+    font-size: .96rem;
+}
+
+.task-hint {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 11px;
+    background: #f5f7f8;
+    color: #607077;
+    font-size: .83rem;
+    line-height: 1.45;
+}
+
+/* -------------------------------------------------- */
+/* Regler                                             */
+/* -------------------------------------------------- */
+
+.controls-card {
+    padding: 23px;
+}
+
+.section-heading {
+    margin: 0 0 17px;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.control-group {
+    padding-bottom: 22px;
+}
+
+.control-group + .control-group {
+    border-top: 1px solid #edf0f2;
+    padding-top: 21px;
+}
+
+.control-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.control-title {
+    font-size: .96rem;
+    font-weight: 700;
+}
+
+.badge {
+    min-width: 74px;
+    text-align: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.badge-supply {
+    color: #925329;
+    background: var(--supply-light);
+}
+
+.badge-demand {
+    color: #365c75;
+    background: var(--demand-light);
+}
+
+.slider-wrap {
+    padding: 2px 0;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 7px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+    background: #e4e9ec;
+}
+
+input[type="range"]:disabled {
+    cursor: default;
+    opacity: .7;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid var(--slider-color);
+    box-shadow: 0 2px 7px rgba(0,0,0,.18);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid var(--slider-color);
+    box-shadow: 0 2px 7px rgba(0,0,0,.18);
+}
+
+#supplySlider {
+    --slider-color: var(--supply);
+}
+
+#demandSlider {
+    --slider-color: var(--demand);
+}
+
+.slider-labels {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: .73rem;
+    color: #87939a;
+}
+
+/* -------------------------------------------------- */
+/* Antwortauswahl                                     */
+/* -------------------------------------------------- */
+
+.answer-card {
+    padding: 23px;
+}
+
+.answer-block + .answer-block {
+    margin-top: 20px;
+}
+
+.answer-question {
+    font-weight: 720;
+    margin-bottom: 10px;
+    font-size: .91rem;
+}
+
+.answer-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+}
+
+.answer-button {
+    border: 1px solid #d8e0e4;
+    background: #f8fafb;
+    color: #53626a;
+    border-radius: 10px;
+    padding: 10px 5px;
+    cursor: pointer;
+    transition: .16s ease;
+    font-size: .81rem;
+    font-weight: 680;
+}
+
+.answer-button:hover:not(:disabled) {
+    background: #eef3f5;
+    transform: translateY(-1px);
+}
+
+.answer-button.selected {
+    background: #526e7d;
+    color: white;
+    border-color: #526e7d;
+}
+
+.answer-button:disabled {
+    cursor: default;
+}
+
+/* -------------------------------------------------- */
+/* Ergebnis                                           */
+/* -------------------------------------------------- */
+
+.result-box {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 14px;
+    background: #f6f8f9;
+}
+
+.result-heading {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .075em;
+    color: #748188;
+    font-weight: 760;
+    margin-bottom: 12px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.result-value {
+    padding: 11px;
+    border-radius: 10px;
+    background: white;
+}
+
+.result-label {
+    display: block;
+    font-size: .7rem;
+    color: #7b878e;
+    margin-bottom: 3px;
+}
+
+.result-number {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 760;
+}
+
+.change {
+    display: block;
+    margin-top: 3px;
+    color: #7b878e;
+    font-size: .68rem;
+}
+
+/* -------------------------------------------------- */
+/* Feedback                                           */
+/* -------------------------------------------------- */
+
+.feedback {
+    display: none;
+    margin-top: 17px;
+    padding: 13px 14px;
+    border-radius: 11px;
+    line-height: 1.45;
+    font-size: .85rem;
+}
+
+.feedback.error {
+    display: block;
+    background: var(--error-light);
+    color: #873f3f;
+}
+
+.feedback.success {
+    display: block;
+    background: var(--success-light);
+    color: #32684e;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button {
+    border: 0;
+    border-radius: 11px;
+    padding: 12px 12px;
+    font-weight: 720;
+    cursor: pointer;
+    transition: .16s ease;
+}
+
+.primary-button {
+    color: white;
+    background: var(--accent);
+}
+
+.primary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(.96);
+}
+
+.primary-button:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.secondary-button {
+    background: #e9eef0;
+    color: #536168;
+}
+
+.secondary-button:hover {
+    background: #dfe6e9;
+}
+
+.next-button {
+    display: none;
+    width: 100%;
+    margin-top: 9px;
+    border: 0;
+    padding: 13px;
+    border-radius: 11px;
+    background: var(--success);
+    color: white;
+    font-weight: 740;
+    cursor: pointer;
+}
+
+.next-button.visible {
+    display: block;
+}
+
+/* -------------------------------------------------- */
+/* Abschluss                                          */
+/* -------------------------------------------------- */
+
+.completion {
+    display: none;
+    padding: 31px 25px;
+    text-align: center;
+}
+
+.completion.visible {
+    display: block;
+}
+
+.completion-symbol {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    margin: 0 auto 17px;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    color: white;
+    background: var(--success);
+}
+
+.completion h2 {
+    margin: 0 0 8px;
+}
+
+.completion p {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.stat-line {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 20px 0;
+}
+
+.stat {
+    min-width: 100px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 1.55rem;
+}
+
+.stat span {
+    font-size: .73rem;
+    color: var(--muted);
+}
+
+.restart-button {
+    border: 0;
+    border-radius: 11px;
+    background: var(--accent);
+    color: white;
+    padding: 12px 19px;
+    font-weight: 720;
+    cursor: pointer;
+}
+
+@media (max-width: 920px) {
+    .page {
+        padding: 14px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .diagram-card {
+        position: static;
+    }
+
+    #marketGraph {
+        height: 470px;
+    }
+}
+
+:root{--cost:#c97a43;--revenue:#496f8a;--capacity:#8b659d}
+[hidden]{display:none!important}button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #306b9b;outline-offset:4px}
+.diagram-card{padding:22px}.diagram-heading{display:flex;justify-content:space-between;gap:12px;align-items:center}.diagram-heading h2{font-size:1rem;margin:0}.eyebrow{font-size:.72rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:8px;font-weight:750}
+#breakEvenGraph{width:100%;height:auto;display:block;margin-top:14px}.legend{gap:12px;font-size:.76rem}.legend-line.capacity{background:var(--capacity)}
+.model-values{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:20px}.model-values div{background:#f5f7f8;border-radius:10px;padding:10px}.model-values small{display:block;color:#697780;font-size:.68rem;margin-bottom:4px}.model-values strong{font-size:.88rem}.result-box{margin-top:12px}.result-number{font-size:1.1rem}.note{font-size:.78rem;color:#64747c;line-height:1.5;margin:14px 0 0}
+summary{cursor:pointer;font-weight:700;color:#4f6571}details{font-size:.82rem;line-height:1.6;border-top:1px solid #e6ebee;padding-top:13px;margin-top:16px}details p{margin-bottom:0}.control-group{padding-bottom:16px}.control-group + .control-group{padding-top:16px}.control-title{font-size:.87rem}.badge{min-width:95px}.badge-capacity{background:#f0e9f5;color:#785288}.badge-neutral{background:#edf1f3;color:#536269}.slider-labels{color:#667780}.controls-card{padding:22px}.control-group:last-child{padding-bottom:0}.section-heading{margin-bottom:18px}.answer-question{line-height:1.4}.answer-options.two{grid-template-columns:repeat(2,1fr)}.answer-button{line-height:1.4;padding:10px 6px}.feedback{font-size:.85rem}.feedback ul{padding-left:18px;margin:8px 0}.feedback p{margin:8px 0 0}.result-heading{margin-bottom:9px}.model-label{font-size:.72rem;color:#60717a;background:#edf1f3;padding:5px 8px;border-radius:7px}.completion{align-self:start}.completion-table{width:100%;border-collapse:collapse;margin:20px 0;text-align:left;font-size:.8rem}.completion-table th,.completion-table td{padding:9px 5px;border-bottom:1px solid #e4e9ec}.completion-table th{color:#6d7b83}.stat-line{gap:14px}.stat{min-width:85px}.progress-text{min-width:110px}.completion p{font-size:.9rem}.challenge-text{font-size:.93rem}
+@media(max-width:1050px){.layout{grid-template-columns:minmax(0,1.35fr) minmax(330px,1fr)}.page{padding:18px}.diagram-card{padding:15px}}
+@media(max-width:920px){.layout{grid-template-columns:1fr}.page{padding:14px}.diagram-card{position:static}.model-values{margin-top:10px}.side{gap:14px}.diagram-heading h2{font-size:.95rem}}
+@media(max-width:450px){.model-values{grid-template-columns:repeat(2,1fr)}.diagram-card{padding:12px}.challenge-card,.controls-card,.answer-card{padding:20px}.result-grid{grid-template-columns:1fr 1fr}.result-number{font-size:1rem}.subtitle{font-size:.9rem}.legend{font-size:.68rem;gap:8px}.diagram-heading{align-items:flex-start}.model-label{max-width:100px;text-align:center}}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* Large hit area and explicit pointer support for mouse, pen and touch. */
+input[type="range"]{height:36px;background:transparent;touch-action:none;display:block;margin:0;}
+input[type="range"]::-webkit-slider-runnable-track{height:8px;background:#e4e9ec;border-radius:999px;}
+input[type="range"]::-webkit-slider-thumb{width:26px;height:26px;margin-top:-9px;}
+input[type="range"]::-moz-range-track{height:8px;background:#e4e9ec;border-radius:999px;}
+input[type="range"]::-moz-range-thumb{width:18px;height:18px;}
+.slider-actions{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:5px;}
+.slider-action{border:1px solid #d8e0e4;border-radius:8px;background:#f8fafb;color:#53626a;padding:8px 3px;font:inherit;font-size:.72rem;cursor:pointer;min-height:36px;}
+.slider-action:hover:not(:disabled){background:#e6edf1}.slider-action:disabled{opacity:.5;cursor:default;}
+.slider-action:focus-visible{outline:3px solid #306b9b;outline-offset:2px;}
+</style></head>
+<body><div class="page">
+<header><div class="eyebrow">Wirtschaft verstehen · Interaktives Lernmodell</div><h1>Break-Even-Analyse</h1><div class="subtitle">Analysiere Veränderungen im Unternehmen. Passe Kosten, Erlös und Kapazität an und beurteile die Gewinnschwelle.</div>
+<div class="progress-area"><div class="progress-track" role="progressbar" aria-label="Gelöste Fälle" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" id="progress"><div class="progress-fill" id="progressFill"></div></div><div class="progress-text" id="progressText"></div></div></header>
+<main class="layout">
+<section class="card diagram-card" aria-labelledby="diagramTitle"><div class="diagram-heading"><h2 id="diagramTitle">Kosten, Erlös & Kapazität</h2><span class="model-label">Deine Modellierung</span></div>
+<svg id="breakEvenGraph" viewBox="0 0 760 525" role="img" aria-labelledby="graphTitle graphDesc"><title id="graphTitle">Break-Even-Diagramm</title><desc id="graphDesc"></desc></svg>
+<div class="legend"><span class="legend-item"><i class="legend-line" style="background:var(--cost)"></i>Gesamtkosten K</span><span class="legend-item"><i class="legend-line" style="background:var(--revenue)"></i>Erlös E</span><span class="legend-item"><i class="legend-line capacity"></i>Kapazität</span><span class="legend-item"><i class="legend-original"></i>Ausgangslage</span></div>
+<div class="model-values" id="modelValues"></div>
+<div class="result-box"><div class="result-heading">Schnittpunkt in deinem Modell</div><div class="result-grid"><div class="result-value"><span class="result-label">Break-Even-Menge x*</span><strong class="result-number" id="bepValue"></strong><span class="change" id="bepOriginal"></span></div><div class="result-value"><span class="result-label">Innerhalb der Kapazität?</span><strong class="result-number" id="reachableValue"></strong><span class="change" id="capacityValue"></span></div></div></div>
+<p class="note">Farbige Linien zeigen deine Einstellung, gestrichelte Linien die Ausgangslage. Die Flächen markieren Verlust und Gewinn bis zur Kapazitätsgrenze. Jenseits davon sind die Funktionen nur rechnerisch fortgesetzt.</p>
+<details><summary>Modellannahmen & Merkhilfe</summary><p>Alle Angaben gelten pro Monat. Die produzierte Menge wird vollständig verkauft; Preis und variable Kosten je Stück sind konstant. Nicht genannte Größen bleiben unverändert.</p><p><strong>K(x) = K<sub>f</sub> + k<sub>v</sub> · x</strong><br><strong>E(x) = p · x</strong><br><strong>x* = K<sub>f</sub> / (p − k<sub>v</sub>)</strong> bei p &gt; k<sub>v</sub>.</p><p>Die Gewinnschwelle liegt bei E(x) = K(x). Eine reine Kapazitätsänderung verändert diesen Schnittpunkt nicht, kann aber seine Erreichbarkeit verändern. Mehr tatsächlich produzierte Stücke allein verschieben keine Kapazitätsgrenze; dafür muss sich die maximal mögliche Ausbringungsmenge ändern.</p></details>
+</section>
+<div class="side" id="gameArea">
+<section class="card challenge-card" aria-labelledby="challengeTitle"><div class="challenge-header"><span class="challenge-label">Ereigniskarte</span><span class="market-tag" id="marketTag"></span></div><h2 class="challenge-title" id="challengeTitle" tabindex="-1"></h2><p class="challenge-text" id="challengeText"></p><div class="task-hint"><strong>Deine Aufgabe:</strong> Stelle die Richtung der Veränderung ein. Lasse nicht betroffene Größen unverändert. Beurteile danach Break-Even-Menge und Erreichbarkeit.<br><span>Ziehe die Regler oder nutze die Tasten darunter. Die Mitte bedeutet unverändert. Bei ausdrücklich genannten Mengen stelle den angegebenen Wert ein.</span></div></section>
+<section class="card controls-card"><h3 class="section-heading">1. Modell verändern</h3><div id="controls"></div></section>
+<section class="card answer-card"><h3 class="section-heading">2. Auswirkungen bestimmen</h3><div class="answer-block"><div class="answer-question" id="bepQuestion">Bei welcher Ausbringungsmenge liegt der neue rechnerische Break-Even-Point?</div><div class="answer-options" role="group" aria-labelledby="bepQuestion" data-group="bep"><button class="answer-button" data-value="down" aria-pressed="false">Bei geringerer<br>Menge</button><button class="answer-button" data-value="same" aria-pressed="false">Bei gleicher<br>Menge</button><button class="answer-button" data-value="up" aria-pressed="false">Bei höherer<br>Menge</button></div></div>
+<div class="answer-block"><div class="answer-question" id="reachQuestion">Ist die neue Gewinnschwelle innerhalb der Kapazität erreichbar?</div><div class="answer-options two" role="group" aria-labelledby="reachQuestion" data-group="reach"><button class="answer-button" data-value="yes" aria-pressed="false">Ja, erreichbar</button><button class="answer-button" data-value="no" aria-pressed="false">Nein, nicht erreichbar</button></div></div>
+<div id="feedback" class="feedback" role="status" aria-live="polite"></div><div class="action-row"><button class="secondary-button" id="resetButton">↺ Zurücksetzen</button><button class="primary-button" id="checkButton">Antwort prüfen</button></div><button class="next-button" id="nextButton">Nächste Ereigniskarte →</button></section></div>
+<section id="completion" class="card completion" aria-labelledby="completionTitle"><div class="completion-symbol">✓</div><h2 id="completionTitle" tabindex="-1">Alle Fälle gelöst!</h2><p>Du hast die Veränderungen modelliert und ihre Folgen für die Gewinnschwelle beurteilt.</p><div class="stat-line"><div class="stat"><strong id="solvedCount">10</strong><span>Fälle gelöst</span></div><div class="stat"><strong id="firstCount">0</strong><span>im ersten Versuch</span></div><div class="stat"><strong id="mistakeCount">0</strong><span>Fehlversuche</span></div></div><table class="completion-table"><thead><tr><th scope="col">Fall</th><th scope="col">Versuche</th></tr></thead><tbody id="summaryRows"></tbody></table><button class="restart-button" id="restartButton">Neue Runde starten ↺</button></section>
+</main><p class="note" style="text-align:center;margin-top:24px">10 realistische Lernfälle · Zufällige Reihenfolge · Ohne Internet nutzbar</p></div>
+<script>
+'use strict';
+const $=id=>document.getElementById(id);
+const specs=[
+ {id:'fixed',label:'Gesamtkosten K: parallel verschieben',low:'↓ nach unten',high:'nach oben ↑',color:'#c97a43',badge:'badge-supply',negative:'↓ nach unten',positive:'nach oben ↑'},
+ {id:'variable',label:'Gesamtkosten K: Steigung verändern',low:'flacher',high:'steiler',color:'#c97a43',badge:'badge-supply',negative:'flacher',positive:'steiler'},
+ {id:'capacity',label:'Kapazitätsgrenze verschieben',low:'← nach links',high:'nach rechts →',color:'#8b659d',badge:'badge-capacity',negative:'← links',positive:'rechts →'},
+ {id:'price',label:'Erlös E: Steigung verändern',low:'flacher',high:'steiler',color:'#496f8a',badge:'badge-demand',negative:'flacher',positive:'steiler'}
+];
+const base={fixed:6000,variable:8,price:20,capacity:900};
+// Jeder Fall isoliert einen Einfluss. Kapazitätserweiterungen sind hier kostenneutral.
+const eventCards=[
+ {id:1,industry:'Manufaktur',title:'Mehr Platz im Produktionsplan',text:'Eine Manufaktur für Stofftaschen ordnet ihre Arbeitsabläufe neu. Mit denselben Beschäftigten und Maschinen kann sie pro Monat mehr Taschen als bisher herstellen. Miete, Monatslöhne, Materialverbrauch je Tasche und Verkaufspreis bleiben gleich.',change:{capacity:1},explanation:'Die maximal mögliche Ausbringungsmenge steigt: Die Kapazitätsgrenze wandert nach rechts. Kosten- und Erlösfunktion bleiben gleich. Deshalb liegt der Break-Even-Point weiterhin bei derselben Menge.'},
+ {id:2,industry:'Druckerei',title:'Weniger verfügbare Maschinenzeit',text:'Eine Druckerei kann ihre gemeinsam genutzte Maschine künftig an weniger Tagen im Monat verwenden. Die monatliche Pauschale bleibt vertraglich gleich. Dadurch sinkt die maximal mögliche Zahl bedruckter Stoffbeutel. Stückkosten und Verkaufspreis ändern sich nicht.',change:{capacity:-1},explanation:'Weniger verfügbare Produktionszeit senkt die Kapazität. Die Grenze verschiebt sich nach links, während Kosten und Erlös unverändert bleiben. Die Gewinnschwelle liegt weiterhin bei 500 Stück und ist trotz der geringeren Kapazität noch erreichbar.'},
+ {id:3,industry:'Keramikwerkstatt',title:'Der Mietvertrag wird teurer',text:'Eine Keramikwerkstatt muss für ihre Räume ab dem nächsten Monat eine höhere feste Miete zahlen. Sie nutzt weiterhin dieselben Räume und Maschinen. Ton, Glasur und Energie je Becher sowie der Verkaufspreis bleiben gleich.',change:{fixed:1},explanation:'Die höhere Miete erhöht die Fixkosten. Die Gesamtkostenkurve verschiebt sich parallel nach oben. Der Deckungsbeitrag je Stück bleibt gleich; es müssen mehr Stück verkauft werden, um die Fixkosten zu decken.'},
+ {id:4,industry:'Siebdruckstudio',title:'Günstigere Versicherung',text:'Ein Siebdruckstudio wechselt zu einer günstigeren Betriebsversicherung bei gleichem Schutz. Der feste Monatsbeitrag sinkt. Produktionsmöglichkeiten, Kosten je bedrucktem Shirt und Verkaufspreis bleiben unverändert.',change:{fixed:-1},explanation:'Der niedrigere feste Versicherungsbeitrag senkt die Fixkosten. Die Gesamtkostenkurve verschiebt sich parallel nach unten. Die Gewinnschwelle wird schon bei einer geringeren Ausbringungsmenge erreicht.'},
+ {id:5,industry:'Schokoladenatelier',title:'Kakao wird teurer',text:'Ein Schokoladenatelier zahlt künftig mehr für den Kakao in jeder Geschenkbox. Rezeptur und Packungsgröße bleiben gleich. Das Atelier hält den Verkaufspreis zunächst stabil; feste Monatskosten und Produktionskapazität ändern sich nicht.',change:{variable:1},explanation:'Die variablen Kosten je Stück steigen. Die Gesamtkostenkurve wird bei unverändertem Fixkostenabschnitt steiler. Der Deckungsbeitrag je Stück sinkt, sodass die Gewinnschwelle erst bei einer höheren Menge erreicht wird.'},
+ {id:6,industry:'Kerzenmanufaktur',title:'Günstigerer Wachseinkauf',text:'Eine Kerzenmanufaktur erhält von einem neuen Lieferanten gleichwertiges Wachs zu einem niedrigeren Preis je Kilogramm, ohne Mindestabnahme oder zusätzliche Gebühren. Wachsverbrauch je Kerze, Verkaufspreis, Fixkosten und Kapazität bleiben gleich.',change:{variable:-1},explanation:'Die variablen Kosten je Kerze sinken. Die Gesamtkostenkurve wird flacher, ihr Anfangspunkt bleibt gleich. Bei gleichem Verkaufspreis bleibt pro Stück mehr zur Deckung der Fixkosten übrig: Die Break-Even-Menge sinkt.'},
+ {id:7,industry:'Designatelier',title:'Ein höherer Preis wird akzeptiert',text:'Ein Designatelier erhöht den Verkaufspreis seiner Notizbuch-Sets. Seine Geschäftskunden akzeptieren den neuen Preis und nehmen weiterhin die gesamte produzierte Menge ab. Herstellkosten und Produktionsmöglichkeiten bleiben unverändert.',change:{price:1},explanation:'Der höhere Preis je Stück macht die Erlösgerade steiler. Sie beginnt weiterhin im Ursprung. Weil der Deckungsbeitrag steigt, reichen weniger verkaufte Sets zum Erreichen der Gewinnschwelle.'},
+ {id:8,industry:'Seifenwerkstatt',title:'Preisnachlass für den Handel',text:'Eine Seifenwerkstatt vereinbart für ihre Geschenksets einen niedrigeren Verkaufspreis mit ihren Händlern. Alle produzierten Sets werden weiterhin abgenommen. Die Rezeptur, sämtliche Kosten und die Produktionskapazität bleiben unverändert.',change:{price:-1},explanation:'Ein niedrigerer Verkaufspreis macht die Erlösgerade flacher. Bei unveränderten Kosten sinkt der Deckungsbeitrag je Stück. Die Gewinnschwelle liegt deshalb bei einer höheren Ausbringungsmenge.'},
+ {id:9,industry:'Buchbinderei · Vertiefung',title:'Ein Engpass wird kritisch',text:'Eine Buchbinderei kann wegen eingeschränkter Maschinenverfügbarkeit statt bisher 650 nur noch 350 Alben pro Monat herstellen. Der feste Mietvertrag für die Maschine läuft unverändert weiter. Stückkosten und Verkaufspreis bleiben gleich.',start:{capacity:650},change:{capacity:-1},explanation:'Die Kapazitätsgrenze wandert von 650 auf 350 Stück nach links. Der rechnerische Break-Even-Point bleibt bei 500 Stück. Er liegt nun außerhalb der Kapazität: Die Gewinnschwelle ist nicht mehr erreichbar.'},
+ {id:10,industry:'Textilatelier · Vertiefung',title:'Die Gewinnschwelle rückt in Reichweite',text:'Ein Textilatelier beseitigt durch eine bessere Reihenfolge der Arbeitsschritte einen Engpass. Statt bisher 400 kann es nun 700 Schals pro Monat fertigen – mit denselben Beschäftigten und Maschinen. Fixkosten, Stückkosten und Verkaufspreis bleiben gleich.',start:{capacity:400},change:{capacity:1},explanation:'Die Kapazität steigt von 400 auf 700 Stück. Der rechnerische Break-Even-Point bleibt bei 500 Stück. Er war zuvor nicht erreichbar und liegt jetzt innerhalb der Kapazität.'}
+];
+let cards=[],index=0,answers={bep:null,reach:null},solved=false,mistakes=0,attempts=[],results=[];
+const fmt=n=>new Intl.NumberFormat('de-DE',{maximumFractionDigits:1}).format(n);
+function initial(){return {...base,...cards[index].start};}
+function model(start,changes){return {fixed:start.fixed*(1+.25*(changes.fixed||0)),variable:start.variable+2*(changes.variable||0),price:start.price+4*(changes.price||0),capacity:start.capacity+300*(changes.capacity||0)};}
+function bep(m){return m.price>m.variable?m.fixed/(m.price-m.variable):Infinity;}
+function currentChanges(){return Object.fromEntries(specs.map(s=>[s.id,Number($(s.id+'Slider').value)/100]));}
+function answerFor(start,m){const difference=bep(m)-bep(start);return {bep:Math.abs(difference)<.001?'same':difference>0?'up':'down',reach:bep(m)<=m.capacity?'yes':'no'};}
+$('controls').innerHTML=specs.map(s=>`<div class="control-group"><div class="control-title-row"><label class="control-title" for="${s.id}Slider">${s.label}</label><output id="${s.id}Badge" for="${s.id}Slider" class="badge ${s.badge}">unverändert</output></div><div class="slider-wrap"><input type="range" id="${s.id}Slider" min="-100" max="100" step="1" value="0" style="--slider-color:${s.color}" aria-valuetext="unverändert"></div><div class="slider-actions"><button class="slider-action" data-slider="${s.id}" data-setting="-100" aria-label="${s.label}: ${s.negative}">${s.low}</button><button class="slider-action" data-slider="${s.id}" data-setting="0" aria-label="${s.label}: unverändert">unverändert</button><button class="slider-action" data-slider="${s.id}" data-setting="100" aria-label="${s.label}: ${s.positive}">${s.high}</button></div></div>`).join('');
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},text){let n=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>n.setAttribute(k,v));if(text!==undefined)n.textContent=text;return n;}
+function updateModel(){
+ const start=initial(),c=currentChanges(),m=model(start,c),oldB=bep(start),b=bep(m);
+ for(const s of specs){const v=c[s.id],label=v<0?s.negative:v>0?s.positive:'unverändert';$(s.id+'Badge').textContent=label;$(s.id+'Slider').setAttribute('aria-valuetext',label);}
+ $('modelValues').innerHTML=[['Fixkosten',fmt(m.fixed)+' €'],['Variable Kosten',fmt(m.variable)+' €/Stück'],['Verkaufspreis',fmt(m.price)+' €/Stück'],['Kapazität',fmt(m.capacity)+' Stück']].map(([l,v])=>`<div><small>${l}</small><strong>${v}</strong></div>`).join('');
+ $('bepValue').textContent=fmt(b)+' Stück';$('bepOriginal').textContent='Ausgangslage: '+fmt(oldB)+' Stück';$('reachableValue').textContent=b<=m.capacity?'Ja, erreichbar':'Nein, außerhalb';$('capacityValue').textContent='Kapazität: '+fmt(m.capacity)+' Stück';
+ const svg=$('breakEvenGraph');svg.replaceChildren(el('title',{id:'graphTitle'},'Break-Even-Diagramm'),el('desc',{id:'graphDesc'},`Gesamtkosten K(x) = ${fmt(m.fixed)} + ${fmt(m.variable)} mal x; Erlös E(x) = ${fmt(m.price)} mal x. Gewinnschwelle bei ${fmt(b)} Stück. Kapazität ${fmt(m.capacity)} Stück. ${b<=m.capacity?'Gewinnschwelle erreichbar.':'Gewinnschwelle nicht erreichbar.'}`));
+ const L=80,R=714,T=50,B=435,X=1300,Y=32000,x=q=>L+q/X*(R-L),y=v=>B-v/Y*(B-T);
+ const add=(tag,a,t,parent=svg)=>{const n=el(tag,a,t);parent.appendChild(n);return n;};
+ const line=(x1,y1,x2,y2,stroke,width=1,dash='',parent=svg)=>add('line',{x1,y1,x2,y2,stroke,'stroke-width':width,...(dash?{'stroke-dasharray':dash}:{})},undefined,parent);
+ const text=(xx,yy,t,a={})=>add('text',{x:xx,y:yy,fill:'#63737b','font-size':12,...a},t);
+ const defs=add('defs');const clip=add('clipPath',{id:'plotClip'},undefined,defs);add('rect',{x:L,y:T,width:R-L,height:B-T},undefined,clip);
+ text(L,24,'Kosten / Erlös (€)',{'font-size':14,'font-weight':650});
+ for(let v=0;v<=30000;v+=5000){line(L,y(v),R,y(v),'#e1e6e9');text(L-10,y(v)+4,fmt(v),{'text-anchor':'end'});}
+ for(let v=0;v<=1200;v+=200){line(x(v),T,x(v),B,'#e1e6e9');text(x(v),B+22,fmt(v),{'text-anchor':'middle'});}
+ const plot=add('g',{'clip-path':'url(#plotClip)'});
+ add('rect',{x:x(m.capacity),y:T,width:R-x(m.capacity),height:B-T,fill:'#f1f2f4',opacity:.8},undefined,plot);
+ const K=q=>m.fixed+m.variable*q,E=q=>m.price*q;
+ function zone(a,z,color){if(z<=a)return;add('polygon',{points:`${x(a)},${y(K(a))} ${x(z)},${y(K(z))} ${x(z)},${y(E(z))} ${x(a)},${y(E(a))}`,fill:color,opacity:.55},undefined,plot);}
+ zone(0,Math.min(b,m.capacity),'#f2d5c0');zone(b,m.capacity,'#c9e1ee');
+ for(const [mm,original] of [[start,true],[m,false]]){
+  const opacity=original?.55:1;
+  for(const [v,offset,color] of [[mm.variable,mm.fixed,'#c97a43'],[mm.price,0,'#496f8a']]){
+   line(x(0),y(offset),x(X),y(offset+v*X),color,original?2:3.5,original?'6 6':'',plot).setAttribute('opacity',opacity);
+  }
+  line(x(mm.capacity),T,x(mm.capacity),B,original?'#b7a5c2':'#8b659d',original?2:3,original?'4 6':'8 5',plot);
+ }
+ line(x(oldB),y(start.price*oldB),x(oldB),B,'#9aa7af',1.5,'4 5',plot);
+ add('circle',{cx:x(oldB),cy:y(start.price*oldB),r:5,fill:'white',stroke:'#9aa7af','stroke-width':2},undefined,plot);
+ line(x(b),y(E(b)),x(b),B,'#4d5a61',1.5,'5 5',plot);
+ add('circle',{cx:x(b),cy:y(E(b)),r:6,fill:'#4d5a61',stroke:'white','stroke-width':2.5},undefined,plot);
+ line(L,B,R+12,B,'#455a64',2);line(L,B,L,T-12,'#455a64',2);
+ add('path',{d:`M ${R+12} ${B} l -8 -4 v 8 Z M ${L} ${T-12} l -4 8 h 8 Z`,fill:'#455a64'});
+ text(x(m.capacity)-6,T-10,'Kapazität: '+fmt(m.capacity),{'text-anchor':'end',fill:'#785288','font-weight':700});
+ const labelQ=Math.min(1140,m.capacity*.90);
+ text(x(labelQ),y(E(labelQ))-10,'E',{'font-size':18,'font-weight':750,fill:'#496f8a'});
+ text(x(labelQ),y(K(labelQ))+22,'K',{'font-size':18,'font-weight':750,fill:'#a96637'});
+ text(x(b),B+44,'x* = '+fmt(b),{'text-anchor':'middle','font-weight':750,fill:'#455a64'});
+ text(R,B+73,'Ausbringungsmenge x (Stück)',{'text-anchor':'end','font-size':14,'font-weight':650});
+ const lossQ=Math.min(b,m.capacity)*.4;text(x(lossQ),y((K(lossQ)+E(lossQ))/2)+4,'Verlust',{'text-anchor':'middle',fill:'#93592f','font-size':13});
+ if(m.capacity-b>150){const gainQ=(b+m.capacity)/2;text(x(gainQ),y((K(gainQ)+E(gainQ))/2)+4,'Gewinn',{'text-anchor':'middle',fill:'#365c75','font-size':13});}
+}
+function setFeedback(type,html){$('feedback').className='feedback '+type;$('feedback').innerHTML=html;}
+function setProgress(n){$('progressFill').style.width=(n/cards.length*100)+'%';$('progress').setAttribute('aria-valuenow',n);}
+function resetCard(keepFeedback=false){if(solved)return;answers={bep:null,reach:null};specs.forEach(s=>{$(s.id+'Slider').value=0;$(s.id+'Slider').disabled=false;});document.querySelectorAll('.slider-action').forEach(b=>b.disabled=false);document.querySelectorAll('.answer-button').forEach(b=>{b.classList.remove('selected');b.setAttribute('aria-pressed','false');b.disabled=false;});$('checkButton').disabled=false;$('resetButton').disabled=false;$('nextButton').classList.remove('visible');if(!keepFeedback)setFeedback('','');updateModel();}
+function loadCard(focus=false){solved=false;const c=cards[index];$('marketTag').textContent=c.industry;$('challengeTitle').textContent=c.title;$('challengeText').textContent=c.text;$('progressText').textContent=`Karte ${index+1} / ${cards.length}`;$('nextButton').textContent=index===cards.length-1?'Runde abschließen ✓':'Nächste Ereigniskarte →';setProgress(index);resetCard();if(focus)$('challengeTitle').focus();}
+function checkAnswer(){
+ if(solved)return;
+ if(answers.bep===null||answers.reach===null){setFeedback('error','Bitte beantworte beide Fragen zur Gewinnschwelle.');return;}
+ const c=cards[index],chosen=currentChanges(),target=model(initial(),chosen),expected=answerFor(initial(),model(initial(),c.change));
+ attempts[index]++;const errors=[];
+ for(const s of specs)if(Math.sign(chosen[s.id])!== (c.change[s.id]||0))errors.push(s.label);
+ if(c.start && Math.abs(target.capacity-model(initial(),c.change).capacity)>.01)errors.push('Kapazität auf die in der Karte genannte Stückzahl einstellen (äußere Reglertaste)');
+ if(answers.bep!==expected.bep)errors.push('Veränderung der Break-Even-Menge');
+ if(answers.reach!==expected.reach)errors.push('Erreichbarkeit innerhalb der Kapazität');
+ if(errors.length){mistakes++;setFeedback('error','<strong>Noch nicht richtig.</strong> Prüfe diese Punkte:<ul>'+errors.map(t=>'<li>'+t+'</li>').join('')+'</ul>Modell und Antworten wurden zurückgesetzt. Spiele dieselbe Karte noch einmal.');resetCard(true);return;}
+ solved=true;results.push({title:c.title,attempts:attempts[index]});
+ setFeedback('success','<strong>Richtig!</strong> '+c.explanation+`<p>Gewinnschwelle: ${fmt(bep(initial()))} → <strong>${fmt(bep(target))} Stück</strong>. Neue Kapazität: <strong>${fmt(target.capacity)} Stück</strong>.</p>`);
+ specs.forEach(s=>$(s.id+'Slider').disabled=true);document.querySelectorAll('.slider-action').forEach(b=>b.disabled=true);document.querySelectorAll('.answer-button').forEach(b=>b.disabled=true);$('checkButton').disabled=true;$('resetButton').disabled=true;$('nextButton').classList.add('visible');setProgress(index+1);
+}
+function nextCard(){if(!solved)return;if(index<cards.length-1){index++;loadCard(true);}else{showCompletion();}}
+function showCompletion(){$('gameArea').hidden=true;$('completion').classList.add('visible');$('mistakeCount').textContent=mistakes;$('firstCount').textContent=attempts.filter(a=>a===1).length;$('solvedCount').textContent=cards.length;$('summaryRows').innerHTML=results.map(r=>`<tr><td>${r.title}</td><td>${r.attempts}</td></tr>`).join('');$('progressText').textContent=cards.length+' / '+cards.length+' gelöst';$('completionTitle').focus();}
+function startGame(){cards=[...eventCards];for(let i=cards.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[cards[i],cards[j]]=[cards[j],cards[i]];}index=0;mistakes=0;attempts=cards.map(()=>0);results=[];$('gameArea').hidden=false;$('completion').classList.remove('visible');loadCard();}
+for(const s of specs){
+ const slider=$(s.id+'Slider');
+ slider.addEventListener('input',updateModel);
+ slider.addEventListener('change',updateModel);
+ let dragging=false;
+ function setFromPointer(event){
+  const rect=slider.getBoundingClientRect();
+  if(rect.width<=26)return;
+  const fraction=Math.max(0,Math.min(1,(event.clientX-rect.left-13)/(rect.width-26)));
+  let value=Math.round(-100+fraction*200);
+  if(Math.abs(value)<=3)value=0;
+  slider.value=String(value);updateModel();
+ }
+ slider.addEventListener('pointerdown',event=>{
+  if(slider.disabled || (event.pointerType==='mouse'&&event.button!==0))return;
+  event.preventDefault();dragging=true;slider.focus();
+  if(slider.setPointerCapture)slider.setPointerCapture(event.pointerId);
+  setFromPointer(event);
+ });
+ slider.addEventListener('pointermove',event=>{if(dragging&&!slider.disabled){event.preventDefault();setFromPointer(event);}});
+ slider.addEventListener('pointerup',()=>{dragging=false;});
+ slider.addEventListener('pointercancel',()=>{dragging=false;});
+ slider.addEventListener('lostpointercapture',()=>{dragging=false;});
+}
+document.querySelectorAll('.slider-action').forEach(button=>button.addEventListener('click',()=>{
+ const slider=$(button.dataset.slider+'Slider');if(slider.disabled)return;
+ slider.value=button.dataset.setting;updateModel();
+}));
+document.querySelectorAll('.answer-options').forEach(group=>group.querySelectorAll('button').forEach(button=>button.addEventListener('click',()=>{if(solved)return;answers[group.dataset.group]=button.dataset.value;group.querySelectorAll('button').forEach(b=>{const selected=b===button;b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));});})));
+$('resetButton').addEventListener('click',()=>resetCard());$('checkButton').addEventListener('click',checkAnswer);$('nextButton').addEventListener('click',nextCard);$('restartButton').addEventListener('click',()=>{startGame();$('challengeTitle').focus();});
+startGame();
+</script></body></html>

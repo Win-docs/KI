@@ -1,0 +1,2905 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Marktmodell – Angebot und Nachfrage</title>
+
+<style>
+:root {
+    --bg: #f4f6f8;
+    --card: #ffffff;
+    --text: #263238;
+    --muted: #6d7b83;
+    --grid: #e1e6e9;
+    --axis: #455a64;
+
+    --supply: #c97a43;
+    --supply-light: #f7e7dc;
+
+    --demand: #496f8a;
+    --demand-light: #e1ebf1;
+
+    --equilibrium: #4d5a61;
+    --original: #aab4b9;
+
+    --success: #38785a;
+    --success-light: #e4f2ea;
+
+    --error: #a84e4e;
+    --error-light: #f8e8e8;
+
+    --accent: #526e7d;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    color: var(--text);
+    background:
+        radial-gradient(circle at top left, #ffffff 0%, transparent 32%),
+        var(--bg);
+}
+
+button,
+input {
+    font: inherit;
+}
+
+.page {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 26px;
+}
+
+header {
+    margin-bottom: 18px;
+}
+
+h1 {
+    margin: 0 0 6px 0;
+    font-size: clamp(1.7rem, 3vw, 2.4rem);
+    font-weight: 760;
+    letter-spacing: -0.035em;
+}
+
+.subtitle {
+    color: var(--muted);
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.progress-area {
+    margin-top: 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.progress-track {
+    flex: 1;
+    height: 8px;
+    border-radius: 999px;
+    background: #dfe5e8;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    border-radius: inherit;
+    background: var(--accent);
+    transition: width .35s ease;
+}
+
+.progress-text {
+    min-width: 80px;
+    text-align: right;
+    font-size: .83rem;
+    color: var(--muted);
+    font-weight: 700;
+}
+
+.layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(340px, .9fr);
+    gap: 22px;
+    align-items: start;
+}
+
+.card {
+    background: var(--card);
+    border-radius: 20px;
+    box-shadow:
+        0 2px 6px rgba(35,55,65,.04),
+        0 12px 35px rgba(35,55,65,.07);
+}
+
+.diagram-card {
+    padding: 20px 22px 15px 18px;
+    position: sticky;
+    top: 18px;
+}
+
+#marketGraph {
+    width: 100%;
+    height: 550px;
+    display: block;
+    user-select: none;
+}
+
+/* -------------------------------------------------- */
+/* SVG                                                */
+/* -------------------------------------------------- */
+
+.grid-line {
+    stroke: var(--grid);
+    stroke-width: 1;
+}
+
+.axis {
+    stroke: var(--axis);
+    stroke-width: 2.3;
+}
+
+.axis-label {
+    fill: var(--text);
+    font-size: 17px;
+    font-weight: 650;
+}
+
+.curve {
+    fill: none;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+.curve-supply {
+    stroke: var(--supply);
+}
+
+.curve-demand {
+    stroke: var(--demand);
+}
+
+.curve-original {
+    opacity: .17;
+    stroke-width: 3;
+    stroke-dasharray: 7 7;
+}
+
+.curve-label {
+    font-size: 20px;
+    font-weight: 760;
+}
+
+.equilibrium-guide {
+    stroke: var(--equilibrium);
+    stroke-width: 1.8;
+    stroke-dasharray: 6 6;
+}
+
+.original-guide {
+    stroke: var(--original);
+    stroke-width: 1.5;
+    stroke-dasharray: 4 6;
+}
+
+.equilibrium-point {
+    fill: var(--equilibrium);
+    stroke: white;
+    stroke-width: 3;
+}
+
+.original-point {
+    fill: white;
+    stroke: var(--original);
+    stroke-width: 2;
+}
+
+.new-axis-marker {
+    fill: var(--equilibrium);
+    font-weight: 700;
+    font-size: 13px;
+}
+
+.original-axis-marker {
+    fill: #8c989f;
+    font-weight: 600;
+    font-size: 12px;
+}
+
+.legend {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 18px;
+    color: #718087;
+    font-size: .8rem;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.legend-line {
+    width: 23px;
+    height: 3px;
+    border-radius: 4px;
+}
+
+.legend-original {
+    width: 23px;
+    border-top: 2px dashed var(--original);
+}
+
+/* -------------------------------------------------- */
+/* Rechte Seite                                       */
+/* -------------------------------------------------- */
+
+.side {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* -------------------------------------------------- */
+/* Ereigniskarte                                      */
+/* -------------------------------------------------- */
+
+.challenge-card {
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+}
+
+.challenge-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 5px;
+    background: var(--accent);
+}
+
+.challenge-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 17px;
+}
+
+.challenge-label {
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 760;
+    font-size: .72rem;
+}
+
+.market-tag {
+    display: inline-block;
+    padding: 5px 9px;
+    border-radius: 999px;
+    background: #edf1f3;
+    color: #536269;
+    font-size: .75rem;
+    font-weight: 700;
+}
+
+.challenge-title {
+    margin: 0 0 9px 0;
+    font-size: 1.18rem;
+    line-height: 1.3;
+}
+
+.challenge-text {
+    margin: 0;
+    line-height: 1.58;
+    color: #45545c;
+    font-size: .96rem;
+}
+
+.task-hint {
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 11px;
+    background: #f5f7f8;
+    color: #607077;
+    font-size: .83rem;
+    line-height: 1.45;
+}
+
+/* -------------------------------------------------- */
+/* Regler                                             */
+/* -------------------------------------------------- */
+
+.controls-card {
+    padding: 23px;
+}
+
+.section-heading {
+    margin: 0 0 17px;
+    font-size: 1rem;
+    font-weight: 750;
+}
+
+.control-group {
+    padding-bottom: 22px;
+}
+
+.control-group + .control-group {
+    border-top: 1px solid #edf0f2;
+    padding-top: 21px;
+}
+
+.control-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.control-title {
+    font-size: .96rem;
+    font-weight: 700;
+}
+
+.badge {
+    min-width: 74px;
+    text-align: center;
+    padding: 5px 9px;
+    border-radius: 999px;
+    font-size: .76rem;
+    font-weight: 700;
+}
+
+.badge-supply {
+    color: #925329;
+    background: var(--supply-light);
+}
+
+.badge-demand {
+    color: #365c75;
+    background: var(--demand-light);
+}
+
+.slider-wrap {
+    padding: 2px 0;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 7px;
+    appearance: none;
+    -webkit-appearance: none;
+    border-radius: 999px;
+    outline: none;
+    cursor: pointer;
+    background: #e4e9ec;
+}
+
+input[type="range"]:disabled {
+    cursor: default;
+    opacity: .7;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 23px;
+    height: 23px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid var(--slider-color);
+    box-shadow: 0 2px 7px rgba(0,0,0,.18);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: white;
+    border: 4px solid var(--slider-color);
+    box-shadow: 0 2px 7px rgba(0,0,0,.18);
+}
+
+#supplySlider {
+    --slider-color: var(--supply);
+}
+
+#demandSlider {
+    --slider-color: var(--demand);
+}
+
+.slider-labels {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+    font-size: .73rem;
+    color: #87939a;
+}
+
+/* -------------------------------------------------- */
+/* Antwortauswahl                                     */
+/* -------------------------------------------------- */
+
+.answer-card {
+    padding: 23px;
+}
+
+.answer-block + .answer-block {
+    margin-top: 20px;
+}
+
+.answer-question {
+    font-weight: 720;
+    margin-bottom: 10px;
+    font-size: .91rem;
+}
+
+.answer-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 7px;
+}
+
+.answer-button {
+    border: 1px solid #d8e0e4;
+    background: #f8fafb;
+    color: #53626a;
+    border-radius: 10px;
+    padding: 10px 5px;
+    cursor: pointer;
+    transition: .16s ease;
+    font-size: .81rem;
+    font-weight: 680;
+}
+
+.answer-button:hover:not(:disabled) {
+    background: #eef3f5;
+    transform: translateY(-1px);
+}
+
+.answer-button.selected {
+    background: #526e7d;
+    color: white;
+    border-color: #526e7d;
+}
+
+.answer-button:disabled {
+    cursor: default;
+}
+
+/* -------------------------------------------------- */
+/* Ergebnis                                           */
+/* -------------------------------------------------- */
+
+.result-box {
+    margin-top: 20px;
+    padding: 16px;
+    border-radius: 14px;
+    background: #f6f8f9;
+}
+
+.result-heading {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .075em;
+    color: #748188;
+    font-weight: 760;
+    margin-bottom: 12px;
+}
+
+.result-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+}
+
+.result-value {
+    padding: 11px;
+    border-radius: 10px;
+    background: white;
+}
+
+.result-label {
+    display: block;
+    font-size: .7rem;
+    color: #7b878e;
+    margin-bottom: 3px;
+}
+
+.result-number {
+    display: block;
+    font-size: 1.25rem;
+    font-weight: 760;
+}
+
+.change {
+    display: block;
+    margin-top: 3px;
+    color: #7b878e;
+    font-size: .68rem;
+}
+
+/* -------------------------------------------------- */
+/* Feedback                                           */
+/* -------------------------------------------------- */
+
+.feedback {
+    display: none;
+    margin-top: 17px;
+    padding: 13px 14px;
+    border-radius: 11px;
+    line-height: 1.45;
+    font-size: .85rem;
+}
+
+.feedback.error {
+    display: block;
+    background: var(--error-light);
+    color: #873f3f;
+}
+
+.feedback.success {
+    display: block;
+    background: var(--success-light);
+    color: #32684e;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 9px;
+    margin-top: 18px;
+}
+
+.primary-button,
+.secondary-button {
+    border: 0;
+    border-radius: 11px;
+    padding: 12px 12px;
+    font-weight: 720;
+    cursor: pointer;
+    transition: .16s ease;
+}
+
+.primary-button {
+    color: white;
+    background: var(--accent);
+}
+
+.primary-button:hover:not(:disabled) {
+    transform: translateY(-1px);
+    filter: brightness(.96);
+}
+
+.primary-button:disabled {
+    opacity: .4;
+    cursor: default;
+}
+
+.secondary-button {
+    background: #e9eef0;
+    color: #536168;
+}
+
+.secondary-button:hover {
+    background: #dfe6e9;
+}
+
+.next-button {
+    display: none;
+    width: 100%;
+    margin-top: 9px;
+    border: 0;
+    padding: 13px;
+    border-radius: 11px;
+    background: var(--success);
+    color: white;
+    font-weight: 740;
+    cursor: pointer;
+}
+
+.next-button.visible {
+    display: block;
+}
+
+/* -------------------------------------------------- */
+/* Abschluss                                          */
+/* -------------------------------------------------- */
+
+.completion {
+    display: none;
+    padding: 31px 25px;
+    text-align: center;
+}
+
+.completion.visible {
+    display: block;
+}
+
+.completion-symbol {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    margin: 0 auto 17px;
+    display: grid;
+    place-items: center;
+    font-size: 1.7rem;
+    color: white;
+    background: var(--success);
+}
+
+.completion h2 {
+    margin: 0 0 8px;
+}
+
+.completion p {
+    color: var(--muted);
+    line-height: 1.5;
+}
+
+.stat-line {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin: 20px 0;
+}
+
+.stat {
+    min-width: 100px;
+}
+
+.stat strong {
+    display: block;
+    font-size: 1.55rem;
+}
+
+.stat span {
+    font-size: .73rem;
+    color: var(--muted);
+}
+
+.restart-button {
+    border: 0;
+    border-radius: 11px;
+    background: var(--accent);
+    color: white;
+    padding: 12px 19px;
+    font-weight: 720;
+    cursor: pointer;
+}
+
+@media (max-width: 920px) {
+    .page {
+        padding: 14px;
+    }
+
+    .layout {
+        grid-template-columns: 1fr;
+    }
+
+    .diagram-card {
+        position: static;
+    }
+
+    #marketGraph {
+        height: 470px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="page">
+
+<header>
+    <h1>Marktmodell: Angebot und Nachfrage</h1>
+
+    <div class="subtitle">
+        Analysiere reale Veränderungen auf Märkten und untersuche ihre
+        Auswirkungen auf Gleichgewichtspreis und Gleichgewichtsmenge.
+    </div>
+
+    <div class="progress-area">
+        <div class="progress-track">
+            <div id="progressFill" class="progress-fill"></div>
+        </div>
+
+        <div id="progressText" class="progress-text">
+            Karte 1 / 10
+        </div>
+    </div>
+</header>
+
+
+<main class="layout">
+
+<!-- ====================================================== -->
+<!-- DIAGRAMM                                               -->
+<!-- ====================================================== -->
+
+<section class="card diagram-card">
+
+<svg id="marketGraph"
+     viewBox="0 0 760 560"
+     role="img"
+     aria-label="Marktmodell mit Angebotskurve, Nachfragekurve und Marktgleichgewicht">
+
+    <defs>
+
+        <marker id="arrow"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="7"
+                markerHeight="7"
+                orient="auto-start-reverse">
+
+            <path d="M 0 0 L 10 5 L 0 10 z"
+                  fill="#455a64"/>
+        </marker>
+
+        <clipPath id="plotClip">
+            <rect x="90"
+                  y="35"
+                  width="610"
+                  height="450"/>
+        </clipPath>
+
+    </defs>
+
+
+    <g id="grid"></g>
+
+
+    <!-- Achsen -->
+
+    <line class="axis"
+          x1="90"
+          y1="485"
+          x2="715"
+          y2="485"
+          marker-end="url(#arrow)"/>
+
+    <line class="axis"
+          x1="90"
+          y1="485"
+          x2="90"
+          y2="23"
+          marker-end="url(#arrow)"/>
+
+
+    <text class="axis-label"
+          x="704"
+          y="520"
+          text-anchor="end">
+        Menge
+    </text>
+
+    <text class="axis-label"
+          x="42"
+          y="37"
+          text-anchor="middle">
+        Preis
+    </text>
+
+
+    <g clip-path="url(#plotClip)">
+
+        <!-- Ausgangskurven -->
+
+        <path id="originalSupply"
+              class="curve curve-supply curve-original"/>
+
+        <path id="originalDemand"
+              class="curve curve-demand curve-original"/>
+
+
+        <!-- Ausgangsgleichgewicht -->
+
+        <line id="originalVertical"
+              class="original-guide"/>
+
+        <line id="originalHorizontal"
+              class="original-guide"/>
+
+        <circle id="originalPoint"
+                class="original-point"
+                r="5"/>
+
+
+        <!-- Neues Gleichgewicht -->
+
+        <line id="currentVertical"
+              class="equilibrium-guide"/>
+
+        <line id="currentHorizontal"
+              class="equilibrium-guide"/>
+
+
+        <!-- Aktuelle Kurven -->
+
+        <path id="supplyCurve"
+              class="curve curve-supply"/>
+
+        <path id="demandCurve"
+              class="curve curve-demand"/>
+
+
+        <circle id="equilibriumPoint"
+                class="equilibrium-point"
+                r="7"/>
+
+    </g>
+
+
+    <!-- Kurvenbeschriftungen -->
+
+    <text id="supplyLabel"
+          class="curve-label"
+          fill="#c97a43">
+        A
+    </text>
+
+    <text id="demandLabel"
+          class="curve-label"
+          fill="#496f8a">
+        N
+    </text>
+
+
+    <!-- Achsenwerte -->
+
+    <text id="oldPriceLabel"
+          class="original-axis-marker"
+          text-anchor="end">
+    </text>
+
+    <text id="oldQuantityLabel"
+          class="original-axis-marker"
+          text-anchor="middle">
+    </text>
+
+    <text id="priceLabel"
+          class="new-axis-marker"
+          text-anchor="end">
+    </text>
+
+    <text id="quantityLabel"
+          class="new-axis-marker"
+          text-anchor="middle">
+    </text>
+
+</svg>
+
+
+<div class="legend">
+
+    <div class="legend-item">
+        <div class="legend-line"
+             style="background:#c97a43"></div>
+        Angebot A
+    </div>
+
+    <div class="legend-item">
+        <div class="legend-line"
+             style="background:#496f8a"></div>
+        Nachfrage N
+    </div>
+
+    <div class="legend-item">
+        <div class="legend-original"></div>
+        Ausgangssituation
+    </div>
+
+</div>
+
+</section>
+
+
+<!-- ====================================================== -->
+<!-- RECHTE SPALTE                                          -->
+<!-- ====================================================== -->
+
+<div class="side"
+     id="gameArea">
+
+
+<!-- EREIGNISKARTE -->
+
+<section class="card challenge-card">
+
+    <div class="challenge-header">
+
+        <div class="challenge-label">
+            Ereigniskarte
+        </div>
+
+        <div id="marketTag"
+             class="market-tag">
+            Markt
+        </div>
+
+    </div>
+
+
+    <h2 id="challengeTitle"
+        class="challenge-title">
+    </h2>
+
+
+    <p id="challengeText"
+       class="challenge-text">
+    </p>
+
+
+    <div class="task-hint">
+        <strong>Deine Aufgabe:</strong>
+        Verschiebe zunächst Angebot und/oder Nachfrage.
+        Entscheide anschließend, wie sich Gleichgewichtspreis
+        und Gleichgewichtsmenge verändern.
+    </div>
+
+</section>
+
+
+<!-- REGLER -->
+
+<section class="card controls-card">
+
+    <h3 class="section-heading">
+        1. Marktmodell verändern
+    </h3>
+
+
+    <div class="control-group">
+
+        <div class="control-title-row">
+
+            <div class="control-title">
+                Angebotskurve A
+            </div>
+
+            <div id="supplyBadge"
+                 class="badge badge-supply">
+                unverändert
+            </div>
+
+        </div>
+
+
+        <div class="slider-wrap">
+
+            <input id="supplySlider"
+                   type="range"
+                   min="-30"
+                   max="30"
+                   value="0"
+                   step="1">
+
+        </div>
+
+
+        <div class="slider-labels">
+            <span>← nach links</span>
+            <span>unverändert</span>
+            <span>nach rechts →</span>
+        </div>
+
+    </div>
+
+
+    <div class="control-group">
+
+        <div class="control-title-row">
+
+            <div class="control-title">
+                Nachfragekurve N
+            </div>
+
+            <div id="demandBadge"
+                 class="badge badge-demand">
+                unverändert
+            </div>
+
+        </div>
+
+
+        <div class="slider-wrap">
+
+            <input id="demandSlider"
+                   type="range"
+                   min="-30"
+                   max="30"
+                   value="0"
+                   step="1">
+
+        </div>
+
+
+        <div class="slider-labels">
+            <span>← nach links</span>
+            <span>unverändert</span>
+            <span>nach rechts →</span>
+        </div>
+
+
+    </div>
+
+
+    <div class="result-box">
+
+        <div class="result-heading">
+            Marktgleichgewicht im Modell
+        </div>
+
+        <div class="result-grid">
+
+            <div class="result-value">
+
+                <span class="result-label">
+                    Gleichgewichtspreis
+                </span>
+
+                <span id="priceResult"
+                      class="result-number">
+                    50
+                </span>
+
+                <span id="priceChange"
+                      class="change">
+                    Ausgangswert: 50
+                </span>
+
+            </div>
+
+
+            <div class="result-value">
+
+                <span class="result-label">
+                    Gleichgewichtsmenge
+                </span>
+
+                <span id="quantityResult"
+                      class="result-number">
+                    50
+                </span>
+
+                <span id="quantityChange"
+                      class="change">
+                    Ausgangswert: 50
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ANTWORT -->
+
+<section class="card answer-card">
+
+    <h3 class="section-heading">
+        2. Auswirkungen bestimmen
+    </h3>
+
+
+    <div class="answer-block">
+
+        <div class="answer-question">
+            Wie verändert sich der Gleichgewichtspreis?
+        </div>
+
+
+        <div class="answer-options"
+             data-group="price">
+
+            <button class="answer-button"
+                    data-value="up">
+                ↑ steigt
+            </button>
+
+            <button class="answer-button"
+                    data-value="same">
+                = gleich
+            </button>
+
+            <button class="answer-button"
+                    data-value="down">
+                ↓ sinkt
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="answer-block">
+
+        <div class="answer-question">
+            Wie verändert sich die Gleichgewichtsmenge?
+        </div>
+
+
+        <div class="answer-options"
+             data-group="quantity">
+
+            <button class="answer-button"
+                    data-value="up">
+                ↑ steigt
+            </button>
+
+            <button class="answer-button"
+                    data-value="same">
+                = gleich
+            </button>
+
+            <button class="answer-button"
+                    data-value="down">
+                ↓ sinkt
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div id="feedback"
+         class="feedback">
+    </div>
+
+
+    <div class="action-row">
+
+        <button id="resetButton"
+                class="secondary-button">
+            ↺ Zurücksetzen
+        </button>
+
+        <button id="checkButton"
+                class="primary-button">
+            Antwort prüfen
+        </button>
+
+    </div>
+
+
+    <button id="nextButton"
+            class="next-button">
+        Nächste Ereigniskarte →
+    </button>
+
+</section>
+
+</div>
+
+
+<!-- ====================================================== -->
+<!-- ABSCHLUSS                                              -->
+<!-- ====================================================== -->
+
+<section id="completion"
+         class="card completion">
+
+    <div class="completion-symbol">
+        ✓
+    </div>
+
+    <h2>
+        Alle Ereigniskarten gelöst
+    </h2>
+
+    <p>
+        Du hast alle zehn Marktsituationen korrekt analysiert.
+    </p>
+
+
+    <div class="stat-line">
+
+        <div class="stat">
+            <strong>10</strong>
+            <span>gelöste Karten</span>
+        </div>
+
+        <div class="stat">
+            <strong id="mistakeCount">
+                0
+            </strong>
+            <span>Fehlversuche</span>
+        </div>
+
+    </div>
+
+
+    <button id="restartButton"
+            class="restart-button">
+        Neue Runde starten
+    </button>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   1. GRUNDMODELL
+   =========================================================
+
+   Angebot:
+   P = 0,8 · (Q - Angebotsverschiebung) + 10
+
+   Nachfrage:
+   P = 90 - 0,8 · (Q - Nachfrageverschiebung)
+
+   Ausgangsgleichgewicht:
+   P0 = 50
+   M0 = 50
+
+   Positive Verschiebung:
+   Kurve nach rechts
+
+   Negative Verschiebung:
+   Kurve nach links
+*/
+
+
+const plot = {
+    left: 90,
+    right: 700,
+    top: 35,
+    bottom: 485
+};
+
+const maxQ = 100;
+const maxP = 100;
+
+
+function xScale(quantity) {
+
+    return plot.left +
+        (quantity / maxQ) *
+        (plot.right - plot.left);
+
+}
+
+
+function yScale(price) {
+
+    return plot.bottom -
+        (price / maxP) *
+        (plot.bottom - plot.top);
+
+}
+
+
+function supplyPrice(quantity, shift) {
+
+    return 0.8 * (quantity - shift) + 10;
+
+}
+
+
+function demandPrice(quantity, shift) {
+
+    return 90 - 0.8 * (quantity - shift);
+
+}
+
+
+function calculateEquilibrium(
+    supplyShift,
+    demandShift
+) {
+
+    return {
+
+        quantity:
+            50 +
+            (supplyShift + demandShift) / 2,
+
+        price:
+            50 +
+            0.4 *
+            (demandShift - supplyShift)
+
+    };
+
+}
+
+
+const originalEquilibrium =
+    calculateEquilibrium(0, 0);
+
+
+/* =========================================================
+   2. EREIGNISKARTEN
+   =========================================================
+
+   shiftSupply:
+        -1 = links
+         0 = unverändert
+         1 = rechts
+
+   shiftDemand:
+        -1 = links
+         0 = unverändert
+         1 = rechts
+*/
+
+
+const eventCards = [
+
+    {
+        market: "Markt für Fahrräder",
+
+        title:
+            "Neue Begeisterung für das Fahrrad",
+
+        text:
+            "Immer mehr Menschen möchten ihre Alltagswege mit dem Fahrrad statt mit dem Auto zurücklegen. Die Produktionsbedingungen der Fahrradhersteller verändern sich nicht.",
+
+        supply: 0,
+        demand: 1,
+
+        price: "up",
+        quantity: "up",
+
+        explanation:
+            "Die Nachfrage nach Fahrrädern steigt. Die Nachfragekurve verschiebt sich nach rechts. Dadurch steigen sowohl Gleichgewichtspreis als auch Gleichgewichtsmenge."
+    },
+
+
+    {
+        market: "Markt für Erdbeeren",
+
+        title:
+            "Spätfrost schädigt die Ernte",
+
+        text:
+            "Ein ungewöhnlich starker Spätfrost zerstört einen Teil der Erdbeerernte. Die Nachfrage der Verbraucherinnen und Verbraucher bleibt unverändert.",
+
+        supply: -1,
+        demand: 0,
+
+        price: "up",
+        quantity: "down",
+
+        explanation:
+            "Durch die geringere Ernte sinkt das Angebot. Die Angebotskurve verschiebt sich nach links. Der Gleichgewichtspreis steigt, während die Gleichgewichtsmenge sinkt."
+    },
+
+
+    {
+        market: "Markt für Kinotickets",
+
+        title:
+            "Streaming wird deutlich günstiger",
+
+        text:
+            "Mehrere große Streaminganbieter senken dauerhaft ihre Preise. Für viele Haushalte wird Streaming dadurch gegenüber einem Kinobesuch attraktiver.",
+
+        supply: 0,
+        demand: -1,
+
+        price: "down",
+        quantity: "down",
+
+        explanation:
+            "Streaming ist ein Substitut für Kinobesuche. Wird das Substitut attraktiver, sinkt die Nachfrage nach Kinotickets. Preis und Menge im neuen Gleichgewicht sinken."
+    },
+
+
+    {
+        market: "Markt für Solarmodule",
+
+        title:
+            "Produktion wird effizienter",
+
+        text:
+            "Ein neues Produktionsverfahren verringert bei Herstellern von Solarmodulen den Material- und Energieeinsatz je Modul deutlich.",
+
+        supply: 1,
+        demand: 0,
+
+        price: "down",
+        quantity: "up",
+
+        explanation:
+            "Die Produktionskosten sinken. Dadurch können die Unternehmen bei jedem Preis eine größere Menge anbieten. Das Angebot verschiebt sich nach rechts: Der Preis sinkt und die gehandelte Menge steigt."
+    },
+
+
+    {
+        market: "Markt für Brot",
+
+        title:
+            "Mehl und Energie werden teurer",
+
+        text:
+            "Bäckereien müssen deutlich höhere Preise für Mehl und Energie zahlen. Die Nachfrage nach Brot verändert sich zunächst nicht.",
+
+        supply: -1,
+        demand: 0,
+
+        price: "up",
+        quantity: "down",
+
+        explanation:
+            "Höhere Produktionskosten verringern das Angebot. Die Angebotskurve verschiebt sich nach links. Der Gleichgewichtspreis steigt und die Gleichgewichtsmenge sinkt."
+    },
+
+
+    {
+        market: "Markt für Bahntickets",
+
+        title:
+            "Autofahren wird teurer",
+
+        text:
+            "Die Kosten für Autofahrten steigen deutlich. Viele Pendlerinnen und Pendler überlegen deshalb, häufiger mit der Bahn zu fahren.",
+
+        supply: 0,
+        demand: 1,
+
+        price: "up",
+        quantity: "up",
+
+        explanation:
+            "Auto und Bahn sind für viele Wege Substitute. Wird Autofahren teurer, steigt die Nachfrage nach Bahnfahrten. Die Nachfragekurve verschiebt sich nach rechts."
+    },
+
+
+    {
+        market: "Markt für Restaurantbesuche",
+
+        title:
+            "Haushaltseinkommen sinken",
+
+        text:
+            "In einer wirtschaftlichen Schwächephase verfügen viele Haushalte über weniger Einkommen. Restaurantbesuche werden als normales Gut betrachtet.",
+
+        supply: 0,
+        demand: -1,
+
+        price: "down",
+        quantity: "down",
+
+        explanation:
+            "Bei einem normalen Gut führt ein niedrigeres Einkommen zu geringerer Nachfrage. Die Nachfragekurve verschiebt sich nach links. Gleichgewichtspreis und Gleichgewichtsmenge sinken."
+    },
+
+
+    {
+        market: "Markt für Smartphones",
+
+        title:
+            "Engpass bei Mikrochips",
+
+        text:
+            "Wichtige Mikrochips sind weltweit nur eingeschränkt verfügbar. Smartphonehersteller können deshalb bei gegebenen Preisen weniger Geräte produzieren.",
+
+        supply: -1,
+        demand: 0,
+
+        price: "up",
+        quantity: "down",
+
+        explanation:
+            "Der Chipmangel begrenzt die Produktion. Das Angebot sinkt und die Angebotskurve verschiebt sich nach links. Der Gleichgewichtspreis steigt, die Gleichgewichtsmenge sinkt."
+    },
+
+
+    {
+        market: "Markt für Regenschirme",
+
+        title:
+            "Wochenlange Regenperiode angekündigt",
+
+        text:
+            "Meteorologen kündigen für die kommenden Wochen außergewöhnlich viel Regen an. Die Produktionsbedingungen der Hersteller verändern sich nicht.",
+
+        supply: 0,
+        demand: 1,
+
+        price: "up",
+        quantity: "up",
+
+        explanation:
+            "Die erwartete Regenperiode erhöht die Nachfrage nach Regenschirmen. Die Nachfragekurve verschiebt sich nach rechts. Preis und Menge steigen."
+    },
+
+
+    {
+        market: "Markt für Möbel",
+
+        title:
+            "Automatisierung senkt Produktionskosten",
+
+        text:
+            "Ein neues automatisiertes Fertigungsverfahren ermöglicht Möbelherstellern, ihre Produkte mit deutlich geringerem Arbeits- und Materialaufwand herzustellen.",
+
+        supply: 1,
+        demand: 0,
+
+        price: "down",
+        quantity: "up",
+
+        explanation:
+            "Die geringeren Produktionskosten erhöhen das Angebot. Die Angebotskurve verschiebt sich nach rechts. Dadurch sinkt der Gleichgewichtspreis, während die Gleichgewichtsmenge steigt."
+    }
+
+];
+
+
+/* =========================================================
+   3. SPIELSTATUS
+   ========================================================= */
+
+
+let cards = [];
+
+let currentCardIndex = 0;
+
+let mistakes = 0;
+
+let selectedAnswers = {
+    price: null,
+    quantity: null
+};
+
+
+/* =========================================================
+   4. DOM
+   ========================================================= */
+
+
+const supplySlider =
+    document.getElementById("supplySlider");
+
+const demandSlider =
+    document.getElementById("demandSlider");
+
+
+const supplyCurve =
+    document.getElementById("supplyCurve");
+
+const demandCurve =
+    document.getElementById("demandCurve");
+
+const originalSupply =
+    document.getElementById("originalSupply");
+
+const originalDemand =
+    document.getElementById("originalDemand");
+
+
+const equilibriumPoint =
+    document.getElementById("equilibriumPoint");
+
+const originalPoint =
+    document.getElementById("originalPoint");
+
+
+const currentVertical =
+    document.getElementById("currentVertical");
+
+const currentHorizontal =
+    document.getElementById("currentHorizontal");
+
+const originalVertical =
+    document.getElementById("originalVertical");
+
+const originalHorizontal =
+    document.getElementById("originalHorizontal");
+
+
+const supplyLabel =
+    document.getElementById("supplyLabel");
+
+const demandLabel =
+    document.getElementById("demandLabel");
+
+
+const priceLabel =
+    document.getElementById("priceLabel");
+
+const quantityLabel =
+    document.getElementById("quantityLabel");
+
+const oldPriceLabel =
+    document.getElementById("oldPriceLabel");
+
+const oldQuantityLabel =
+    document.getElementById("oldQuantityLabel");
+
+
+const feedback =
+    document.getElementById("feedback");
+
+const nextButton =
+    document.getElementById("nextButton");
+
+const checkButton =
+    document.getElementById("checkButton");
+
+const resetButton =
+    document.getElementById("resetButton");
+
+
+/* =========================================================
+   5. SVG
+   ========================================================= */
+
+
+function createSVGElement(name) {
+
+    return document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        name
+    );
+
+}
+
+
+function createCurve(
+    priceFunction,
+    shift
+) {
+
+    let d = "";
+    let started = false;
+
+    for (
+        let q = -40;
+        q <= 140;
+        q += 1
+    ) {
+
+        const p =
+            priceFunction(q, shift);
+
+        const x =
+            xScale(q);
+
+        const y =
+            yScale(p);
+
+
+        if (!started) {
+
+            d += `M ${x} ${y}`;
+
+            started = true;
+
+        }
+
+        else {
+
+            d += ` L ${x} ${y}`;
+
+        }
+
+    }
+
+    return d;
+
+}
+
+
+/* Raster */
+
+const grid =
+    document.getElementById("grid");
+
+
+for (
+    let value = 20;
+    value <= 80;
+    value += 20
+) {
+
+    const vertical =
+        createSVGElement("line");
+
+    vertical.setAttribute(
+        "x1",
+        xScale(value)
+    );
+
+    vertical.setAttribute(
+        "x2",
+        xScale(value)
+    );
+
+    vertical.setAttribute(
+        "y1",
+        plot.top
+    );
+
+    vertical.setAttribute(
+        "y2",
+        plot.bottom
+    );
+
+    vertical.setAttribute(
+        "class",
+        "grid-line"
+    );
+
+    grid.appendChild(vertical);
+
+
+    const horizontal =
+        createSVGElement("line");
+
+    horizontal.setAttribute(
+        "x1",
+        plot.left
+    );
+
+    horizontal.setAttribute(
+        "x2",
+        plot.right
+    );
+
+    horizontal.setAttribute(
+        "y1",
+        yScale(value)
+    );
+
+    horizontal.setAttribute(
+        "y2",
+        yScale(value)
+    );
+
+    horizontal.setAttribute(
+        "class",
+        "grid-line"
+    );
+
+    grid.appendChild(horizontal);
+
+}
+
+
+/* Ausgangskurven */
+
+originalSupply.setAttribute(
+    "d",
+    createCurve(
+        supplyPrice,
+        0
+    )
+);
+
+originalDemand.setAttribute(
+    "d",
+    createCurve(
+        demandPrice,
+        0
+    )
+);
+
+
+const originalX =
+    xScale(
+        originalEquilibrium.quantity
+    );
+
+const originalY =
+    yScale(
+        originalEquilibrium.price
+    );
+
+
+originalPoint.setAttribute(
+    "cx",
+    originalX
+);
+
+originalPoint.setAttribute(
+    "cy",
+    originalY
+);
+
+
+originalVertical.setAttribute(
+    "x1",
+    originalX
+);
+
+originalVertical.setAttribute(
+    "x2",
+    originalX
+);
+
+originalVertical.setAttribute(
+    "y1",
+    originalY
+);
+
+originalVertical.setAttribute(
+    "y2",
+    plot.bottom
+);
+
+
+originalHorizontal.setAttribute(
+    "x1",
+    plot.left
+);
+
+originalHorizontal.setAttribute(
+    "x2",
+    originalX
+);
+
+originalHorizontal.setAttribute(
+    "y1",
+    originalY
+);
+
+originalHorizontal.setAttribute(
+    "y2",
+    originalY
+);
+
+
+oldPriceLabel.setAttribute(
+    "x",
+    plot.left - 12
+);
+
+oldPriceLabel.setAttribute(
+    "y",
+    originalY + 4
+);
+
+oldPriceLabel.textContent =
+    "P₀ = 50";
+
+
+oldQuantityLabel.setAttribute(
+    "x",
+    originalX
+);
+
+oldQuantityLabel.setAttribute(
+    "y",
+    plot.bottom + 22
+);
+
+oldQuantityLabel.textContent =
+    "M₀ = 50";
+
+
+/* =========================================================
+   6. HILFSFUNKTIONEN
+   ========================================================= */
+
+
+function formatNumber(value) {
+
+    if (
+        Math.abs(
+            value -
+            Math.round(value)
+        ) < 0.01
+    ) {
+
+        return Math.round(value);
+
+    }
+
+    return value
+        .toFixed(1)
+        .replace(".", ",");
+
+}
+
+
+function movementText(value) {
+
+    if (value === 0) {
+        return "unverändert";
+    }
+
+    if (value < 0) {
+        return "← links";
+    }
+
+    return "rechts →";
+
+}
+
+
+function changeText(
+    current,
+    original
+) {
+
+    const difference =
+        current - original;
+
+    if (
+        Math.abs(difference) < 0.01
+    ) {
+
+        return "unverändert";
+
+    }
+
+    if (difference > 0) {
+
+        return "▲ steigt";
+
+    }
+
+    return "▼ sinkt";
+
+}
+
+
+function direction(value) {
+
+    if (value > 0) {
+        return 1;
+    }
+
+    if (value < 0) {
+        return -1;
+    }
+
+    return 0;
+
+}
+
+
+function updateSliderBackground(
+    slider,
+    color
+) {
+
+    const min =
+        Number(slider.min);
+
+    const max =
+        Number(slider.max);
+
+    const value =
+        Number(slider.value);
+
+
+    const percent =
+        ((value - min) /
+        (max - min)) *
+        100;
+
+
+    const center =
+        ((0 - min) /
+        (max - min)) *
+        100;
+
+
+    if (value >= 0) {
+
+        slider.style.background =
+            `linear-gradient(
+                to right,
+                #e4e9ec 0%,
+                #e4e9ec ${center}%,
+                ${color} ${center}%,
+                ${color} ${percent}%,
+                #e4e9ec ${percent}%,
+                #e4e9ec 100%
+            )`;
+
+    }
+
+    else {
+
+        slider.style.background =
+            `linear-gradient(
+                to right,
+                #e4e9ec 0%,
+                #e4e9ec ${percent}%,
+                ${color} ${percent}%,
+                ${color} ${center}%,
+                #e4e9ec ${center}%,
+                #e4e9ec 100%
+            )`;
+
+    }
+
+}
+
+
+/* =========================================================
+   7. DIAGRAMM AKTUALISIEREN
+   ========================================================= */
+
+
+function updateMarket() {
+
+    const supplyShift =
+        Number(
+            supplySlider.value
+        );
+
+    const demandShift =
+        Number(
+            demandSlider.value
+        );
+
+
+    const equilibrium =
+        calculateEquilibrium(
+            supplyShift,
+            demandShift
+        );
+
+
+    const eqX =
+        xScale(
+            equilibrium.quantity
+        );
+
+    const eqY =
+        yScale(
+            equilibrium.price
+        );
+
+
+    supplyCurve.setAttribute(
+        "d",
+        createCurve(
+            supplyPrice,
+            supplyShift
+        )
+    );
+
+
+    demandCurve.setAttribute(
+        "d",
+        createCurve(
+            demandPrice,
+            demandShift
+        )
+    );
+
+
+    equilibriumPoint.setAttribute(
+        "cx",
+        eqX
+    );
+
+    equilibriumPoint.setAttribute(
+        "cy",
+        eqY
+    );
+
+
+    currentVertical.setAttribute(
+        "x1",
+        eqX
+    );
+
+    currentVertical.setAttribute(
+        "x2",
+        eqX
+    );
+
+    currentVertical.setAttribute(
+        "y1",
+        eqY
+    );
+
+    currentVertical.setAttribute(
+        "y2",
+        plot.bottom
+    );
+
+
+    currentHorizontal.setAttribute(
+        "x1",
+        plot.left
+    );
+
+    currentHorizontal.setAttribute(
+        "x2",
+        eqX
+    );
+
+    currentHorizontal.setAttribute(
+        "y1",
+        eqY
+    );
+
+    currentHorizontal.setAttribute(
+        "y2",
+        eqY
+    );
+
+
+    priceLabel.setAttribute(
+        "x",
+        plot.left - 12
+    );
+
+    priceLabel.setAttribute(
+        "y",
+        eqY - 8
+    );
+
+    priceLabel.textContent =
+        `P₁ = ${
+            formatNumber(
+                equilibrium.price
+            )
+        }`;
+
+
+    quantityLabel.setAttribute(
+        "x",
+        eqX
+    );
+
+    quantityLabel.setAttribute(
+        "y",
+        plot.bottom + 42
+    );
+
+    quantityLabel.textContent =
+        `M₁ = ${
+            formatNumber(
+                equilibrium.quantity
+            )
+        }`;
+
+
+    const unchanged =
+        supplyShift === 0 &&
+        demandShift === 0;
+
+
+    priceLabel.style.opacity =
+        unchanged
+        ? "0"
+        : "1";
+
+
+    quantityLabel.style.opacity =
+        unchanged
+        ? "0"
+        : "1";
+
+
+    currentVertical.style.opacity =
+        unchanged
+        ? "0"
+        : "1";
+
+
+    currentHorizontal.style.opacity =
+        unchanged
+        ? "0"
+        : "1";
+
+
+    /* Beschriftung A */
+
+    const supplyLabelQ = 82;
+
+    const supplyLabelP =
+        supplyPrice(
+            supplyLabelQ,
+            supplyShift
+        );
+
+    supplyLabel.setAttribute(
+        "x",
+        xScale(supplyLabelQ) + 10
+    );
+
+    supplyLabel.setAttribute(
+        "y",
+        yScale(supplyLabelP) + 6
+    );
+
+
+    /* Beschriftung N */
+
+    const demandLabelQ = 82;
+
+    const demandLabelP =
+        demandPrice(
+            demandLabelQ,
+            demandShift
+        );
+
+    demandLabel.setAttribute(
+        "x",
+        xScale(demandLabelQ) + 10
+    );
+
+    demandLabel.setAttribute(
+        "y",
+        yScale(demandLabelP) + 6
+    );
+
+
+    document
+        .getElementById(
+            "priceResult"
+        )
+        .textContent =
+        formatNumber(
+            equilibrium.price
+        );
+
+
+    document
+        .getElementById(
+            "quantityResult"
+        )
+        .textContent =
+        formatNumber(
+            equilibrium.quantity
+        );
+
+
+    document
+        .getElementById(
+            "priceChange"
+        )
+        .textContent =
+        changeText(
+            equilibrium.price,
+            originalEquilibrium.price
+        );
+
+
+    document
+        .getElementById(
+            "quantityChange"
+        )
+        .textContent =
+        changeText(
+            equilibrium.quantity,
+            originalEquilibrium.quantity
+        );
+
+
+    document
+        .getElementById(
+            "supplyBadge"
+        )
+        .textContent =
+        movementText(
+            supplyShift
+        );
+
+
+    document
+        .getElementById(
+            "demandBadge"
+        )
+        .textContent =
+        movementText(
+            demandShift
+        );
+
+
+    updateSliderBackground(
+        supplySlider,
+        "#c97a43"
+    );
+
+
+    updateSliderBackground(
+        demandSlider,
+        "#496f8a"
+    );
+
+}
+
+
+/* =========================================================
+   8. ANTWORTAUSWAHL
+   ========================================================= */
+
+
+document
+    .querySelectorAll(
+        ".answer-options"
+    )
+    .forEach(group => {
+
+        const groupName =
+            group.dataset.group;
+
+
+        group
+            .querySelectorAll(
+                ".answer-button"
+            )
+            .forEach(button => {
+
+                button.addEventListener(
+                    "click",
+                    () => {
+
+                        group
+                            .querySelectorAll(
+                                ".answer-button"
+                            )
+                            .forEach(btn => {
+
+                                btn.classList.remove(
+                                    "selected"
+                                );
+
+                            });
+
+
+                        button.classList.add(
+                            "selected"
+                        );
+
+
+                        selectedAnswers[
+                            groupName
+                        ] =
+                            button.dataset.value;
+
+                    }
+                );
+
+            });
+
+    });
+
+
+/* =========================================================
+   9. ZUFALLSREIHENFOLGE
+   ========================================================= */
+
+
+function shuffle(array) {
+
+    const copy =
+        [...array];
+
+
+    for (
+        let i =
+            copy.length - 1;
+
+        i > 0;
+
+        i--
+    ) {
+
+        const j =
+            Math.floor(
+                Math.random() *
+                (i + 1)
+            );
+
+
+        [
+            copy[i],
+            copy[j]
+        ] = [
+            copy[j],
+            copy[i]
+        ];
+
+    }
+
+
+    return copy;
+
+}
+
+
+/* =========================================================
+   10. KARTE LADEN
+   ========================================================= */
+
+
+function loadCard() {
+
+    const card =
+        cards[currentCardIndex];
+
+
+    document
+        .getElementById(
+            "marketTag"
+        )
+        .textContent =
+        card.market;
+
+
+    document
+        .getElementById(
+            "challengeTitle"
+        )
+        .textContent =
+        card.title;
+
+
+    document
+        .getElementById(
+            "challengeText"
+        )
+        .textContent =
+        card.text;
+
+
+    document
+        .getElementById(
+            "progressText"
+        )
+        .textContent =
+        `Karte ${
+            currentCardIndex + 1
+        } / ${cards.length}`;
+
+
+    document
+        .getElementById(
+            "progressFill"
+        )
+        .style.width =
+        `${
+            (
+                currentCardIndex /
+                cards.length
+            ) * 100
+        }%`;
+
+
+    resetCard();
+
+
+    nextButton.classList.remove(
+        "visible"
+    );
+
+
+    if (
+        currentCardIndex ===
+        cards.length - 1
+    ) {
+
+        nextButton.textContent =
+            "Runde abschließen ✓";
+
+    }
+
+    else {
+
+        nextButton.textContent =
+            "Nächste Ereigniskarte →";
+
+    }
+
+}
+
+
+/* =========================================================
+   11. KARTE ZURÜCKSETZEN
+   ========================================================= */
+
+
+function resetCard(
+    keepFeedback = false
+) {
+
+    supplySlider.value = 0;
+    demandSlider.value = 0;
+
+
+    supplySlider.disabled = false;
+    demandSlider.disabled = false;
+
+
+    selectedAnswers = {
+        price: null,
+        quantity: null
+    };
+
+
+    document
+        .querySelectorAll(
+            ".answer-button"
+        )
+        .forEach(button => {
+
+            button.classList.remove(
+                "selected"
+            );
+
+            button.disabled = false;
+
+        });
+
+
+    checkButton.disabled = false;
+
+
+    if (!keepFeedback) {
+
+        feedback.className =
+            "feedback";
+
+        feedback.textContent =
+            "";
+
+    }
+
+
+    nextButton.classList.remove(
+        "visible"
+    );
+
+
+    updateMarket();
+
+}
+
+
+/* =========================================================
+   12. ANTWORT PRÜFEN
+   ========================================================= */
+
+
+function checkAnswer() {
+
+    const card =
+        cards[currentCardIndex];
+
+
+    if (
+        selectedAnswers.price === null ||
+        selectedAnswers.quantity === null
+    ) {
+
+        feedback.className =
+            "feedback error";
+
+        feedback.textContent =
+            "Bitte entscheide zuerst, wie sich Preis und Menge verändern.";
+
+        return;
+
+    }
+
+
+    const chosenSupply =
+        direction(
+            Number(
+                supplySlider.value
+            )
+        );
+
+
+    const chosenDemand =
+        direction(
+            Number(
+                demandSlider.value
+            )
+        );
+
+
+    const correctShift =
+        chosenSupply === card.supply &&
+        chosenDemand === card.demand;
+
+
+    const correctPrice =
+        selectedAnswers.price ===
+        card.price;
+
+
+    const correctQuantity =
+        selectedAnswers.quantity ===
+        card.quantity;
+
+
+    if (
+        correctShift &&
+        correctPrice &&
+        correctQuantity
+    ) {
+
+        feedback.className =
+            "feedback success";
+
+
+        feedback.innerHTML =
+            "<strong>Richtig!</strong> " +
+            card.explanation;
+
+
+        supplySlider.disabled =
+            true;
+
+        demandSlider.disabled =
+            true;
+
+
+        document
+            .querySelectorAll(
+                ".answer-button"
+            )
+            .forEach(button => {
+
+                button.disabled =
+                    true;
+
+            });
+
+
+        checkButton.disabled =
+            true;
+
+
+        nextButton.classList.add(
+            "visible"
+        );
+
+
+        document
+            .getElementById(
+                "progressFill"
+            )
+            .style.width =
+            `${
+                (
+                    (
+                        currentCardIndex +
+                        1
+                    ) /
+                    cards.length
+                ) * 100
+            }%`;
+
+    }
+
+    else {
+
+        mistakes++;
+
+
+        feedback.className =
+            "feedback error";
+
+
+        feedback.innerHTML =
+            "<strong>Noch nicht richtig.</strong> " +
+            "Die Ereigniskarte wird noch einmal gespielt. " +
+            "Überlege erneut, welche Kurve betroffen ist und in welche Richtung sie sich verschiebt.";
+
+
+        /*
+            Gleiche Karte bleibt bestehen.
+            Nur Modell und Antworten werden zurückgesetzt.
+        */
+
+        resetCard(true);
+
+    }
+
+}
+
+
+/* =========================================================
+   13. NÄCHSTE KARTE
+   ========================================================= */
+
+
+function nextCard() {
+
+    currentCardIndex++;
+
+
+    if (
+        currentCardIndex <
+        cards.length
+    ) {
+
+        loadCard();
+
+    }
+
+    else {
+
+        showCompletion();
+
+    }
+
+}
+
+
+/* =========================================================
+   14. ABSCHLUSS
+   ========================================================= */
+
+
+function showCompletion() {
+
+    document
+        .getElementById(
+            "gameArea"
+        )
+        .style.display =
+        "none";
+
+
+    document
+        .getElementById(
+            "completion"
+        )
+        .classList.add(
+            "visible"
+        );
+
+
+    document
+        .getElementById(
+            "mistakeCount"
+        )
+        .textContent =
+        mistakes;
+
+
+    document
+        .getElementById(
+            "progressText"
+        )
+        .textContent =
+        "10 / 10 gelöst";
+
+
+    document
+        .getElementById(
+            "progressFill"
+        )
+        .style.width =
+        "100%";
+
+}
+
+
+/* =========================================================
+   15. NEUE RUNDE
+   ========================================================= */
+
+
+function startGame() {
+
+    cards =
+        shuffle(eventCards);
+
+
+    currentCardIndex = 0;
+
+    mistakes = 0;
+
+
+    document
+        .getElementById(
+            "gameArea"
+        )
+        .style.display =
+        "flex";
+
+
+    document
+        .getElementById(
+            "completion"
+        )
+        .classList.remove(
+            "visible"
+        );
+
+
+    loadCard();
+
+}
+
+
+/* =========================================================
+   16. EVENTS
+   ========================================================= */
+
+
+supplySlider.addEventListener(
+    "input",
+    updateMarket
+);
+
+
+demandSlider.addEventListener(
+    "input",
+    updateMarket
+);
+
+
+resetButton.addEventListener(
+    "click",
+    () => {
+
+        resetCard();
+
+    }
+);
+
+
+checkButton.addEventListener(
+    "click",
+    checkAnswer
+);
+
+
+nextButton.addEventListener(
+    "click",
+    nextCard
+);
+
+
+document
+    .getElementById(
+        "restartButton"
+    )
+    .addEventListener(
+        "click",
+        startGame
+    );
+
+
+/* =========================================================
+   17. START
+   ========================================================= */
+
+
+startGame();
+
+</script>
+
+</body>
+</html>

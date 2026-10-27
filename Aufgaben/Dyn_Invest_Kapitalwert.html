@@ -1,0 +1,372 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Interaktives Lernlabor für die Kapitalwertmethode – BWR, 12. Jahrgangsstufe. Mit Zeitreise, Formeln, Zahlungsübersicht und Wissenstest.">
+  <title>Kapitalwert-Labor · Interaktive Kapitalwertmethode</title>
+  <style>
+    :root {--ink:#183047;--muted:#60748a;--line:#dce6ed;--page:#f6f8fa;--white:#fff;--teal:#0f7885;--tealDark:#075360;--tint:#e7f5f5;--coral:#ce6b48;--orangeTint:#fff1e9;--green:#16745e;--greenTint:#e5f6ee;--red:#b64345;--redTint:#fff0ef;--shadow:0 18px 60px rgba(31,63,82,.065);--radius:22px;}
+    *,*:before,*:after{box-sizing:border-box} html{scroll-behavior:smooth;scroll-padding-top:84px} body{margin:0;background:var(--page);font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Arial,sans-serif;color:var(--ink);line-height:1.55;font-size:15px}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,summary:focus-visible,a:focus-visible{outline:3px solid #f6b956;outline-offset:3px}a{text-decoration:none;color:inherit}h1,h2,h3,p{margin-top:0}h1{font-size:clamp(2.1rem,5vw,3.7rem);line-height:1.1;letter-spacing:-.052em;margin-bottom:17px}h2{font-size:clamp(1.5rem,2.8vw,2.15rem);letter-spacing:-.038em;line-height:1.2;margin-bottom:9px}h3{font-size:1.02rem;line-height:1.35;margin-bottom:12px;letter-spacing:-.012em}small,.small{font-size:.83rem}sup,sub{line-height:0} .muted{color:var(--muted)} .wrap{width:min(1190px,calc(100% - 44px));margin:0 auto} .site-head{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(250,252,253,.92);border-bottom:1px solid var(--line)} .head-inside{display:flex;align-items:center;justify-content:space-between;min-height:63px;gap:20px} .logo{display:flex;align-items:center;gap:9px;font-weight:850;letter-spacing:-.025em;font-size:1rem;white-space:nowrap}.logo-mark{display:grid;place-items:center;width:30px;height:30px;background:var(--teal);border-radius:10px;color:white;font-size:1.1rem}.nav{display:flex;gap:24px;font-size:.84rem;font-weight:700;color:#4e6679}.nav a:hover{color:var(--teal)}
+    .hero{background:linear-gradient(112deg,#153c4c 0%,#102d44 60%,#184d59 100%);color:#fff;position:relative;overflow:hidden}.hero:before{content:"";position:absolute;border:1px solid rgba(255,255,255,.14);width:530px;height:530px;border-radius:50%;right:-145px;top:-260px;box-shadow:0 0 0 90px rgba(255,255,255,.035),0 0 0 180px rgba(255,255,255,.018)}.hero-content{position:relative;padding:67px 0 65px;display:grid;grid-template-columns:minmax(0,1.22fr) minmax(270px,.78fr);align-items:center;gap:36px}.kicker{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);padding:6px 11px;border-radius:50px;font-weight:750;letter-spacing:.075em;font-size:.7rem;text-transform:uppercase;margin-bottom:23px}.hero h1 span{color:#7de2d5}.hero p{max-width:620px;font-size:1.05rem;color:#d7e8ee;margin-bottom:24px}.hero-link{display:inline-flex;align-items:center;gap:8px;border-radius:12px;background:#fff;color:#174355;padding:12px 17px;font-weight:800;font-size:.9rem;transition:transform .15s}.hero-link:hover{transform:translateY(-2px)}.hero-art{border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.075);backdrop-filter:blur(8px);border-radius:22px;padding:23px;box-shadow:0 15px 40px #07233050}.art-overline{color:#c6dce5;font-size:.76rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.art-sum{font-size:2.2rem;font-weight:850;letter-spacing:-.055em;margin:7px 0 11px}.art-line{height:3px;background:linear-gradient(to right,#ffbd87 0 28%,transparent 28% 35%,#8fe6d9 35%);position:relative;border-radius:8px;margin:24px 0}.art-line:before,.art-line:after{content:"";position:absolute;top:-6px;height:15px;width:15px;border-radius:100%;background:#ffbd87;left:5%}.art-line:after{background:#8fe6d9;left:auto;right:10%}.art-foot{display:flex;justify-content:space-between;color:#d5e5ed;font-size:.78rem}.art-foot b{color:white}
+    main{padding-bottom:64px}.section{margin-top:55px}.section-head{max-width:770px;margin-bottom:23px}.eyebrow{font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;color:var(--teal);font-weight:850;margin-bottom:7px}.section-head p{color:var(--muted);margin:0}.concepts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.concept{background:white;border:1px solid var(--line);border-radius:18px;padding:21px;position:relative;min-height:165px}.concept-number{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;background:var(--tint);color:var(--teal);font-weight:900;margin-bottom:12px}.concept p{font-size:.89rem;color:var(--muted);margin:0}.concept strong{display:block;margin-bottom:5px}
+    .card{background:white;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:var(--radius);padding:25px}.dashboard{display:grid;grid-template-columns:minmax(310px,.9fr) minmax(0,1.1fr);gap:18px;align-items:stretch}.dashboard .card{height:100%}.card-heading{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:15px}.card-heading h3{margin:0;font-size:1.08rem}.mini-tag{background:#edf4f6;color:#526979;border-radius:100px;padding:4px 10px;font-size:.7rem;font-weight:800}.presets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px}.preset-option{display:inline-flex;align-items:center;gap:4px}.chip{border:1px solid #d5e2e8;color:#52697a;background:#fff;padding:7px 11px;border-radius:100px;font-size:.78rem;font-weight:750;transition:all .15s}.chip:hover,.chip.active{border-color:var(--teal);background:var(--tint);color:var(--tealDark)}.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.control{min-width:0}.control.full{grid-column:1/-1}.control-label{display:flex;align-items:center;gap:4px;margin-bottom:6px;font-weight:720;font-size:.85rem}.control-label .aside{color:var(--muted);font-weight:550}.num-input{width:100%;height:45px;border:1px solid #d8e3ea;border-radius:10px;background:#fbfdfe;padding:0 11px;color:var(--ink);font-weight:750}.num-input:focus{border-color:var(--teal)}.unit-input{display:flex;align-items:center;gap:7px}.unit-input .num-input{min-width:0}.unit{font-size:.8rem;color:var(--muted);font-weight:850}.range-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:3px}.range-val{font-variant-numeric:tabular-nums;font-weight:900;color:var(--tealDark);font-size:1.03rem}.range{width:100%;accent-color:var(--teal);height:23px;cursor:pointer}.range-caps{display:flex;justify-content:space-between;color:#8ba0ad;font-size:.72rem;margin-top:-4px}.settings-tip{margin-top:18px;border-radius:13px;padding:12px 13px;background:#eff7f8;color:#456779;font-size:.83rem}
+    .result-card{background:linear-gradient(150deg,#fff 25%,#f4faf9 100%)}.result-header{display:flex;align-items:center;justify-content:space-between;gap:10px}.result-eyebrow{color:var(--muted);font-weight:850;letter-spacing:.09em;font-size:.75rem;text-transform:uppercase}.result-number{font-size:clamp(2rem,4.5vw,3.45rem);font-weight:900;letter-spacing:-.055em;line-height:1.1;margin:14px 0 9px;font-variant-numeric:tabular-nums}.result-number.positive{color:var(--green)}.result-number.negative{color:var(--red)}.result-number.zero{color:var(--teal)}.verdict{display:inline-flex;align-items:center;gap:7px;border-radius:100px;padding:7px 12px;font-size:.79rem;font-weight:850;background:var(--greenTint);color:var(--green)}.verdict.negative{background:var(--redTint);color:var(--red)}.verdict.zero{background:#eef3f9;color:#536985}.explain{color:#526878;margin:12px 0 24px;font-size:.91rem}.result-divider{border-top:1px solid var(--line);margin:18px 0}.sum-line{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin:12px 0;font-size:.91rem}.sum-line b{font-size:1.03rem;font-variant-numeric:tabular-nums}.result-bars{display:grid;gap:13px;margin-top:24px}.bar-label{display:flex;justify-content:space-between;gap:8px;font-size:.78rem;font-weight:750;margin-bottom:6px}.bar-track{height:12px;background:#e6eef0;border-radius:12px;overflow:hidden}.bar-fill{width:30%;height:100%;border-radius:12px;transition:width .2s ease}.bar-fill.bw{background:var(--teal)}.bar-fill.i0{background:#e2a370}.caption-text{font-size:.76rem;color:var(--muted);margin:12px 0 0}.equation-strip{display:flex;justify-content:center;flex-wrap:wrap;gap:8px;align-items:center;margin-top:22px;padding:14px 12px;border-radius:14px;background:#f0f6f7;border:1px solid #dcebec;font-size:clamp(.96rem,1.6vw,1.13rem);font-weight:750}.math-variable{font-family:Georgia,"Times New Roman",serif;font-style:italic}.equation-strip .number{font-variant-numeric:tabular-nums}.minus-op{color:var(--coral)}
+    .time-card{padding:26px 27px 29px}.time-top{display:flex;gap:25px;justify-content:space-between;align-items:start}.time-pick{display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}.time-pick label{font-size:.8rem;color:var(--muted);font-weight:750}.select{background:white;border:1px solid var(--line);border-radius:10px;padding:9px 30px 9px 11px;color:var(--ink);font-weight:800;font-size:.86rem;max-width:165px}.time-pad{background:#f2f8f8;border:1px solid #e1ecee;border-radius:19px;margin-top:18px;padding:25px 26px 19px}.time-slider-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px}.time-slider-head strong{font-size:1.18rem;letter-spacing:-.02em}.time-slider-head span{color:var(--muted);font-size:.84rem}.time-slider{width:100%;accent-color:var(--teal);height:24px;cursor:ew-resize}.timeline{display:grid;align-items:start;position:relative;margin:16px 4px 4px;gap:2px}.timeline:before{content:"";position:absolute;top:15px;left:6%;right:6%;height:3px;border-radius:3px;background:linear-gradient(90deg,#dba37c,#8ebdc1);z-index:0}.year-dot{background:none;border:0;position:relative;z-index:1;padding:0 0 4px;min-width:0;text-align:center;display:flex;flex-direction:column;align-items:center;gap:7px;color:#7a91a1;font-size:.74rem;font-weight:850}.dot{display:block;height:31px;width:31px;border:3px solid #b6d2d7;background:white;border-radius:50%;transition:.16s;box-shadow:0 0 0 3px #f2f8f8}.year-dot.selected .dot{background:var(--teal);border-color:var(--teal);box-shadow:0 0 0 5px #b8e1e0}.year-dot.focus .dot{border-color:#d69060;box-shadow:0 0 0 4px #f9dcc9}.year-dot.selected.focus .dot{background:var(--teal);border-color:#d69060}.year-dot.selected{color:var(--tealDark)}.dot-legend{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;margin-top:13px;font-size:.73rem;font-weight:700;color:#607788}.legend-ball{display:inline-block;width:9px;height:9px;border-radius:50%;background:var(--teal);margin-right:5px}.legend-ball.payment{background:#d69060}.time-results{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:20px}.time-metric{border:1px solid var(--line);padding:17px;border-radius:16px;background:#fff;min-width:0}.time-metric.highlight{background:#f3fcfa;border-color:#b9e4dc}.time-metric small{display:block;font-weight:750;color:#607587;margin-bottom:7px}.time-metric .large{font-size:clamp(1.3rem,2.3vw,1.75rem);font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}.time-metric p{color:var(--muted);font-size:.81rem;margin:5px 0 0}.time-formula{background:#f9fbfd;border-left:3px solid var(--teal);padding:14px 17px;border-radius:0 12px 12px 0;margin-top:18px;color:#536d7e;font-size:.9rem}.time-formula strong{color:var(--ink)}.note{font-size:.82rem;color:#61788a;margin:14px 0 0}
+    .math-card{padding:27px}.formula-box{padding:19px;background:#f7fafb;border:1px solid #e2edf0;border-radius:14px;margin-top:14px;overflow-x:auto}.formula-title{font-size:.78rem;letter-spacing:.055em;text-transform:uppercase;font-weight:900;color:#667f8e;margin:0 0 12px}.formula{display:flex;align-items:center;gap:9px;white-space:nowrap;font:clamp(1.1rem,2.3vw,1.55rem) Georgia,"Times New Roman",serif;min-height:58px;color:#203c4e}.fraction{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;vertical-align:middle;line-height:1.18;white-space:nowrap;max-width:none}.fraction .top{border-bottom:1.7px solid currentColor;padding:0 7px 5px}.fraction .bottom{padding:5px 7px 0}.italic{font-style:italic}.formula .dots{margin:0 1px}.formula-tag{font-size:.78rem;color:#587081;margin-top:9px;line-height:1.4}.math-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}.math-row .formula{font-size:clamp(1.05rem,1.8vw,1.28rem)}.formula-box.special{background:#edf8f7;border-color:#cde9e6}.formula-box.disabled{background:#f7f8fa;border-color:var(--line)}.special-disabled{font-size:.88rem;color:var(--muted);margin:0}.formula-box .small-expl{font-size:.85rem;color:#4d6d7b;margin:8px 0 0}
+    .table-head{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:14px}.table-scroller{overflow-x:auto;border:1px solid var(--line);border-radius:15px}.calc-table{border-collapse:collapse;width:100%;min-width:760px;text-align:right;font-size:.87rem;font-variant-numeric:tabular-nums}.calc-table th,.calc-table td{padding:11px 10px;border-bottom:1px solid #e9eff2}.calc-table thead{background:#f3f7f9}.calc-table thead th{color:#506b7c;font-size:.75rem;font-weight:850;line-height:1.35}.calc-table th:first-child,.calc-table td:first-child{text-align:left;padding-left:17px}.calc-table tbody tr{transition:background .13s}.calc-table tbody tr:hover{background:#f4fafa}.calc-table tbody tr.active{background:#eef8f6}.calc-table tbody tr:last-child td{border-bottom:none}.calc-table td .year-button{display:inline-flex;align-items:center;gap:7px;background:none;border:0;color:var(--tealDark);font-weight:900;padding:4px 2px}.calc-table td .year-button:hover{text-decoration:underline}.cash-input{width:88px;text-align:right;padding:7px;border:1px solid #d9e5eb;border-radius:8px;background:#fff;color:var(--ink);font-weight:750}.table-subrow{font-size:.75rem;color:var(--muted);margin-top:3px}.th-nobr{white-space:nowrap}.calc-breakdown{display:flex;justify-content:flex-end;margin-top:20px}.calc-breakdown-inner{width:min(425px,100%)}.calc-breakdown-inner .sum-line{margin:7px 0}.calc-breakdown-inner .emphasis{border-top:2px solid var(--line);padding-top:11px;margin-top:11px;font-weight:900}.calc-breakdown-inner .final{background:var(--tint);padding:12px 14px;border-radius:11px;font-weight:900}.calc-breakdown-inner .final b{color:var(--tealDark)}.bar-detail{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-top:23px}.bar-detail h3{margin-bottom:9px}.cash-bars{display:flex;align-items:end;gap:7px;height:115px;min-width:0;padding:4px 5px 22px;border-bottom:1px solid #bbd0d7}.contrib-item{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;position:relative}.contrib-btn{border:0;background:none;display:flex;flex-direction:column;align-items:center;gap:4px;justify-content:flex-end;height:100%;padding:0;min-width:0}.contrib-bar{display:block;width:70%;max-width:46px;border-radius:6px 6px 0 0;background:#77b6bc;min-height:2px;transition:.2s}.contrib-btn.active .contrib-bar{background:var(--teal);box-shadow:0 0 0 2px #bbdfdb}.contrib-bar.neg{background:#e39b94}.contrib-btn span:last-child{font-size:.7rem;font-weight:850;color:#698391;position:absolute;bottom:-22px}.contrib-btn:hover .contrib-bar{filter:brightness(.93)}.read-the-chart{font-size:.82rem;color:var(--muted);padding:10px 0 0;margin:0}
+    .quiz-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}.quiz-card{border:1px solid var(--line);border-radius:18px;background:white;padding:20px;min-height:245px}.quiz-index{font-size:.72rem;text-transform:uppercase;letter-spacing:.07em;font-weight:850;color:var(--teal);margin-bottom:11px}.quiz-card h3{font-size:.97rem;min-height:55px}.answers{display:grid;gap:8px}.answer{border:1px solid #dce6eb;border-radius:9px;background:#fafdfe;text-align:left;padding:9px 11px;font-size:.8rem;line-height:1.35;font-weight:650;color:#456071}.answer:hover{border-color:#8bbfc1}.answer.good{border-color:#71b7a0;background:var(--greenTint);color:var(--green)}.answer.bad{border-color:#d5a29d;background:var(--redTint);color:var(--red)}.quiz-feedback{font-size:.78rem;font-weight:750;margin:11px 0 0;min-height:22px}.quiz-feedback.ok{color:var(--green)}.quiz-feedback.no{color:var(--red)}.reset-button{border:1px solid #bdd9d7;background:#ecf8f6;color:var(--tealDark);padding:10px 14px;border-radius:10px;font-weight:850;font-size:.83rem}.reset-button:hover{background:#dff1ef}.quiz-bottom{margin-top:14px;display:flex;justify-content:space-between;align-items:center;gap:12px;color:var(--muted);font-size:.83rem}.memo{border-radius:20px;background:#e8f4f4;border:1px solid #cfe5e4;padding:23px 26px;display:flex;gap:17px;align-items:start;margin-top:29px}.memo-icon{font-size:1.5rem}.memo h3{margin:0 0 4px}.memo p{margin:0;color:#446776}.footer{border-top:1px solid var(--line);color:#7b8c9b;padding:23px 0 38px;font-size:.79rem}.footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .help{display:inline-grid;place-items:center;flex:0 0 auto;width:19px;height:19px;padding:0;border:1px solid #a6cad0;border-radius:50%;background:#e9f7f7;color:#0d7480;font-size:12px;line-height:1;font-weight:900;vertical-align:middle;transform:translateY(-1px)}.help:hover,.help[aria-expanded=true]{background:var(--teal);color:white}.tooltip{position:fixed;display:none;z-index:200;width:min(310px,calc(100vw - 25px));padding:14px 16px;background:#183747;color:#eef9fc;border-radius:13px;box-shadow:0 15px 35px rgba(5,29,42,.25);font-size:.82rem;line-height:1.5}.tooltip strong{display:block;font-size:.92rem;color:white;margin-bottom:3px}.tooltip.visible{display:block}.tooltip:after{content:"";position:absolute;width:0;height:0;border:7px solid transparent;border-bottom-color:#183747;top:-13px;left:calc(var(--arrowX, 25px))}.tooltip.above:after{top:auto;bottom:-13px;border-bottom-color:transparent;border-top-color:#183747}.info-inline{display:inline-flex;align-items:center;gap:5px}.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media (max-width:900px){.hero-content{grid-template-columns:1fr}.hero-art{display:none}.dashboard{grid-template-columns:1fr}.quiz-grid{grid-template-columns:1fr}.quiz-card{min-height:auto}.quiz-card h3{min-height:auto}.answers{grid-template-columns:repeat(3,1fr)}.time-top{flex-direction:column;gap:10px}.time-pick{justify-content:flex-start}.concepts{grid-template-columns:1fr 1fr}.nav{gap:12px}.bar-detail{grid-template-columns:1fr 1fr}}
+    @media (max-width:620px){.wrap{width:min(100% - 28px,1190px)}.head-inside{min-height:59px}.nav{gap:12px;font-size:.75rem}.nav a:nth-child(1),.nav a:nth-child(4){display:none}.nav a:nth-child(2){display:inline}.logo{font-size:.87rem}.hero-content{padding:49px 0 52px}.hero p{font-size:.94rem}.section{margin-top:36px}.concepts,.math-row,.time-results,.bar-detail{grid-template-columns:1fr}.concept{min-height:auto}.card{padding:19px}.time-card,.math-card{padding:19px}.time-pad{padding:18px 12px}.time-slider-head{flex-direction:column;align-items:flex-start;gap:0}.year-dot{font-size:.65rem}.dot{width:25px;height:25px}.timeline:before{top:12px}.answers{grid-template-columns:1fr}.quiz-bottom{align-items:flex-start;flex-direction:column}.result-number{font-size:2.55rem}.formula{font-size:1.13rem}.formula-box{padding:13px}.math-row .formula{font-size:1.06rem}.footer .wrap{display:block}.memo{padding:19px}.control-label{font-size:.78rem}}
+    @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
+    @media print{.site-head,.hero-link,.settings-tip,.quiz-grid,.quiz-bottom,.help{display:none!important}.hero{color:#183047;background:white}.hero-content{padding:15px 0}.hero h1 span{color:#183047}.hero p{color:#506b7c}.card,.concept{box-shadow:none;break-inside:avoid}.section{margin-top:25px}}
+  </style>
+</head>
+<body>
+  <header class="site-head">
+    <div class="wrap head-inside">
+      <a class="logo" href="#start"><span class="logo-mark">K<span style="font-size:.63rem;align-self:end;padding-bottom:6px">0</span></span><span>Kapitalwert-Labor</span></a>
+      <nav class="nav" aria-label="Navigation">
+        <a href="#labor">Ausprobieren</a><a href="#zeitreise">Zeitreise</a><a href="#rechenweg">Rechenweg</a><a href="#selbsttest">Selbsttest</a>
+      </nav>
+    </div>
+  </header>
+  <section class="hero" id="start">
+    <div class="wrap hero-content">
+      <div>
+        <span class="kicker">BWR · 12. Jahrgangsstufe · Dynamische Verfahren</span>
+        <h1>Was ist Geld <span>morgen</span> wert?</h1>
+        <p>Heute investieren, in den nächsten Jahren Geld zurückbekommen: Mit der <strong>Kapitalwertmethode</strong> findest du heraus, ob sich eine Investition lohnt. Hier kannst du alles selbst verändern.</p>
+        <a class="hero-link" href="#labor">Jetzt experimentieren <span aria-hidden="true">→</span></a>
+      </div>
+      <div class="hero-art" aria-hidden="true">
+        <div class="art-overline">Die Idee in einer Rechnung</div>
+        <div class="art-sum">K<sub>0</sub> = BW − I<sub>0</sub></div>
+        <div class="art-line"></div>
+        <div class="art-foot"><span><b>Heute</b><br>Auszahlung</span><span style="text-align:right"><b>Später</b><br>Einzahlungen − Auszahlungen</span></div>
+      </div>
+    </div>
+  </section>
+  <main>
+    <section class="wrap section" aria-labelledby="idee-title">
+      <div class="section-head"><div class="eyebrow">01 / Die Grundidee</div><h2 id="idee-title">Drei Schritte zu einer Entscheidung</h2><p>Beim dynamischen Verfahren zählt nicht nur, <em>wie viel</em> Geld fließt, sondern auch <em>wann</em>.</p></div>
+      <div class="concepts">
+        <div class="concept"><div class="concept-number">01</div><strong>Heute Geld ausgeben</strong><p>Eine Investition beginnt mit der Anfangsauszahlung <span class="info-inline"><b>I<sub>0</sub></b><button class="help" data-help="i0" aria-label="Hilfe: Anfangsauszahlung">?</button></span>.</p></div>
+        <div class="concept"><div class="concept-number">02</div><strong>Später Geld erhalten</strong><p>Jahr für Jahr entstehen Einzahlungen <b>e</b> und Auszahlungen <b>a</b> – am Ende eventuell ein Restwert.</p></div>
+        <div class="concept"><div class="concept-number">03</div><strong>Auf heute zurückrechnen</strong><p>Zukünftige Beträge werden <strong>abgezinst</strong>. Ihre Summe ist der <span class="info-inline"><b>Barwert</b><button class="help" data-help="bw" aria-label="Hilfe: Barwert">?</button></span>.</p></div>
+      </div>
+    </section>
+    <section class="wrap section" id="labor" aria-labelledby="labor-title">
+      <div class="section-head"><div class="eyebrow">02 / Dein Experiment</div><h2 id="labor-title">Verändere die Investition</h2><p>Wähle ein Beispiel oder verschiebe die Regler. Alle Werte und Formeln passen sich sofort an.</p></div>
+      <div class="dashboard">
+        <div class="card">
+          <div class="card-heading"><h3>Deine Annahmen</h3><span class="mini-tag">Alles veränderbar</span></div>
+          <div class="presets" role="group" aria-label="Beispielszenarien">
+            <span class="preset-option"><button type="button" class="chip active" data-preset="maschine">⚙️ Maschine</button><button type="button" class="help" data-help="preset-maschine" aria-label="Info zum Beispiel Maschine" aria-expanded="false">?</button></span>
+            <span class="preset-option"><button type="button" class="chip" data-preset="grenzfall">⚖️ Grenzfall</button><button type="button" class="help" data-help="preset-grenzfall" aria-label="Info zum Beispiel Grenzfall" aria-expanded="false">?</button></span>
+            <span class="preset-option"><button type="button" class="chip" data-preset="wachsen">📈 Wachsende Erträge</button><button type="button" class="help" data-help="preset-wachsen" aria-label="Info zum Beispiel Wachsende Erträge" aria-expanded="false">?</button></span>
+          </div>
+          <div class="form-grid">
+            <div class="control full">
+              <label class="control-label" for="i0">Anfangsauszahlung I<sub>0</sub><button type="button" class="help" data-help="i0" aria-label="Hilfe: I null">?</button></label>
+              <div class="unit-input"><input class="num-input" id="i0" type="number" min="0" max="1000000" step="100" value="10000"><span class="unit">€</span></div>
+            </div>
+            <div class="control full">
+              <div class="range-head"><label class="control-label" for="rate">Kalkulationszins i <button type="button" class="help" data-help="i" aria-label="Hilfe: Kalkulationszins">?</button></label><output class="range-val" id="rate-val" for="rate">6,0 %</output></div>
+              <input class="range" type="range" id="rate" min="0" max="20" value="6" step="0.5"><div class="range-caps"><span>0 %</span><span>20 %</span></div>
+            </div>
+            <div class="control full">
+              <div class="range-head"><label class="control-label" for="years">Nutzungsdauer n <button type="button" class="help" data-help="n" aria-label="Hilfe: Nutzungsdauer">?</button></label><output class="range-val" id="years-val" for="years">5 Jahre</output></div>
+              <input class="range" type="range" id="years" min="1" max="8" value="5" step="1"><div class="range-caps"><span>1 Jahr</span><span>8 Jahre</span></div>
+            </div>
+            <div class="control full">
+              <label class="control-label" for="rest">Restwert R<sub>n</sub> <button type="button" class="help" data-help="rn" aria-label="Hilfe: Restwert">?</button></label>
+              <div class="unit-input"><input class="num-input" id="rest" type="number" min="0" max="1000000" step="100" value="1500"><span class="unit">€</span></div>
+            </div>
+          </div>
+          <div class="settings-tip"><strong>Probiere aus:</strong> Was passiert mit dem Kapitalwert, wenn du den Zinssatz erhöhst? Die jährlichen Ein- und Auszahlungen kannst du <a href="#rechenweg" style="color:var(--tealDark);font-weight:900;text-decoration:underline">unten in der Tabelle</a> bearbeiten.</div>
+        </div>
+        <div class="card result-card">
+          <div class="result-header"><span class="result-eyebrow">Kapitalwert <span class="info-inline">K<sub>0</sub><button class="help" data-help="k0" aria-label="Hilfe: Kapitalwert">?</button></span></span><span class="mini-tag">zum Zeitpunkt 0</span></div>
+          <div class="result-number positive" id="capital-number" aria-live="polite">+1.230,56 €</div>
+          <div class="verdict" id="verdict">✓ Investition vorteilhaft</div>
+          <p class="explain" id="result-explain">Der Barwert der zukünftigen Rückflüsse ist größer als die Anfangsauszahlung.</p>
+          <div class="result-divider"></div>
+          <div class="sum-line"><span>Barwert <b>BW</b> <button class="help" data-help="bw" aria-label="Hilfe: Barwert">?</button></span><b id="r-bw">–</b></div>
+          <div class="sum-line"><span>− Anfangsauszahlung <b>I<sub>0</sub></b></span><b id="r-i0">–</b></div>
+          <div class="equation-strip" aria-label="Kapitalwert ist Barwert minus Anfangsauszahlung"><span class="math-variable">K<sub>0</sub></span><span>=</span><span class="number" id="eq-bw">–</span><span class="minus-op">−</span><span class="number" id="eq-i0">–</span></div>
+          <div class="result-bars">
+            <div><div class="bar-label"><span>Barwert der zukünftigen Zahlungen</span><span id="bar-bw-label">–</span></div><div class="bar-track"><div id="bar-bw" class="bar-fill bw"></div></div></div>
+            <div><div class="bar-label"><span>Anfangsauszahlung heute</span><span id="bar-i0-label">–</span></div><div class="bar-track"><div id="bar-i0" class="bar-fill i0"></div></div></div>
+          </div>
+          <p class="caption-text">Die Balken vergleichen Werte <strong>zum selben Zeitpunkt (heute)</strong>. Der Unterschied ist dein Kapitalwert.</p>
+        </div>
+      </div>
+    </section>
+    <section class="wrap section" id="zeitreise" aria-labelledby="zeit-title">
+      <div class="section-head"><div class="eyebrow">03 / Zeitreise</div><h2 id="zeit-title">Schiebe die Zeit vor und zurück</h2><p>Eine Zahlung kann je nach Betrachtungszeitpunkt unterschiedlich viel wert sein. Wähle zuerst eine zukünftige Zahlung und bewege dann den Zeitregler.</p></div>
+      <div class="card time-card">
+        <div class="time-top">
+          <div><h3>Wie viel ist <em>dieselbe</em> Zahlung zu verschiedenen Zeiten wert?</h3><p class="muted small" style="margin:0">Zukunft → Vergangenheit: abzinsen. Vergangenheit → Zukunft: aufzinsen.</p></div>
+          <div class="time-pick"><label for="focus-year">Zahlung auswählen:</label><select id="focus-year" class="select" aria-label="Zahlung aus einem Jahr auswählen"></select></div>
+        </div>
+        <div class="time-pad">
+          <div class="time-slider-head"><strong id="time-label">Betrachtungszeitpunkt: heute (Jahr 0)</strong><span>Hierhin rechnen wir die ausgewählte Zahlung um.</span></div>
+          <input type="range" class="time-slider" id="time-slider" min="0" max="5" value="0" step="1" aria-label="Betrachtungszeitpunkt von Jahr 0 bis Nutzungsende">
+          <div class="timeline" id="timeline" role="group" aria-label="Jahre auswählen"></div>
+          <div class="dot-legend"><span><i class="legend-ball"></i> Betrachtungszeitpunkt</span><span><i class="legend-ball payment"></i> Jahr der Zahlung</span></div>
+        </div>
+        <div class="time-results">
+          <div class="time-metric highlight"><small id="selected-cash-title">Wert der Zahlung aus Jahr 5 im Jahr 0</small><div id="cash-at-time" class="large">–</div><p id="selected-cash-note">Derselbe Geldbetrag, auf den ausgewählten Zeitpunkt umgerechnet.</p></div>
+          <div class="time-metric"><small id="all-cash-title">Wert aller zukünftigen Rückflüsse im Jahr 0</small><div id="bw-at-time" class="large">–</div><p id="bw-at-time-note">Im Jahr 0 ist dies genau der Barwert (BW).</p></div>
+        </div>
+        <div class="time-formula" id="time-explanation" aria-live="polite"></div>
+        <p class="note"><strong>Wichtig:</strong> Der <strong>Barwert BW</strong> ist definitionsgemäß der Wert aller zukünftigen Nettozahlungen <strong>heute (Jahr 0)</strong>. Wenn du den Regler verschiebst, zeigst du einen Vergleichswert für ein anderes Jahr – der ursprüngliche BW ändert sich dadurch nicht.</p>
+      </div>
+    </section>
+    <section class="wrap section" id="rechenweg" aria-labelledby="weg-title">
+      <div class="section-head"><div class="eyebrow">04 / Rechenweg</div><h2 id="weg-title">So entsteht der Barwert</h2><p>Die Formeln sind an dein Tafelbild angelehnt. Mit den <button type="button" class="help" data-help="hilfe" aria-label="Hilfezeichen erklären">?</button> erfährst du, was jede Abkürzung bedeutet.</p></div>
+      <div class="card math-card">
+        <h3>1. Die allgemeine Formel</h3>
+        <div class="formula-box" aria-label="BW gleich (e1 minus a1) geteilt durch (1 plus i) hoch 1 plus (e2 minus a2) geteilt durch (1 plus i) hoch 2 und so weiter plus (en minus an) geteilt durch (1 plus i) hoch n plus Rn geteilt durch (1 plus i) hoch n">
+          <p class="formula-title">Barwert aller zukünftigen Zahlungen</p>
+          <div class="formula">
+            <span>BW</span><span>=</span>
+            <span class="fraction"><span class="top"><i>e</i><sub>1</sub> − <i>a</i><sub>1</sub></span><span class="bottom">(1 + <i>i</i>)<sup>1</sup></span></span><span>+</span>
+            <span class="fraction"><span class="top"><i>e</i><sub>2</sub> − <i>a</i><sub>2</sub></span><span class="bottom">(1 + <i>i</i>)<sup>2</sup></span></span><span>+</span><span class="dots">…</span><span>+</span>
+            <span class="fraction"><span class="top"><i>e</i><sub>n</sub> − <i>a</i><sub>n</sub></span><span class="bottom">(1 + <i>i</i>)<sup>n</sup></span></span><span>+</span>
+            <span class="fraction"><span class="top"><i>R</i><sub>n</sub></span><span class="bottom">(1 + <i>i</i>)<sup>n</sup></span></span>
+          </div>
+          <div class="formula-tag">e<sub>t</sub> <button class="help" data-help="e" aria-label="Hilfe: Einzahlungen">?</button> Einzahlungen im Jahr t &nbsp; · &nbsp; a<sub>t</sub> <button class="help" data-help="a" aria-label="Hilfe: Auszahlungen">?</button> Auszahlungen im Jahr t &nbsp; · &nbsp; R<sub>n</sub> <button class="help" data-help="rn" aria-label="Hilfe: Restwert">?</button> Restwert am Ende &nbsp; · &nbsp; i <button class="help" data-help="i" aria-label="Hilfe: Zins">?</button> Zins pro Jahr &nbsp; · &nbsp; n <button class="help" data-help="n" aria-label="Hilfe: n">?</button> Jahre</div>
+        </div>
+        <div class="math-row">
+          <div class="formula-box special" id="special-box">
+            <p class="formula-title">Spezialfall: r ist jedes Jahr gleich</p>
+            <div class="formula" id="special-formula">
+              <span>BW</span><span>=</span><span class="fraction"><span class="top"><i>r</i></span><span class="bottom"><i>q</i><sup>n</sup></span></span><span>·</span><span class="fraction"><span class="top"><i>q</i><sup>n</sup> − 1</span><span class="bottom"><i>q</i> − 1</span></span><span>+</span><span class="fraction"><span class="top"><i>R</i><sub>n</sub></span><span class="bottom"><i>q</i><sup>n</sup></span></span>
+            </div>
+            <p id="special-help" class="small-expl">r = e<sub>t</sub> − a<sub>t</sub> <button class="help" data-help="r" aria-label="Hilfe: jährlicher Überschuss">?</button>, q = 1 + i <button class="help" data-help="q" aria-label="Hilfe: q">?</button></p>
+          </div>
+          <div class="formula-box">
+            <p class="formula-title">2. Kapitalwert berechnen</p>
+            <div class="formula"><span><i>K</i><sub>0</sub></span><span>=</span><span>BW</span><span>−</span><span><i>I</i><sub>0</sub></span></div>
+            <p class="small-expl"><span id="simple-calc">BW − Anfangsauszahlung = Kapitalwert</span>. <strong id="small-verdict">Positiver Kapitalwert: vorteilhaft.</strong></p>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:17px" aria-labelledby="calc-title">
+        <div class="table-head"><div><h3 id="calc-title" style="margin:0 0 3px">Die Rechnung Jahr für Jahr</h3><p class="muted small" style="margin:0">Klicke in die Felder für e und a – die Rechnung aktualisiert sich sofort.</p></div><span class="mini-tag">Werte in €</span></div>
+        <div class="table-scroller">
+          <table class="calc-table"><thead><tr>
+            <th scope="col">Jahr <button class="help" data-help="t" aria-label="Hilfe: Jahr t">?</button></th>
+            <th scope="col">Einzahlung e<sub>t</sub> <button class="help" data-help="e" aria-label="Hilfe: e">?</button></th>
+            <th scope="col">Auszahlung a<sub>t</sub> <button class="help" data-help="a" aria-label="Hilfe: a">?</button></th>
+            <th scope="col">Überschuss<br>e<sub>t</sub> − a<sub>t</sub> <button class="help" data-help="r" aria-label="Hilfe: Überschuss">?</button></th>
+            <th scope="col">Abzinsungs-<br>faktor <button class="help" data-help="faktor" aria-label="Hilfe: Abzinsungsfaktor">?</button></th>
+            <th scope="col">Barwert des<br>Überschusses</th>
+          </tr></thead><tbody id="cash-table-body"></tbody></table>
+        </div>
+        <p class="note">Klicke auf eine Jahreszahl, um genau diese Zahlung oben in der Zeitreise auszuwählen. Der Restwert R<sub>n</sub> kommt im letzten Jahr <strong>zusätzlich</strong> hinzu.</p>
+        <div class="bar-detail">
+          <div><h3>Barwert-Bausteine pro Jahr</h3><div id="contributions" class="cash-bars" aria-label="Barwert-Anteile der jährlichen Nettozahlungen"></div><p class="read-the-chart">Jeder Balken zeigt, wie viel der Überschuss eines Jahres <strong>heute</strong> wert ist – ohne Restwert. Balken anklicken, um eine Zahlung auszuwählen.</p></div>
+          <div class="calc-breakdown"><div class="calc-breakdown-inner">
+            <div class="sum-line"><span>Barwerte der Jahresüberschüsse</span><b id="s-net">–</b></div>
+            <div class="sum-line"><span>+ Barwert des Restwerts</span><b id="s-rest">–</b></div>
+            <div class="sum-line emphasis"><span>= Barwert BW</span><b id="s-bw">–</b></div>
+            <div class="sum-line"><span>− Anfangsauszahlung I<sub>0</sub></span><b id="s-i0">–</b></div>
+            <div class="sum-line final"><span>= Kapitalwert K<sub>0</sub></span><b id="s-capital">–</b></div>
+          </div></div>
+        </div>
+      </div>
+    </section>
+    <section class="wrap section" id="selbsttest" aria-labelledby="quiz-title">
+      <div class="section-head"><div class="eyebrow">05 / Selbsttest</div><h2 id="quiz-title">Hast du das Prinzip verstanden?</h2><p>Wähle eine Antwort pro Frage. Du erhältst sofort eine Rückmeldung – ganz ohne Noten.</p></div>
+      <div class="quiz-grid">
+        <div class="quiz-card" data-quiz="0"><div class="quiz-index">Frage 01 · Zeitwert</div><h3>Warum ist eine Einzahlung von 1.000 € in drei Jahren heute weniger wert?</h3><div class="answers"><button class="answer" data-q="0" data-a="0">Weil zukünftige Einnahmen grundsätzlich unsicher sind.</button><button class="answer" data-q="0" data-a="1">Weil Geld heute verzinst bzw. alternativ angelegt werden könnte.</button><button class="answer" data-q="0" data-a="2">Weil die Anfangsauszahlung immer höher ist.</button></div><p class="quiz-feedback" id="feedback-0" aria-live="polite"></p></div>
+        <div class="quiz-card" data-quiz="1"><div class="quiz-index">Frage 02 · Entscheidung</div><h3>Der Barwert beträgt 12.000 € und I<sub>0</sub> beträgt 10.000 €. Was folgt?</h3><div class="answers"><button class="answer" data-q="1" data-a="0">K<sub>0</sub> = −2.000 €: nicht vorteilhaft.</button><button class="answer" data-q="1" data-a="1">K<sub>0</sub> = 2.000 €: vorteilhaft.</button><button class="answer" data-q="1" data-a="2">K<sub>0</sub> = 22.000 €: vorteilhaft.</button></div><p class="quiz-feedback" id="feedback-1" aria-live="polite"></p></div>
+        <div class="quiz-card" data-quiz="2"><div class="quiz-index">Frage 03 · Restwert</div><h3>Wie wird ein Restwert R<sub>n</sub> am Ende der Nutzungsdauer behandelt?</h3><div class="answers"><button class="answer" data-q="2" data-a="0">Er wird ohne Abzinsung zu BW addiert.</button><button class="answer" data-q="2" data-a="1">Er wird von der Anfangsauszahlung abgezogen.</button><button class="answer" data-q="2" data-a="2">Er wird durch (1 + i)<sup>n</sup> geteilt und zu BW addiert.</button></div><p class="quiz-feedback" id="feedback-2" aria-live="polite"></p></div>
+      </div>
+      <div class="quiz-bottom"><span id="quiz-score">0 von 3 Aufgaben beantwortet</span><button class="reset-button" id="quiz-reset" type="button">Antworten zurücksetzen ↺</button></div>
+      <div class="memo"><span class="memo-icon" aria-hidden="true">💡</span><div><h3>Merksatz</h3><p><strong>BW</strong> sagt dir, was alle künftigen Nettozahlungen <em>heute</em> wert sind. <strong>K<sub>0</sub> = BW − I<sub>0</sub></strong> sagt dir, ob die Investition unter Berücksichtigung des Kalkulationszinses vorteilhaft ist: <strong>K<sub>0</sub> ≥ 0</strong> bedeutet mindestens gleichwertig zur geforderten Verzinsung. Bei K<sub>0</sub> = 0 wird genau diese Verzinsung erreicht.</p></div></div>
+    </section>
+  </main>
+  <footer class="footer"><div class="wrap"><span>Kapitalwert-Labor · BWR 12. Jahrgangsstufe · Formeln und Glossar nach dem bereitgestellten Tafelbild</span><span>Funktioniert vollständig offline · Keine Anmeldung · Keine Datenübertragung</span></div></footer>
+  <div class="tooltip" id="tooltip" role="tooltip"><strong id="tooltip-title"></strong><span id="tooltip-text"></span></div>
+  <script>
+    'use strict';
+    const euros = new Intl.NumberFormat('de-DE',{style:'currency',currency:'EUR',minimumFractionDigits:2,maximumFractionDigits:2});
+    const shortEuro = new Intl.NumberFormat('de-DE',{maximumFractionDigits:0});
+    const dec = new Intl.NumberFormat('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+    const qFmt = new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:3});
+    const factorFmt = new Intl.NumberFormat('de-DE',{minimumFractionDigits:4,maximumFractionDigits:4});
+    const el = id=>document.getElementById(id);
+    const money = n=>euros.format(Math.abs(n)<0.0049?0:n);
+    const signed = n=>(n>0.0049?'+':'')+money(n);
+    const clamp=(v,lo,hi)=>Math.min(hi,Math.max(lo,v));
+    const safeNum=(v,fallback=0)=>Number.isFinite(Number(v))?Number(v):fallback;
+    const examples={
+      maschine:{i0:10000,rate:6,n:5,rest:1500,cash:Array.from({length:5},()=>({e:3600,a:1200}))},
+      grenzfall:{i0:9700,rate:8,n:5,rest:0,cash:Array.from({length:5},()=>({e:3500,a:1100}))},
+      wachsen:{i0:13000,rate:5,n:6,rest:2000,cash:[[2800,1600],[3100,1500],[3500,1200],[4100,1100],[4400,1200],[4900,1100]].map(([e,a])=>({e,a}))}
+    };
+    let state={...structuredClone(examples.maschine),time:0,focus:5,preset:'maschine'};
+    const defaultSpecialMarkup=el('special-formula').innerHTML;
+    const help={
+      'preset-maschine':['⚙️ Maschine · Musterinvestition','Eine Maschine wird angeschafft und liefert jedes Jahr gleich hohe Überschüsse (Einzahlungen minus Auszahlungen). Am Ende kommt ein Restwert hinzu. Der Kapitalwert ist hier positiv.'],
+      'preset-grenzfall':['⚖️ Grenzfall · Musterinvestition','Der Kapitalwert liegt knapp unter 0 €. Die Investition erreicht die geforderte Verzinsung damit gerade nicht. Verändere zum Beispiel den Zinssatz und beobachte, wann sie vorteilhaft wird.'],
+      'preset-wachsen':['📈 Wachsende Erträge · Musterinvestition','Die jährlichen Überschüsse (Einzahlungen minus Auszahlungen) steigen. Weil sie nicht konstant sind, werden die einzelnen Jahresüberschüsse mit der allgemeinen Formel abgezinst.'],
+      k0:['K₀ · Kapitalwert','Barwert aller künftigen Nettozahlungen minus Anfangsauszahlung: K₀ = BW − I₀. K₀ > 0: vorteilhaft; K₀ = 0: geforderte Verzinsung wird genau erreicht; K₀ < 0: nicht vorteilhaft.'],
+      bw:['BW · Barwert','Der Wert aller zukünftigen Einzahlungen abzüglich Auszahlungen (einschließlich eines möglichen Restwerts), zurückgerechnet auf heute (Zeitpunkt 0). Eine spätere Zahlung zählt heute weniger als ein gleich hoher Betrag heute.'],
+      i0:['I₀ · Anfangsauszahlung','Die Zahlung zu Beginn der Investition (t = 0). Sie umfasst in der Regel Anschaffungs- und Einrichtungs-/Installationskosten. Weil sie heute anfällt, wird sie nicht abgezinst.'],
+      rn:['Rₙ · Restwert','Der erwartete Restwert des Investitionsobjekts am Ende des Betrachtungszeitraums (Jahr n), zum Beispiel der Verkaufserlös einer Maschine. Er wird wie eine Einzahlung im Jahr n abgezinst.'],
+      i:['i · Kalkulationszins','Der Diskontierungs- bzw. Kalkulationszinssatz pro Jahr. Er berücksichtigt die geforderte Mindestverzinsung und ggf. einen Risikoaufschlag. Für die Formel setzt man 6 % als i = 0,06 ein.'],
+      n:['n · Nutzungsdauer','Die Anzahl der Jahre des Betrachtungszeitraums. Die letzten jährlichen Zahlungen und der Restwert fallen am Ende des Jahres n an.'],
+      e:['eₜ · Einzahlungen','Alle der Investition zuzurechnenden Einzahlungen im Jahr t, zum Beispiel Verkaufserlöse oder Einnahmen aus dem Betrieb.'],
+      a:['aₜ · Auszahlungen','Alle der Investition zuzurechnenden laufenden Auszahlungen im Jahr t, zum Beispiel Material-, Wartungs- und Energiekosten. Die Anfangsauszahlung I₀ wird separat behandelt.'],
+      r:['r · konstanter Jahresüberschuss','r = e₁ − a₁ = e₂ − a₂ = … = eₙ − aₙ. Die vereinfachte Rentenbarwertformel ist nur bei in jedem Jahr gleichen Nettoüberschüssen anwendbar.'],
+      q:['q · Zinsfaktor','q = 1 + i, wobei i als Dezimalzahl eingesetzt wird. Bei 6 % Zins beträgt q = 1,06.'],
+      t:['t · Jahresindex','t gibt an, zu welchem Jahr eine Zahlung gehört. t = 0 bedeutet heute; t = 1 das Ende des ersten Jahres, t = 2 das Ende des zweiten Jahres usw.'],
+      faktor:['Abzinsungsfaktor','Eine Zahlung im Jahr t wird mit 1 / (1 + i)ᵗ multipliziert. Je weiter sie in der Zukunft liegt, desto kleiner wird ihr Barwert (bei positivem i).'],
+      hilfe:['Hilfezeichen','Klicke auf ein Fragezeichen neben einer Abkürzung. Es erklärt dir die Bedeutung aus dem Tafelbild. Mit der Esc-Taste lässt sich der Hinweis schließen.']
+    };
+    function calc(){
+      const q=1+state.rate/100;
+      const rows=state.cash.slice(0,state.n).map((c,j)=>{const t=j+1;const net=c.e-c.a;const fac=1/Math.pow(q,t);return {t,e:c.e,a:c.a,net,fac,pv:net*fac};});
+      const netSum=rows.reduce((s,r)=>s+r.pv,0);
+      const restPv=state.rest/Math.pow(q,state.n);
+      const bw=netSum+restPv;
+      return {rows,q,netSum,restPv,bw,capital:bw-state.i0};
+    }
+    function colorStatus(num){return num>0.0049?'positive':num<-.0049?'negative':'zero'}
+    function markCustom(){state.preset='';document.querySelectorAll('[data-preset]').forEach(b=>b.classList.remove('active'))}
+    function renderControls(){
+      el('i0').value=state.i0;el('rest').value=state.rest;el('rate').value=state.rate;el('years').value=state.n;
+      el('rate-val').textContent=dec.format(state.rate)+' %';el('years-val').textContent=state.n+(state.n===1?' Jahr':' Jahre');
+      el('time-slider').max=state.n;el('time-slider').value=state.time;
+      document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('active',b.dataset.preset===state.preset));
+      const dropdown=el('focus-year');dropdown.innerHTML=Array.from({length:state.n},(_,j)=>`<option value="${j+1}">Jahr ${j+1}${j+1===state.n?' (mit Restwert)':''}</option>`).join('');dropdown.value=state.focus;
+    }
+    function renderResult(c){
+      const status=colorStatus(c.capital);
+      const v=el('capital-number');v.textContent=signed(c.capital);v.className='result-number '+status;
+      const verdict=el('verdict');verdict.className='verdict '+status;
+      verdict.textContent=status==='positive'?'✓ Investition vorteilhaft':status==='negative'?'✕ Investition nicht vorteilhaft':'= Geforderte Verzinsung erreicht';
+      el('result-explain').textContent=status==='positive'?'Der Barwert der zukünftigen Nettozahlungen übersteigt die Anfangsauszahlung.':status==='negative'?'Der Barwert der zukünftigen Nettozahlungen reicht nicht aus, um die Anfangsauszahlung zu decken.':'Der Barwert entspricht genau der Anfangsauszahlung. Die geforderte Verzinsung wird erreicht.';
+      el('r-bw').textContent=money(c.bw);el('r-i0').textContent=money(state.i0);
+      el('eq-bw').textContent=shortEuro.format(c.bw)+' €';el('eq-i0').textContent=shortEuro.format(state.i0)+' €';
+      const mx=Math.max(Math.abs(c.bw),state.i0,1);
+      el('bar-bw').style.width=(Math.max(0,c.bw)/mx*100)+'%';el('bar-i0').style.width=(state.i0/mx*100)+'%';
+      el('bar-bw-label').textContent=money(c.bw);el('bar-i0-label').textContent=money(state.i0);
+      el('simple-calc').textContent=`${shortEuro.format(c.bw)} € − ${shortEuro.format(state.i0)} € = ${shortEuro.format(c.capital)} €`;
+      el('small-verdict').textContent=status==='positive'?'Die Investition ist vorteilhaft.':status==='negative'?'Die Investition ist nicht vorteilhaft.':'Die geforderte Verzinsung wird genau erreicht.';
+    }
+    function renderTime(c){
+      const t=state.time, year=state.focus;
+      const row=c.rows[year-1];const amount=row.net+(year===state.n?state.rest:0);
+      const shift=t-year;const value=amount*Math.pow(c.q,shift); const all=c.bw*Math.pow(c.q,t);
+      el('time-slider').value=t;
+      el('focus-year').value=year;
+      el('time-label').textContent=t===0?'Betrachtungszeitpunkt: heute (Jahr 0)':`Betrachtungszeitpunkt: Jahr ${t}`;
+      el('selected-cash-title').textContent=`Wert der Zahlung aus Jahr ${year} im Jahr ${t}`;
+      el('cash-at-time').textContent=money(value);
+      el('all-cash-title').textContent=`Wert aller Rückflüsse im Jahr ${t}`;
+      el('bw-at-time').textContent=money(all);
+      el('selected-cash-note').textContent=`Nettoüberschuss${year===state.n?' inkl. Restwert':''} im Jahr ${year}: ${money(amount)}.`;
+      el('bw-at-time-note').textContent=t===0?'Das ist genau der Barwert BW.':`Das ist BW × (1 + i)${t>0?' hoch '+t:''} – nicht der Barwert zum Zeitpunkt 0.`;
+      const val=shortEuro.format(amount)+' €';const q=qFmt.format(c.q);const years=Math.abs(shift);
+      if(t<year){el('time-explanation').innerHTML=`<strong>Abzinsen: vom Jahr ${year} zurück auf Jahr ${t}.</strong> ${val} ÷ (${q})<sup>${years}</sup> = <strong>${money(value)}</strong>. Du teilst durch den Zinsfaktor, weil der Betrachtungszeitpunkt vor der Zahlung liegt.`;}
+      else if(t>year){el('time-explanation').innerHTML=`<strong>Aufzinsen: vom Jahr ${year} vorwärts auf Jahr ${t}.</strong> ${val} × (${q})<sup>${years}</sup> = <strong>${money(value)}</strong>. Du multiplizierst mit dem Zinsfaktor, weil du in die Zukunft rechnest.`;}
+      else{el('time-explanation').innerHTML=`<strong>Keine Umrechnung nötig.</strong> Zahlung und Betrachtungszeitpunkt liegen beide im Jahr ${year}: <strong>${money(amount)}</strong>.`}
+      const timeline=el('timeline');timeline.style.gridTemplateColumns=`repeat(${state.n+1},minmax(0,1fr))`;
+      timeline.innerHTML=Array.from({length:state.n+1},(_,j)=>`<button type="button" class="year-dot ${j===t?'selected':''} ${j===year?'focus':''}" data-go-time="${j}" aria-label="Betrachtungszeitpunkt Jahr ${j}${j===t?', ausgewählt':''}" aria-pressed="${j===t}"><span class="dot"></span><span>${j===0?'Heute':'Jahr '+j}</span></button>`).join('');
+    }
+    function createTable(c){
+      el('cash-table-body').innerHTML=c.rows.map(row=>`<tr class="cash-row ${state.focus===row.t?'active':''}" data-row="${row.t}">
+        <td><button type="button" class="year-button" data-focus="${row.t}" aria-label="Zahlung aus Jahr ${row.t} in der Zeitreise auswählen">→ ${row.t}</button></td>
+        <td><input type="number" class="cash-input" min="0" max="1000000" step="100" value="${row.e}" data-cash-field="e" data-index="${row.t-1}" aria-label="Einzahlungen im Jahr ${row.t} in Euro"></td>
+        <td><input type="number" class="cash-input" min="0" max="1000000" step="100" value="${row.a}" data-cash-field="a" data-index="${row.t-1}" aria-label="Auszahlungen im Jahr ${row.t} in Euro"></td>
+        <td data-net="${row.t}">${money(row.net)}</td><td data-fac="${row.t}">${factorFmt.format(row.fac)}</td><td data-pv="${row.t}"><strong>${money(row.pv)}</strong></td>
+      </tr>`).join('');
+    }
+    function renderTableValues(c){
+      c.rows.forEach(row=>{
+        const tr=document.querySelector(`.cash-row[data-row="${row.t}"]`);if(!tr)return;
+        tr.classList.toggle('active',state.focus===row.t);
+        tr.querySelector('[data-net]').textContent=money(row.net);
+        tr.querySelector('[data-fac]').textContent=factorFmt.format(row.fac);
+        tr.querySelector('[data-pv]').textContent=money(row.pv);
+      });
+      el('s-net').textContent=money(c.netSum);el('s-rest').textContent=money(c.restPv);el('s-bw').textContent=money(c.bw);el('s-i0').textContent=money(state.i0);el('s-capital').textContent=signed(c.capital);
+      const max=Math.max(...c.rows.map(r=>Math.abs(r.pv)),1);
+      el('contributions').innerHTML=c.rows.map(r=>`<div class="contrib-item"><button type="button" class="contrib-btn ${state.focus===r.t?'active':''}" data-focus="${r.t}" title="Jahr ${r.t}: ${money(r.pv)} Barwert (ohne Restwert)" aria-label="Jahr ${r.t}: Barwert des Überschusses ${money(r.pv)} – Zahlung auswählen"><span class="contrib-bar ${r.pv<0?'neg':''}" style="height:${Math.max(3,Math.abs(r.pv)/max*86)}px"></span><span>${r.t}</span></button></div>`).join('');
+    }
+    function renderSpecial(c){
+      const constant=c.rows.every(row=>Math.abs(row.net-c.rows[0].net)<.005);
+      const box=el('special-box');box.classList.toggle('disabled',!constant);
+      el('special-formula').style.display=constant?'flex':'none';
+      const info=el('special-help');
+      const math=el('special-formula');
+      if(state.rate===0){math.innerHTML='<span>BW</span><span>=</span><span><i>r</i> · <i>n</i></span><span>+</span><span><i>R</i><sub>n</sub></span>'}
+      else{math.innerHTML=defaultSpecialMarkup}
+      if(constant){
+        if(state.rate===0){info.innerHTML=`<strong>r = ${money(c.rows[0].net)} jedes Jahr.</strong> Bei i = 0 % ist q − 1 = 0. Deshalb nutzt du den Grenzfall <strong>BW = r · n + R<sub>n</sub></strong> statt durch null zu teilen. <button class="help" data-help="r" aria-label="Hilfe: r">?</button>`}
+        else{info.innerHTML=`<strong>r = ${money(c.rows[0].net)}</strong> jedes Jahr, <strong>q = ${qFmt.format(c.q)}</strong>. Die Kurzformel ist anwendbar. <button class="help" data-help="q" aria-label="Hilfe: q">?</button>`}
+      }else{info.innerHTML=`Die Jahresüberschüsse sind unterschiedlich. Deshalb verwendest du hier die <strong>allgemeine Formel</strong> oben. Die Kurzformel gilt nur bei konstantem r. <button class="help" data-help="r" aria-label="Hilfe: r">?</button>`}
+    }
+    function render(rebuild=true){
+      const c=calc();if(rebuild){renderControls();createTable(c);} else {el('rate-val').textContent=dec.format(state.rate)+' %';}
+      renderResult(c);renderTime(c);renderTableValues(c);renderSpecial(c);
+    }
+    function extendCash(newN){while(state.cash.length<newN){const last=state.cash.at(-1)||{e:3600,a:1200};state.cash.push({...last});}state.cash=state.cash.slice(0,newN)}
+    function updateYears(n){const old=state.n;state.n=n;extendCash(n);state.time=clamp(state.time,0,n);state.focus=state.focus===old?n:clamp(state.focus,1,n);markCustom();render()}
+    document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{const p=b.dataset.preset;state={...structuredClone(examples[p]),time:0,focus:examples[p].n,preset:p};render()}));
+    el('i0').addEventListener('input',e=>{state.i0=clamp(safeNum(e.target.value),0,1000000);markCustom();render(false)});
+    el('rest').addEventListener('input',e=>{state.rest=clamp(safeNum(e.target.value),0,1000000);markCustom();render(false)});
+    ['i0','rest'].forEach(id=>el(id).addEventListener('blur',()=>{el(id).value=state[id==='rest'?'rest':'i0']}));
+    el('rate').addEventListener('input',e=>{state.rate=clamp(safeNum(e.target.value),0,20);markCustom();render(false)});
+    el('years').addEventListener('input',e=>updateYears(Math.round(clamp(safeNum(e.target.value,1),1,8))));
+    el('time-slider').addEventListener('input',e=>{state.time=Number(e.target.value);renderTime(calc())});
+    el('focus-year').addEventListener('change',e=>{state.focus=Number(e.target.value);renderTime(calc());renderTableValues(calc())});
+    document.addEventListener('click',e=>{
+      const d=e.target.closest('[data-go-time]');if(d){state.time=Number(d.dataset.goTime);renderTime(calc());return}
+      const y=e.target.closest('[data-focus]');if(y){state.focus=Number(y.dataset.focus);renderTime(calc());renderTableValues(calc());return}
+    });
+    el('cash-table-body').addEventListener('input',e=>{
+      const input=e.target.closest('[data-cash-field]');if(!input)return;
+      const idx=Number(input.dataset.index);const field=input.dataset.cashField;
+      state.cash[idx][field]=clamp(safeNum(input.value),0,1000000);markCustom();render(false);
+    });
+    el('cash-table-body').addEventListener('focusout',e=>{const input=e.target.closest('[data-cash-field]');if(input)input.value=state.cash[Number(input.dataset.index)][input.dataset.cashField]});
+    const correct=[1,1,2],quizAnswers=[null,null,null];
+    function renderQuiz(){
+      quizAnswers.forEach((answer,qi)=>{
+        document.querySelectorAll(`.answer[data-q="${qi}"]`).forEach(b=>{
+          const a=Number(b.dataset.a);b.classList.toggle('good',answer!==null&&a===correct[qi]);b.classList.toggle('bad',answer===a&&a!==correct[qi]);b.setAttribute('aria-pressed',answer===a?'true':'false');
+        });
+        const box=el('feedback-'+qi);box.className='quiz-feedback';
+        if(answer===null){box.textContent='';return}
+        if(answer===correct[qi]){box.classList.add('ok');box.textContent='✓ Richtig! '+['Abzinsen berücksichtigt den Zeitwert des Geldes.','BW − I₀ = +2.000 €.','Auch der Restwert fällt erst im Jahr n an.'][qi]}
+        else{box.classList.add('no');box.textContent='Nicht ganz. '+['Denke an die Möglichkeit, Geld heute anzulegen.','Rechne BW − I₀.','Der Restwert liegt in der Zukunft – denke an die Abzinsung.'][qi]}
+      });
+      const completed=quizAnswers.filter(x=>x!==null).length,points=quizAnswers.filter((x,i)=>x===correct[i]).length;
+      el('quiz-score').textContent=completed===3?`${points} von 3 Fragen richtig – ${points===3?'stark!':'du kannst es noch einmal versuchen.'}`:`${completed} von 3 Aufgaben beantwortet`;
+    }
+    document.querySelectorAll('.answer').forEach(b=>b.addEventListener('click',()=>{quizAnswers[Number(b.dataset.q)]=Number(b.dataset.a);renderQuiz()}));
+    el('quiz-reset').addEventListener('click',()=>{quizAnswers.fill(null);renderQuiz()});
+    const tip=el('tooltip');let activeTip=null;let hideTimeout;
+    function showTip(btn){const entry=help[btn.dataset.help];if(!entry)return;clearTimeout(hideTimeout);if(activeTip&&activeTip!==btn)activeTip.setAttribute('aria-expanded','false');activeTip=btn;btn.setAttribute('aria-expanded','true');el('tooltip-title').textContent=entry[0];el('tooltip-text').textContent=entry[1];tip.classList.add('visible');positionTip(btn)}
+    function positionTip(btn){const rect=btn.getBoundingClientRect();const tr=tip.getBoundingClientRect();const spaceBelow=window.innerHeight-rect.bottom;const below=spaceBelow>tr.height+20||rect.top<tr.height+20;const left=clamp(rect.left-20,12,window.innerWidth-tr.width-12);tip.style.left=left+'px';tip.style.top=(below?rect.bottom+12:rect.top-tr.height-12)+'px';tip.style.setProperty('--arrowX',clamp(rect.left-left+5,14,tr.width-25)+'px');tip.style.transform='none';tip.style.setProperty('border-bottom-color','');tip.classList.toggle('above',!below)}
+    function hideTip(){clearTimeout(hideTimeout);tip.classList.remove('visible');if(activeTip)activeTip.setAttribute('aria-expanded','false');activeTip=null}
+    document.addEventListener('click',e=>{const btn=e.target.closest('.help');if(btn){showTip(btn);return;}if(!tip.contains(e.target))hideTip()});
+    document.addEventListener('mouseover',e=>{const btn=e.target.closest('.help');if(btn&&e.relatedTarget!==btn)showTip(btn)});
+    document.addEventListener('mouseout',e=>{const btn=e.target.closest('.help');if(btn&&!btn.contains(e.relatedTarget))hideTimeout=setTimeout(()=>{if(!tip.matches(':hover'))hideTip()},180)});
+    tip.addEventListener('mouseenter',()=>clearTimeout(hideTimeout));tip.addEventListener('mouseleave',hideTip);
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
+    window.addEventListener('scroll',()=>{if(activeTip)positionTip(activeTip)},{passive:true});
+    window.addEventListener('resize',()=>{if(activeTip)positionTip(activeTip)});
+    render();renderQuiz();
+  </script>
+</body>
+</html>
