@@ -1,0 +1,752 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Petrinetz Simulator</title>
+<style>
+:root{
+  --bg:#eef1f4;--panel:#ffffff;--ink:#101214;--muted:#68717a;--line:#cfd5da;
+  --accent:#1769aa;--accent2:#0f8b5f;--warn:#c77b00;--danger:#b3261e;--grid:#d4d9dd;
+  --shadow:0 8px 28px rgba(20,30,40,.12);
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Arial,sans-serif;color:var(--ink);background:var(--bg);overflow:hidden}
+button,input,select,textarea{font:inherit}
+button{border:1px solid #bfc6cc;background:#fff;border-radius:7px;padding:7px 10px;cursor:pointer;color:#151719}
+button:hover{background:#f5f7f8}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+button.primary:hover{filter:brightness(.95)}
+button.success{background:var(--accent2);border-color:var(--accent2);color:#fff}
+button.danger{color:var(--danger)}
+button.tool.active{background:#e4f0fa;border-color:var(--accent);color:#0d4f86;font-weight:650}
+#app{height:100%;display:grid;grid-template-rows:auto 1fr auto}
+.topbar{background:#fff;border-bottom:1px solid var(--line);padding:8px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;z-index:5}
+.brand{font-weight:800;font-size:17px;margin-right:5px;white-space:nowrap}.brand span{color:var(--accent)}
+.sep{height:26px;width:1px;background:var(--line);margin:0 2px}
+.topbar .namebox{display:flex;align-items:center;gap:6px;min-width:210px;flex:1;max-width:390px}
+.topbar input[type=text]{width:100%;border:1px solid #c5cbd0;border-radius:7px;padding:7px 9px}
+.statuspill{border:1px solid #c9d0d5;border-radius:999px;padding:6px 10px;background:#f8fafb;font-size:13px;white-space:nowrap}
+.statuspill.running{border-color:#8bc8ad;background:#eaf8f1;color:#075d3f}.statuspill.paused{border-color:#e4c27e;background:#fff8e8;color:#775000}
+.workspace{display:grid;grid-template-columns:170px 1fr 292px;min-height:0}
+.tools,.inspector{background:#fff;z-index:2;overflow:auto}
+.tools{border-right:1px solid var(--line);padding:12px}.inspector{border-left:1px solid var(--line);padding:14px}
+.sectionTitle{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:800;margin:2px 0 8px}
+.tools button{width:100%;margin-bottom:7px;text-align:left}
+.tools .hint{font-size:12px;line-height:1.45;color:var(--muted);margin-top:12px;padding:9px;background:#f7f9fa;border-radius:7px}
+.canvasWrap{overflow:auto;position:relative;background:#dfe4e7;cursor:default}.canvasWrap.panning{cursor:grabbing}
+#canvas{display:block;width:3000px;height:1800px;background:white;touch-action:none;user-select:none}
+.inspector h3{margin:0 0 12px;font-size:17px}.emptyState{font-size:13px;color:var(--muted);line-height:1.55;padding:10px;background:#f7f9fa;border-radius:8px}
+.field{margin-bottom:12px}.field label{display:block;font-size:12px;font-weight:750;color:#4d555d;margin-bottom:5px}.field input,.field select,.field textarea{width:100%;border:1px solid #c7cdd2;border-radius:7px;padding:8px 9px;background:#fff}.field textarea{min-height:86px;resize:vertical}.field small{display:block;color:var(--muted);font-size:11px;margin-top:4px;line-height:1.35}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:14px}.stat{border:1px solid #d8dde1;border-radius:8px;padding:8px;background:#fafbfc}.stat b{display:block;font-size:18px}.stat span{font-size:11px;color:var(--muted)}
+.activeList{margin-top:12px;border-top:1px solid #e2e6e9;padding-top:10px}.activeItem{font-size:12px;padding:7px 0;border-bottom:1px solid #edf0f2}.progress{height:5px;background:#e2e7ea;border-radius:99px;overflow:hidden;margin-top:4px}.progress>i{display:block;height:100%;background:var(--accent2)}
+.footer{height:31px;background:#fff;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 10px;font-size:12px;color:#58616a;z-index:4}
+.kbd{display:inline-block;border:1px solid #c9cfd4;border-bottom-width:2px;border-radius:4px;padding:0 4px;background:#fafafa;font-size:10px;color:#555}
+.node.selected .selectRing{display:block}.selectRing{display:none;fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:4 3}
+.placeCircle{fill:#fff;stroke:#111;stroke-width:2;transition:fill .15s,stroke .15s,filter .15s}.place.full .placeCircle{fill:#ffe6e6;stroke:#d11a2a;stroke-width:3;filter:url(#capacityGlow)}.place.full .currentText,.place.full .capacityText{fill:#b11222;font-weight:850}.transitionRect{fill:#fff;stroke:#111;stroke-width:2}.transition.active .transitionRect{fill:#1d1f20;stroke:#000}.transition.active .nodeName{font-weight:800}.transition.active .timeText{fill:var(--accent2);font-weight:800}
+.nodeName{font-size:15px;fill:#111;text-anchor:middle;pointer-events:none}.metaText{font-size:12px;fill:#333;text-anchor:middle;pointer-events:none}.currentText{font-weight:750}.capacityText{font-weight:650}.edgeLine{stroke:#111;stroke-width:2;fill:none;marker-end:url(#arrow)}
+.edge.test .edgeLine{stroke:#2563eb;stroke-dasharray:8 6}
+.edge.inhibitor .edgeLine{stroke:#dc2626;marker-end:none}
+.edge.normal.selected .edgeLine{stroke:var(--accent);stroke-width:3}
+.edge.test.selected .edgeLine{stroke:#2563eb;stroke-width:3}
+.edge.inhibitor.selected .edgeLine{stroke:#dc2626;stroke-width:3}
+.edgeHit{stroke:transparent;stroke-width:16;fill:none;cursor:pointer}
+.edgeWeight{font-size:13px;fill:#111;text-anchor:middle;dominant-baseline:middle;font-weight:700;pointer-events:none}
+.weightBg{fill:#fff;stroke:#d7dce0;stroke-width:1;rx:4;pointer-events:none}
+.inhibitorCap{fill:#fff;stroke:#dc2626;stroke-width:2;pointer-events:none}
+.edge.inhibitor.selected .inhibitorCap{stroke:#dc2626;stroke-width:3}
+.edgeTypeTag{font-size:10px;fill:#555;text-anchor:middle;font-weight:800;pointer-events:none}
+.edge.test .edgeTypeTag{fill:#2563eb}
+.edge.inhibitor .edgeTypeTag{fill:#dc2626}.tokenDot{fill:#111;pointer-events:none}.movingToken{fill:var(--accent2);stroke:#fff;stroke-width:1.5;pointer-events:none;filter:url(#tokenShadow)}
+.connectPending .placeCircle,.connectPending .transitionRect{stroke:var(--warn);stroke-width:4}
+.node{cursor:grab}.node:active{cursor:grabbing}.decor{cursor:grab}.decor:active{cursor:grabbing}.decorRect{stroke-width:1.5}.decorHit{fill:rgba(0,0,0,0);stroke:none;pointer-events:all;cursor:grab}.decorSelect{display:none;fill:none;stroke:var(--accent);stroke-width:2;stroke-dasharray:6 4;pointer-events:none}.decor.selected .decorSelect{display:block}.decorText{font-family:Inter,Segoe UI,Arial,sans-serif;white-space:pre;pointer-events:none}.inlineTextEditor{width:100%;height:100%;border:2px solid var(--accent);border-radius:5px;padding:4px 6px;outline:none;resize:none;background:rgba(255,255,255,.97);font-family:Inter,Segoe UI,Arial,sans-serif;line-height:1.25;overflow:auto;box-shadow:0 2px 10px rgba(23,105,170,.2)}.inlineEditHint{font-size:10px;fill:#5c6670;pointer-events:none}.selectionMarquee{fill:rgba(23,105,170,.08);stroke:var(--accent);stroke-width:1.5;stroke-dasharray:7 5;pointer-events:none}.canvasBase{pointer-events:none}
+.toast{position:fixed;left:50%;bottom:48px;transform:translateX(-50%);background:#202326;color:#fff;padding:9px 13px;border-radius:7px;font-size:13px;box-shadow:var(--shadow);z-index:30;opacity:0;pointer-events:none;transition:.18s}.toast.show{opacity:1}
+.modalBack{position:fixed;inset:0;background:rgba(15,20,25,.38);display:none;align-items:center;justify-content:center;z-index:50}.modalBack.open{display:flex}.modal{width:min(680px,92vw);max-height:82vh;overflow:auto;background:#fff;border-radius:12px;box-shadow:0 18px 55px rgba(0,0,0,.25);padding:22px}.modal h2{margin:0 0 12px}.modal p,.modal li{font-size:14px;line-height:1.55}.modal .closeRow{text-align:right;margin-top:18px}
+@media(max-width:1050px){.workspace{grid-template-columns:138px 1fr 250px}.tools{padding:8px}.inspector{padding:10px}.topbar{gap:5px}button{padding:6px 8px;font-size:13px}}
+@media(max-width:760px){.workspace{grid-template-columns:110px 1fr}.inspector{position:fixed;right:0;top:52px;bottom:31px;width:270px;box-shadow:var(--shadow);transform:translateX(100%);transition:.2s}.inspector.mobileOpen{transform:none}.topbar .namebox{display:none}.brand{font-size:15px}.sep{display:none}}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="topbar">
+    <div class="brand">Petri<span>Netz</span> Studio</div>
+    <div class="namebox"><span style="font-size:12px;color:#68717a">Netz:</span><input id="netName" type="text" value="Neues Petrinetz" /></div>
+    <button id="newBtn" title="Neues Netz">Neu</button>
+    <button id="openBtn" title="Projektdatei öffnen">Öffnen</button>
+    <button id="saveBtn" title="Netz als HPS-Datei speichern">HPS speichern</button>
+    <input id="fileInput" type="file" accept=".hps,.pnet,.json,application/octet-stream,application/json" hidden />
+    <div class="sep"></div>
+    <button id="undoBtn" title="Rückgängig (Strg+Z)" disabled>↶ Rückgängig</button>
+    <button id="redoBtn" title="Wiederholen (Strg+Y / Strg+Umschalt+Z)" disabled>↷ Wiederholen</button>
+    <div class="sep"></div>
+    <button id="startBtn" class="success">▶ Start</button>
+    <button id="pauseBtn">⏸ Stop/Pause</button>
+    <button id="resumeBtn">▶ Weiter</button>
+    <button id="stepBtn">⏭ Schritt</button>
+    <button id="resetBtn">↺ Reset</button>
+    <select id="speedSel" title="Simulationsgeschwindigkeit">
+      <option value="0.25">0,25×</option><option value="0.5">0,5×</option><option value="1" selected>1×</option><option value="2">2×</option><option value="5">5×</option><option value="10">10×</option>
+    </select>
+    <span id="simStatus" class="statuspill">Bereit</span>
+    <button id="helpBtn" title="Hilfe">?</button>
+  </div>
+
+  <div class="workspace">
+    <aside class="tools">
+      <div class="sectionTitle">Werkzeuge</div>
+      <button class="tool active" data-tool="select">↖ Auswählen / Ziehen</button>
+      <button class="tool" data-tool="place">○ Stelle anlegen</button>
+      <button class="tool" data-tool="transition">▭ Transition anlegen</button>
+      <button class="tool" data-tool="connect">→ Kante verbinden</button>
+      <button class="tool" data-tool="text">T Textfeld einfügen</button>
+      <button class="tool" data-tool="rect">▭ Hintergrund-Rechteck</button>
+      <button id="deleteBtn" class="danger">⌫ Auswahl löschen</button>
+      <div class="sectionTitle" style="margin-top:18px">Datei</div>
+      <button id="fitBtn">⌖ Auswahl zentrieren</button>
+      <div class="hint">
+        <b>Kante erstellen:</b><br>„Kante verbinden“ wählen, dann Quelle und Ziel anklicken. Nur Stelle ↔ Transition ist zulässig.<br><br>
+        <b>Mehrfachauswahl:</b><br>Im Auswahlmodus auf einer freien Fläche die <b>linke Maustaste gedrückt halten und einen Rahmen aufziehen</b>. Alle Elemente, deren Mittelpunkt im Rahmen liegt, werden markiert. <span class="kbd">Strg</span> / <span class="kbd">Shift</span> + Klick bzw. Rahmen fügt zur bestehenden Auswahl hinzu. Mit <span class="kbd">Strg+C</span> kopierst du die Auswahl und mit <span class="kbd">Strg+V</span> fügst du sie wieder ein.<br><br>
+        <b>Kanten bearbeiten:</b><br>Doppelklick auf eine Kante öffnet direkt ihre Eigenschaften. Dort können Gewicht und Typ (Normal, Tester, Hemmer) eingestellt werden.<br><br>
+        <b>Kapazität:</b><br>Jede Stelle besitzt eine maximale Lageranzahl. Ist sie erreicht, leuchtet die Stelle rot. Eine Transition startet nur, wenn ihre Ausgabestellen genügend freie Kapazität besitzen.<br><br>
+        <b>Textfelder:</b><br>„Textfeld einfügen“ wählen und auf die Zeichenfläche klicken. Auch im Modus <b>„Auswählen / Ziehen“</b> öffnet ein <b>Doppelklick auf den Text</b> die direkte Bearbeitung auf der Zeichenfläche. <span class="kbd">Enter</span> bestätigt, <span class="kbd">Strg</span>+<span class="kbd">Enter</span> fügt einen Zeilenumbruch ein. Farbe und Schriftgröße werden rechts eingestellt.<br><br>
+        <b>Hintergrund-Rechtecke:</b><br>Werkzeug wählen und mit gedrückter linker Maustaste die gewünschte Größe aufziehen. Farbe und exakte Größe können danach rechts angepasst werden.<br><br>
+        <b>Navigation:</b><br>Rechte Maustaste gedrückt halten und ziehen = Zeichenfläche verschieben. <span class="kbd">Strg</span> + Mausrad = zoomen.<br><br>
+        <b>Simulation:</b><br>Bei Start werden aktivierbare Transitionen automatisch gestartet. Eingangstoken werden sofort abgezogen; nach Ablauf des Zeitbedarfs entstehen die Ausgangstoken.
+      </div>
+    </aside>
+
+    <main class="canvasWrap" id="canvasWrap">
+      <svg id="canvas" viewBox="0 0 3000 1800" aria-label="Petri-Netz Zeichenfläche"></svg>
+    </main>
+
+    <aside class="inspector" id="inspector">
+      <h3>Eigenschaften</h3>
+      <div id="propertyPanel" class="emptyState">Wähle eine Stelle, Transition, Kante, ein Textfeld oder ein Hintergrund-Rechteck aus. Die Eigenschaften können hier direkt geändert werden.</div>
+      <div class="stats">
+        <div class="stat"><b id="placeCount">0</b><span>Stellen</span></div>
+        <div class="stat"><b id="transitionCount">0</b><span>Transitionen</span></div>
+        <div class="stat"><b id="edgeCount">0</b><span>Kanten</span></div>
+        <div class="stat"><b id="simTime">0,0</b><span>Sim.-Zeit (s)</span></div>
+      </div>
+      <div class="activeList"><div class="sectionTitle">Laufende Transitionen</div><div id="activeTransitions" class="emptyState">Keine Transition aktiv.</div></div>
+    </aside>
+  </div>
+
+  <div class="footer"><span id="footerMsg">Bereit. Ziehe Elemente mit der Maus oder starte die Simulation.</span><span>Zoom: <b id="zoomValue">100%</b> &nbsp; · &nbsp; Linke Maustaste ziehen: Auswahlrahmen &nbsp; · &nbsp; Rechte Maustaste: Verschieben &nbsp; · &nbsp; <span class="kbd">Strg</span>+Mausrad: Zoom &nbsp; · &nbsp; <span class="kbd">Strg+C</span>/<span class="kbd">Strg+V</span> kopieren/einfügen &nbsp; · &nbsp; <span class="kbd">Entf</span> löschen &nbsp; <span class="kbd">Esc</span> Auswahl/Verbindung abbrechen &nbsp; <span class="kbd">Strg+S</span> HPS speichern</span></div>
+</div>
+<div id="toast" class="toast"></div>
+<div id="helpModal" class="modalBack"><div class="modal">
+  <h2>PetriNetz Studio – Kurzbedienung</h2>
+  <p>Die Anwendung läuft vollständig lokal im Browser. Es werden keine Daten an einen Server übertragen.</p>
+  <ol>
+    <li><b>Stellen</b> und <b>Transitionen</b> über die Werkzeugleiste wählen und dann auf die Zeichenfläche klicken.</li>
+    <li>Mit <b>Kante verbinden</b> zuerst die Quelle, dann das Ziel anklicken. Petri-Netze sind bipartit: Stelle → Transition oder Transition → Stelle.</li>
+    <li>Element anklicken und rechts Name, Anfangsbestand, aktuellen Bestand, <b>maximale Lageranzahl</b>, Zeitbedarf, Kantengewicht oder Kantentyp ändern.</li>
+    <li><b>Start</b> lässt alle jeweils aktivierbaren Transitionen automatisch ablaufen. <b>Stop/Pause</b> hält die Zeit an, <b>Weiter</b> setzt exakt dort fort.</li>
+    <li><b>HPS speichern</b> erzeugt direkt eine binäre <code>.hps</code>-Datei. Diese kann später mit <b>Öffnen</b> wieder in die Web-App geladen werden.</li>
+    <li><b>Mehrfachauswahl:</b> Im Auswahlmodus auf einer freien Fläche mit gedrückter <b>linker Maustaste einen Auswahlrahmen</b> aufziehen. Elemente innerhalb des Rahmens werden gemeinsam markiert. Mit <b>Strg/⌘</b> oder <b>Shift</b> wird die Rahmenauswahl zur bestehenden Auswahl hinzugefügt. Mehrere ausgewählte Elemente können gemeinsam verschoben, gelöscht und mit <b>Strg/⌘ + C</b> kopiert sowie mit <b>Strg/⌘ + V</b> eingefügt werden. Kanten zwischen kopierten Stellen/Transitionen werden automatisch übernommen.</li>
+    <li><b>Kanten bearbeiten:</b> Doppelklick auf eine Kante wählt sie aus. Bei Stelle → Transition kann der Typ <b>Normal</b>, <b>Tester</b> oder <b>Hemmer</b> gewählt werden. Tester prüfen auf mindestens die Gewichtung, ohne Token zu verbrauchen und werden blau dargestellt. Hemmer sperren ab der angegebenen Gewichtung und werden rot dargestellt.</li>
+    <li><b>Textfelder:</b> Mit „Textfeld einfügen“ auf die Zeichenfläche klicken. Ein <b>Doppelklick auf den Text</b> startet die direkte Bearbeitung im Textfeld. <b>Enter</b> bestätigt die Eingabe, <b>Strg/⌘ + Enter</b> erzeugt einen Zeilenumbruch. Schriftgröße und Farbe lassen sich weiterhin im Eigenschaftenbereich ändern.</li>
+    <li><b>Hintergrund-Rechtecke:</b> Werkzeug wählen und mit gedrückter linker Maustaste ein Rechteck aufziehen. Es liegt hinter dem Petri-Netz; Farbe, Breite und Höhe lassen sich im Eigenschaftenbereich ändern.</li>
+    <li><b>Rückgängig/Wiederholen:</b> über die Schaltflächen oben oder mit <b>Strg/⌘ + Z</b>, <b>Strg/⌘ + Y</b> bzw. <b>Strg/⌘ + Shift + Z</b>.</li>
+    <li><b>Navigation:</b> Rechte Maustaste gedrückt halten und ziehen, um über die Zeichenfläche zu navigieren. Mit <b>Strg + Mausrad</b> zoomst du an der Position des Mauszeigers hinein oder heraus.</li>
+    <li>Ältere <code>.pnet</code>-Dateien dieser Web-App können weiterhin geöffnet werden, damit bestehende Projekte nicht verloren gehen.</li>
+  </ol>
+  <p><b>Dateiformat:</b> Stellen, Transitionen und Kanten werden weiterhin im binären HPS-Bereich gespeichert. Textfelder und Hintergrund-Rechtecke werden als PetriNetz-Studio-Zusatzdaten in derselben <code>.hps</code>-Datei abgelegt und beim erneuten Öffnen vollständig wiederhergestellt.</p>
+  <p><b>Simulationslogik:</b> Normale Eingangskanten verbrauchen beim Start einer Transition Token. Tester verlangen mindestens so viele Token wie ihre Gewichtung, verändern den Bestand aber nicht. Hemmer erlauben das Schalten nur, solange der Bestand kleiner als ihre Gewichtung ist. Ausgabestellen müssen genügend freie Kapazität besitzen. Nach dem Zeitbedarf werden Token über normale Ausgangskanten erzeugt. Mehrere Transitionen können parallel laufen.</p>
+  <div class="closeRow"><button id="closeHelp" class="primary">Schließen</button></div>
+</div></div>
+<script>
+'use strict';
+
+const SVG_NS='http://www.w3.org/2000/svg';
+const canvas=document.getElementById('canvas');
+const canvasWrap=document.getElementById('canvasWrap');
+const propertyPanel=document.getElementById('propertyPanel');
+const netName=document.getElementById('netName');
+const simStatus=document.getElementById('simStatus');
+const footerMsg=document.getElementById('footerMsg');
+const speedSel=document.getElementById('speedSel');
+
+const app={
+  model:{name:'Neues Petrinetz',nodes:[],edges:[],decorations:[]},
+  tool:'select', selected:null, selection:new Set(), connectFrom:null,
+  simState:'stopped', active:new Map(), particles:[], logicalTime:0, speed:1,
+  lastTs:null, raf:null, drag:null, rectDraw:null, lasso:null, pan:null, zoom:1, counter:1, textEdit:null,
+  history:[], future:[], historyLock:false, historyLimit:100, lastTextPointer:null,
+  clipboard:null, pasteCount:0
+};
+
+function uid(prefix){return prefix+'_'+(app.counter++)+'_'+Date.now().toString(36)}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v))}
+function num(v,d=0){const n=Number(v);return Number.isFinite(n)?n:d}
+function int(v,d=0){return Math.max(0,Math.round(num(v,d)))}
+function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function nodeById(id){return app.model.nodes.find(n=>n.id===id)}
+function edgeById(id){return app.model.edges.find(e=>e.id===id)}
+function decorById(id){return (app.model.decorations||[]).find(d=>d.id===id)}
+function selKey(kind,id){return kind+':'+id}
+function parseSelKey(key){const i=key.indexOf(':');return {kind:key.slice(0,i),id:key.slice(i+1)}}
+function isSelected(kind,id){return app.selection.has(selKey(kind,id))}
+function clearSelection(){app.selection.clear();app.selected=null}
+function selectOnly(kind,id){app.selection=new Set([selKey(kind,id)]);app.selected={kind,id}}
+function toggleSelection(kind,id){const k=selKey(kind,id);if(app.selection.has(k)){app.selection.delete(k);if(app.selected?.kind===kind&&app.selected?.id===id){const last=[...app.selection].pop();app.selected=last?parseSelKey(last):null}}else{app.selection.add(k);app.selected={kind,id}}}
+function selectedItems(){return [...app.selection].map(parseSelKey)}
+function selectedObj(){if(app.selection.size!==1)return null;const s=selectedItems()[0];return s.kind==='node'?nodeById(s.id):s.kind==='edge'?edgeById(s.id):decorById(s.id)}
+function pauseForEdit(){if(app.simState==='running')pauseSim(false)}
+function snapshotEditState(){return JSON.stringify({name:netName.value||app.model.name||'Petrinetz',model:app.model})}
+function updateHistoryButtons(){const u=document.getElementById('undoBtn'),r=document.getElementById('redoBtn');if(u)u.disabled=!app.history.length;if(r)r.disabled=!app.future.length}
+function pushHistorySnapshot(snapshot=snapshotEditState()){if(app.historyLock)return;const last=app.history[app.history.length-1];if(last!==snapshot){app.history.push(snapshot);if(app.history.length>app.historyLimit)app.history.shift()}app.future=[];updateHistoryButtons()}
+function resetHistory(){app.history=[];app.future=[];updateHistoryButtons()}
+function restoreEditState(snapshot){
+  app.historyLock=true;pauseSim(false);const d=JSON.parse(snapshot);app.model=d.model;if(!Array.isArray(app.model.decorations))app.model.decorations=[];app.model.name=d.name||app.model.name||'Petrinetz';netName.value=app.model.name;clearSelection();app.connectFrom=null;app.active.clear();app.particles=[];app.logicalTime=0;app.simState='stopped';updateSimStatus();render();app.historyLock=false;
+}
+function undo(){if(!app.history.length)return;const current=snapshotEditState(),prev=app.history.pop();app.future.push(current);restoreEditState(prev);updateHistoryButtons();toast('Rückgängig.')}
+function redo(){if(!app.future.length)return;const current=snapshotEditState(),next=app.future.pop();app.history.push(current);restoreEditState(next);updateHistoryButtons();toast('Wiederholt.')}
+function setFooter(msg){footerMsg.textContent=msg}
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(()=>el.classList.remove('show'),2200)}
+
+function blankModel(){return {name:'Neues Petrinetz',nodes:[],edges:[],decorations:[]}}
+
+function addPlace(x,y,name='Neue Stelle',initial=1,capacity=100){
+  pauseForEdit();pushHistorySnapshot();const cap=Math.max(1,int(capacity,100)),init=Math.min(cap,int(initial,1));const n={id:uid('p'),type:'place',x,y,name,initialTokens:init,tokens:init,capacity:cap};
+  app.model.nodes.push(n);selectOnly('node',n.id);setTool('select');render();return n;
+}
+function addTransition(x,y,name='Neue Transition',duration=1){
+  pauseForEdit();pushHistorySnapshot();const n={id:uid('t'),type:'transition',x,y,name,duration:Math.max(0.1,num(duration,1))};
+  app.model.nodes.push(n);selectOnly('node',n.id);setTool('select');render();return n;
+}
+function validColor(v,d='#1f2937'){const x=String(v||'').trim();return /^#[0-9a-fA-F]{6}$/.test(x)?x:d}
+function normalizeDecoration(d){
+  if(!d||!['text','rect'].includes(d.type))return null;
+  if(d.type==='text')return {id:String(d.id||uid('d')),type:'text',x:num(d.x,200),y:num(d.y,200),text:String(d.text??'Text'),fontSize:clamp(int(d.fontSize,24),8,160),color:validColor(d.color,'#1f2937')};
+  return {id:String(d.id||uid('d')),type:'rect',x:num(d.x,100),y:num(d.y,100),width:Math.max(10,num(d.width,240)),height:Math.max(10,num(d.height,140)),color:validColor(d.color,'#dbeafe')};
+}
+function addTextDecoration(x,y){
+  pauseForEdit();pushHistorySnapshot();const d={id:uid('d'),type:'text',x,y,text:'Text',fontSize:24,color:'#1f2937'};app.model.decorations.push(d);selectOnly('decor',d.id);setTool('select');render();return d;
+}
+function startRectDecoration(x,y,pointerId){
+  pauseForEdit();pushHistorySnapshot();const d={id:uid('d'),type:'rect',x,y,width:1,height:1,color:'#dbeafe'};app.model.decorations.push(d);selectOnly('decor',d.id);app.rectDraw={id:d.id,startX:x,startY:y,pointerId};render();try{canvas.setPointerCapture?.(pointerId)}catch{}return d;
+}
+function textDecorMetrics(d){const lines=String(d.text||'Text').split(/\n/),size=clamp(int(d.fontSize,24),8,160),maxLen=Math.max(1,...lines.map(x=>x.length));return {lines,size,width:Math.max(22,maxLen*size*.58),height:Math.max(size*1.25,lines.length*size*1.25)}}
+function startTextEdit(id){
+  const d=decorById(id);if(!d||d.type!=='text')return;pauseForEdit();selectOnly('decor',id);
+  app.textEdit={id,draft:String(d.text??''),original:String(d.text??''),snapshot:snapshotEditState()};render();
+  setTimeout(()=>{const ed=document.getElementById('inlineTextEditor');if(ed){ed.focus();const len=ed.value.length;ed.setSelectionRange(len,len)}},0);
+}
+function commitTextEdit(){
+  const te=app.textEdit;if(!te)return;const d=decorById(te.id);if(!d){app.textEdit=null;render();return}
+  const ed=document.getElementById('inlineTextEditor');const value=ed?ed.value:te.draft;
+  if(value!==te.original){pushHistorySnapshot(te.snapshot);d.text=value}
+  app.textEdit=null;render();
+}
+function cancelTextEdit(){
+  if(!app.textEdit)return;app.textEdit=null;render();
+}
+function insertTextNewline(el){
+  const start=el.selectionStart??el.value.length,end=el.selectionEnd??start;el.value=el.value.slice(0,start)+'\n'+el.value.slice(end);el.selectionStart=el.selectionEnd=start+1;app.textEdit.draft=el.value;
+}
+function bindInlineTextEditor(){
+  const ed=document.getElementById('inlineTextEditor');if(!ed||!app.textEdit)return;
+  ed.addEventListener('input',()=>{if(app.textEdit)app.textEdit.draft=ed.value});
+  ed.addEventListener('keydown',e=>{
+    e.stopPropagation();
+    if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='s'){e.preventDefault();commitTextEdit();saveProject();return}
+    if(e.key==='Enter'){e.preventDefault();if(e.ctrlKey||e.metaKey){insertTextNewline(ed)}else commitTextEdit();return}
+    if(e.key==='Escape'){e.preventDefault();cancelTextEdit();return}
+  });
+  ed.addEventListener('pointerdown',e=>e.stopPropagation());
+  ed.addEventListener('dblclick',e=>e.stopPropagation());
+  ed.addEventListener('blur',()=>{if(app.textEdit?.id===ed.dataset.editId)commitTextEdit()});
+}
+function marqueeRect(l){const left=Math.min(l.startX,l.x),top=Math.min(l.startY,l.y),right=Math.max(l.startX,l.x),bottom=Math.max(l.startY,l.y);return {left,top,right,bottom,width:right-left,height:bottom-top}}
+function pointInRect(x,y,r){return x>=r.left&&x<=r.right&&y>=r.top&&y<=r.bottom}
+function selectionKeysInMarquee(r){
+  const keys=[];
+  for(const n of app.model.nodes)if(pointInRect(n.x,n.y,r))keys.push(selKey('node',n.id));
+  for(const d of app.model.decorations||[]){let cx=d.x,cy=d.y;if(d.type==='rect'){cx=d.x+d.width/2;cy=d.y+d.height/2}else{const m=textDecorMetrics(d);cx=d.x+m.width/2;cy=d.y+m.height/2}if(pointInRect(cx,cy,r))keys.push(selKey('decor',d.id));}
+  for(const e of app.model.edges){const g=edgeGeom(e);if(g&&pointInRect(g.mx,g.my,r))keys.push(selKey('edge',e.id));}
+  return keys;
+}
+function applyMarqueeSelection(){
+  if(!app.lasso)return;const r=marqueeRect(app.lasso),base=new Set(app.lasso.base||[]);
+  if(app.lasso.moved){for(const k of selectionKeysInMarquee(r))base.add(k)}
+  app.selection=base;const last=[...app.selection].pop();app.selected=last?parseSelKey(last):null;
+}
+function addEdge(from,to,weight=1){
+  pauseForEdit();const a=nodeById(from),b=nodeById(to);if(!a||!b)return null;
+  if(a.type===b.type){toast('Kanten dürfen nur Stelle ↔ Transition verbinden.');return null}
+  const existing=app.model.edges.find(e=>e.from===from&&e.to===to);if(existing){selectOnly('edge',existing.id);toast('Diese Kante existiert bereits.');render();return existing}
+  pushHistorySnapshot();const e={id:uid('e'),from,to,weight:Math.max(1,int(weight,1)),arcType:'normal'};app.model.edges.push(e);selectOnly('edge',e.id);render();return e;
+}
+function deleteSelection(){
+  if(!app.selection.size)return;pauseForEdit();pushHistorySnapshot();
+  const items=selectedItems(),nodeIds=new Set(items.filter(s=>s.kind==='node').map(s=>s.id)),edgeIds=new Set(items.filter(s=>s.kind==='edge').map(s=>s.id)),decorIds=new Set(items.filter(s=>s.kind==='decor').map(s=>s.id));
+  app.model.nodes=app.model.nodes.filter(n=>!nodeIds.has(n.id));
+  app.model.edges=app.model.edges.filter(e=>!edgeIds.has(e.id)&&!nodeIds.has(e.from)&&!nodeIds.has(e.to));
+  app.model.decorations=(app.model.decorations||[]).filter(d=>!decorIds.has(d.id));
+  for(const id of nodeIds)app.active.delete(id);
+  clearSelection();app.connectFrom=null;render();
+}
+
+function copySelection(){
+  if(app.textEdit)return;
+  if(!app.selection.size){toast('Nichts zum Kopieren ausgewählt.');return}
+  let items=selectedItems();
+  const nodeIds=new Set(items.filter(s=>s.kind==='node').map(s=>s.id));
+  const decorIds=new Set(items.filter(s=>s.kind==='decor').map(s=>s.id));
+  const explicitEdgeIds=new Set(items.filter(s=>s.kind==='edge').map(s=>s.id));
+
+  // Wird ausschließlich eine Kante ausgewählt, werden ihre beiden Endknoten mitkopiert,
+  // damit die Verbindung beim Einfügen sinnvoll erhalten bleibt.
+  if(!nodeIds.size&&!decorIds.size&&explicitEdgeIds.size){
+    for(const id of explicitEdgeIds){const e=edgeById(id);if(e){nodeIds.add(e.from);nodeIds.add(e.to)}}
+  }
+
+  const nodes=app.model.nodes.filter(n=>nodeIds.has(n.id)).map(n=>JSON.parse(JSON.stringify(n)));
+  const decorations=(app.model.decorations||[]).filter(d=>decorIds.has(d.id)).map(d=>JSON.parse(JSON.stringify(d)));
+  // Interne Verbindungen zwischen kopierten Knoten immer mitnehmen. Explizit markierte
+  // Kanten werden ebenfalls berücksichtigt, sofern beide Endpunkte in der Kopie liegen.
+  const edges=app.model.edges.filter(e=>nodeIds.has(e.from)&&nodeIds.has(e.to)).map(e=>JSON.parse(JSON.stringify(e)));
+
+  if(!nodes.length&&!decorations.length){toast('Für die Auswahl gibt es nichts Kopierbares.');return}
+  app.clipboard={nodes,edges,decorations};app.pasteCount=0;
+  const parts=[];if(nodes.length)parts.push(nodes.length+' Knoten');if(edges.length)parts.push(edges.length+' Kanten');if(decorations.length)parts.push(decorations.length+' Gestaltungselemente');
+  toast('Kopiert: '+parts.join(' · '));
+}
+
+function pasteSelection(){
+  if(app.textEdit)return;
+  const c=app.clipboard;if(!c||(c.nodes?.length||0)+(c.decorations?.length||0)===0){toast('Zwischenablage ist leer.');return}
+  pauseForEdit();pushHistorySnapshot();
+  app.pasteCount=(app.pasteCount||0)+1;const off=35*app.pasteCount;
+  const idMap=new Map(),newKeys=[];
+
+  for(const old of c.nodes||[]){
+    const n=JSON.parse(JSON.stringify(old));n.id=uid(n.type==='place'?'p':'t');n.x=num(n.x)+off;n.y=num(n.y)+off;
+    idMap.set(old.id,n.id);app.model.nodes.push(n);newKeys.push(selKey('node',n.id));
+  }
+  for(const old of c.decorations||[]){
+    const d=JSON.parse(JSON.stringify(old));d.id=uid('d');d.x=num(d.x)+off;d.y=num(d.y)+off;
+    app.model.decorations.push(d);newKeys.push(selKey('decor',d.id));
+  }
+  for(const old of c.edges||[]){
+    const from=idMap.get(old.from),to=idMap.get(old.to);if(!from||!to)continue;
+    const e=JSON.parse(JSON.stringify(old));e.id=uid('e');e.from=from;e.to=to;app.model.edges.push(e);newKeys.push(selKey('edge',e.id));
+  }
+  app.selection=new Set(newKeys);const last=[...app.selection].pop();app.selected=last?parseSelKey(last):null;app.connectFrom=null;render();
+  toast('Kopie eingefügt.');
+}
+
+function setTool(tool){app.tool=tool;app.connectFrom=null;document.querySelectorAll('.tool').forEach(b=>b.classList.toggle('active',b.dataset.tool===tool));setFooter(tool==='connect'?'Verbindungsmodus: Quelle anklicken.':tool==='place'?'Auf die Zeichenfläche klicken, um eine Stelle anzulegen.':tool==='transition'?'Auf die Zeichenfläche klicken, um eine Transition anzulegen.':tool==='text'?'Auf die Zeichenfläche klicken, um ein Textfeld anzulegen.':tool==='rect'?'Linke Maustaste drücken und ziehen, um ein Hintergrund-Rechteck aufzuziehen.':'Auswahlmodus. Elemente anklicken oder ziehen.');render()}
+
+document.querySelectorAll('.tool').forEach(b=>b.addEventListener('click',()=>setTool(b.dataset.tool)));
+document.getElementById('deleteBtn').addEventListener('click',deleteSelection);
+document.getElementById('undoBtn').addEventListener('click',undo);
+document.getElementById('redoBtn').addEventListener('click',redo);
+
+function svgPoint(evt){const pt=canvas.createSVGPoint();pt.x=evt.clientX;pt.y=evt.clientY;const m=canvas.getScreenCTM();return m?pt.matrixTransform(m.inverse()):{x:evt.offsetX,y:evt.offsetY}}
+function center(n){return {x:n.x,y:n.y}}
+function boundaryPoint(n,toward){
+  const dx=toward.x-n.x,dy=toward.y-n.y;if(dx===0&&dy===0)return{x:n.x,y:n.y};
+  if(n.type==='place'){const r=28,L=Math.hypot(dx,dy);return{x:n.x+r*dx/L,y:n.y+r*dy/L}}
+  const hx=28,hy=11;const scale=1/Math.max(Math.abs(dx)/hx,Math.abs(dy)/hy);return{x:n.x+dx*scale,y:n.y+dy*scale};
+}
+function edgeGeom(e){const a=nodeById(e.from),b=nodeById(e.to);if(!a||!b)return null;const p1=boundaryPoint(a,center(b)),p2=boundaryPoint(b,center(a));return{p1,p2,mx:(p1.x+p2.x)/2,my:(p1.y+p2.y)/2}}
+function splitLines(text,max=22){
+  const words=String(text||'').split(/\s+/).filter(Boolean),lines=[];let line='';
+  for(const w of words){const c=line?line+' '+w:w;if(c.length>max&&line){lines.push(line);line=w}else line=c}if(line)lines.push(line);return lines.slice(0,3)
+}
+function textBlock(text,x,y,cls='nodeName'){const lines=splitLines(text);const start=y-(lines.length-1)*8;return `<text class="${cls}" x="${x}" y="${start}">${lines.map((l,i)=>`<tspan x="${x}" dy="${i?17:0}">${esc(l)}</tspan>`).join('')}</text>`}
+function tokenDots(n){
+  const c=int(n.tokens,0);if(c<=0)return'';if(c>8)return `<text x="${n.x}" y="${n.y+5}" text-anchor="middle" font-size="14" font-weight="800">${c}</text>`;
+  const pts=[[-7,-7],[7,-7],[-7,7],[7,7],[0,0],[-13,0],[13,0],[0,13]];return pts.slice(0,c).map(([dx,dy])=>`<circle class="tokenDot" cx="${n.x+dx}" cy="${n.y+dy}" r="3.6"/>`).join('')
+}
+function activeProgress(id){const a=app.active.get(id);if(!a)return 0;return clamp(a.elapsed/Math.max(a.duration,.001),0,1)}
+
+function render(){
+  app.model.name=netName.value || app.model.name || 'Petrinetz';if(!Array.isArray(app.model.decorations))app.model.decorations=[];
+  let out=`<defs>
+    <pattern id="grid" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#d4d9dd"/></pattern>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#111"/></marker>
+    <filter id="tokenShadow"><feDropShadow dx="0" dy="1" stdDeviation="1" flood-opacity=".35"/></filter>
+    <filter id="capacityGlow" x="-80%" y="-80%" width="260%" height="260%"><feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#e32232" flood-opacity=".85"/></filter>
+  </defs><rect class="canvasBase" width="3000" height="1800" fill="#fff"/>`;
+  for(const d of app.model.decorations.filter(x=>x.type==='rect')){const sel=isSelected('decor',d.id);out+=`<g class="decor bgRect${sel?' selected':''}" data-decor-id="${esc(d.id)}"><rect class="decorRect" x="${d.x}" y="${d.y}" width="${d.width}" height="${d.height}" fill="${validColor(d.color,'#dbeafe')}" stroke="${validColor(d.color,'#dbeafe')}"/><rect class="decorSelect" x="${d.x-4}" y="${d.y-4}" width="${d.width+8}" height="${d.height+8}" rx="3"/></g>`}
+  out+=`<rect class="canvasBase" width="3000" height="1800" fill="url(#grid)"/>`;
+  for(const e of app.model.edges){const g=edgeGeom(e);if(!g)continue;const sel=isSelected('edge',e.id),type=normalizeArcType(e.arcType);const w=String(e.weight);const bw=24+8*(w.length-1),tag=type==='test'?'T':type==='inhibitor'?'H':'';out+=`<g class="edge ${type}${sel?' selected':''}" data-edge-id="${e.id}"><line class="edgeHit" x1="${g.p1.x}" y1="${g.p1.y}" x2="${g.p2.x}" y2="${g.p2.y}"/><line class="edgeLine" x1="${g.p1.x}" y1="${g.p1.y}" x2="${g.p2.x}" y2="${g.p2.y}"/>${type==='inhibitor'?`<circle class="inhibitorCap" cx="${g.p2.x}" cy="${g.p2.y}" r="6"/>`:''}<rect class="weightBg" x="${g.mx-bw/2}" y="${g.my-11}" width="${bw}" height="22"/><text class="edgeWeight" x="${g.mx}" y="${g.my+1}">${esc(w)}</text>${tag?`<text class="edgeTypeTag" x="${g.mx}" y="${g.my-16}">${tag}</text>`:''}</g>`}
+  for(const n of app.model.nodes){
+    const sel=isSelected('node',n.id);const pending=app.connectFrom===n.id;const active=app.active.has(n.id);
+    if(n.type==='place'){
+      const cap=placeCapacity(n),full=n.tokens>=cap;
+      out+=`<g class="node place${sel?' selected':''}${pending?' connectPending':''}${full?' full':''}" data-node-id="${n.id}"><circle class="selectRing" cx="${n.x}" cy="${n.y}" r="35"/><circle class="placeCircle" cx="${n.x}" cy="${n.y}" r="28"/>${tokenDots(n)}${textBlock(n.name,n.x,n.y-48)}<text class="metaText" x="${n.x}" y="${n.y+49}">Start: ${n.initialTokens}</text><text class="metaText currentText" x="${n.x}" y="${n.y+65}">Aktuell: ${n.tokens}</text><text class="metaText capacityText" x="${n.x}" y="${n.y+81}">Max: ${cap}</text></g>`;
+    }else{
+      const p=activeProgress(n.id),bar=56*p;out+=`<g class="node transition${sel?' selected':''}${pending?' connectPending':''}${active?' active':''}" data-node-id="${n.id}"><rect class="selectRing" x="${n.x-35}" y="${n.y-18}" width="70" height="36" rx="3"/><rect class="transitionRect" x="${n.x-28}" y="${n.y-11}" width="56" height="22"/>${textBlock(n.name,n.x,n.y-31)}<text class="metaText timeText" x="${n.x}" y="${n.y+31}">Zeit: ${formatNumber(n.duration)} s</text>${active?`<rect x="${n.x-28}" y="${n.y+15}" width="56" height="4" fill="#dce3e6"/><rect x="${n.x-28}" y="${n.y+15}" width="${bar}" height="4" fill="#0f8b5f"/>`:''}</g>`;
+    }
+  }
+  for(const p of app.particles){if(p.progress<0||p.progress>1)continue;const e=edgeById(p.edgeId),g=e&&edgeGeom(e);if(!g)continue;const x=g.p1.x+(g.p2.x-g.p1.x)*p.progress,y=g.p1.y+(g.p2.y-g.p1.y)*p.progress;out+=`<circle class="movingToken" cx="${x}" cy="${y}" r="5"/>`}
+  for(const d of app.model.decorations.filter(x=>x.type==='text')){
+    const sel=isSelected('decor',d.id),editing=app.textEdit?.id===d.id,m=textDecorMetrics({...d,text:editing?app.textEdit.draft:d.text}),lineH=m.size*1.25;
+    if(editing){
+      const editorW=Math.max(180,m.width+32),editorH=Math.max(58,m.height+28);
+      out+=`<g class="decor textDecoration selected" data-decor-id="${esc(d.id)}"><rect class="decorSelect" x="${d.x-7}" y="${d.y-7}" width="${editorW+14}" height="${editorH+14}" rx="4"/><foreignObject x="${d.x}" y="${d.y}" width="${editorW}" height="${editorH}"><textarea xmlns="http://www.w3.org/1999/xhtml" id="inlineTextEditor" data-edit-id="${esc(d.id)}" class="inlineTextEditor" style="font-size:${m.size}px;color:${validColor(d.color,'#1f2937')}">${esc(app.textEdit.draft)}</textarea></foreignObject><text class="inlineEditHint" x="${d.x}" y="${d.y+editorH+14}">Enter = bestätigen · Strg+Enter = Zeilenumbruch</text></g>`;
+    }else{
+      out+=`<g class="decor textDecoration${sel?' selected':''}" data-decor-id="${esc(d.id)}"><rect class="decorHit" x="${d.x-5}" y="${d.y-5}" width="${m.width+10}" height="${m.height+10}" rx="3"/><rect class="decorSelect" x="${d.x-5}" y="${d.y-5}" width="${m.width+10}" height="${m.height+10}" rx="3"/><text class="decorText" x="${d.x}" y="${d.y+m.size}" font-size="${m.size}" fill="${validColor(d.color,'#1f2937')}">${m.lines.map((line,i)=>`<tspan x="${d.x}" dy="${i?lineH:0}">${esc(line||' ')}</tspan>`).join('')}</text></g>`;
+    }
+  }
+  if(app.lasso&&app.lasso.moved){const r=marqueeRect(app.lasso);out+=`<rect class="selectionMarquee" x="${r.left}" y="${r.top}" width="${r.width}" height="${r.height}"/>`}
+  canvas.innerHTML=out;renderInspector();renderStats();bindInlineTextEditor();
+}
+
+function formatNumber(n){return Number(n).toLocaleString('de-DE',{maximumFractionDigits:2})}
+function renderStats(){
+  document.getElementById('placeCount').textContent=app.model.nodes.filter(n=>n.type==='place').length;
+  document.getElementById('transitionCount').textContent=app.model.nodes.filter(n=>n.type==='transition').length;
+  document.getElementById('edgeCount').textContent=app.model.edges.length;
+  document.getElementById('simTime').textContent=app.logicalTime.toLocaleString('de-DE',{minimumFractionDigits:1,maximumFractionDigits:1});
+  const list=document.getElementById('activeTransitions');
+  if(!app.active.size) list.innerHTML='<div class="emptyState">Keine Transition aktiv.</div>';
+  else list.innerHTML=[...app.active.entries()].map(([id,a])=>{const n=nodeById(id),p=clamp(a.elapsed/Math.max(a.duration,.001),0,1),rem=Math.max(0,a.duration-a.elapsed);return `<div class="activeItem"><b>${esc(n?.name||'Transition')}</b><br>Noch ${formatNumber(rem)} s<div class="progress"><i style="width:${p*100}%"></i></div></div>`}).join('');
+}
+function renderInspector(){
+  if(app.selection.size>1){
+    const items=selectedItems(),nodes=items.filter(s=>s.kind==='node').length,edges=items.filter(s=>s.kind==='edge').length,decors=items.filter(s=>s.kind==='decor').length;
+    propertyPanel.className='emptyState';propertyPanel.innerHTML=`<b>${app.selection.size} Elemente ausgewählt</b><br>${nodes} Stellen/Transitionen · ${edges} Kanten · ${decors} Gestaltungselemente<br><br>Ausgewählte Stellen, Transitionen, Textfelder und Rechtecke lassen sich gemeinsam verschieben oder löschen.`;return;
+  }
+  const o=selectedObj();if(!o){propertyPanel.className='emptyState';propertyPanel.innerHTML='Wähle eine Stelle, Transition, Kante, ein Textfeld oder ein Hintergrund-Rechteck aus. Mehrfachauswahl per Auswahlrahmen oder mit Strg/⌘ bzw. Shift + Klick.';return}
+  propertyPanel.className='';
+  const single=selectedItems()[0];
+  if(single.kind==='node'&&o.type==='place'){
+    const cap=placeCapacity(o);propertyPanel.innerHTML=`<div class="sectionTitle">Stelle</div><div class="field"><label>Name</label><input id="propName" type="text" value="${esc(o.name)}"></div><div class="field"><label>Anfangsbestand</label><input id="propInitial" type="number" min="0" max="${cap}" step="1" value="${o.initialTokens}"><small>Wird bei „Reset“ wiederhergestellt.</small></div><div class="field"><label>Aktueller Bestand</label><input id="propCurrent" type="number" min="0" max="${cap}" step="1" value="${o.tokens}"><small>Dieser Bestand sinkt beim Start einer normalen Eingangskante.</small></div><div class="field"><label>Maximale Lageranzahl / Kapazität</label><input id="propCapacity" type="number" min="1" step="1" value="${cap}"><small>Ist die Kapazität erreicht, leuchtet die Stelle rot. Transitionen werden blockiert, wenn die Ausgabestelle nicht genug freie Kapazität besitzt.</small></div>`;
+    bindProp('propName','change',v=>o.name=v);bindProp('propInitial','change',v=>o.initialTokens=Math.min(placeCapacity(o),int(v)));bindProp('propCurrent','change',v=>o.tokens=Math.min(placeCapacity(o),int(v)));bindProp('propCapacity','change',v=>{o.capacity=Math.max(1,int(v,1));o.initialTokens=Math.min(o.initialTokens,o.capacity);o.tokens=Math.min(o.tokens,o.capacity)});
+  }else if(single.kind==='node'){
+    const a=app.active.get(o.id);propertyPanel.innerHTML=`<div class="sectionTitle">Transition</div><div class="field"><label>Name</label><input id="propName" type="text" value="${esc(o.name)}"></div><div class="field"><label>Zeitbedarf (Sekunden)</label><input id="propDuration" type="number" min="0.1" step="0.1" value="${o.duration}"><small>${a?'Diese Transition läuft gerade. Änderungen gelten für den nächsten Durchlauf.':'Zeit zwischen Token-Verbrauch und Token-Erzeugung.'}</small></div>`;
+    bindProp('propName','change',v=>o.name=v);bindProp('propDuration','change',v=>o.duration=Math.max(.1,num(v,1)));
+  }else if(single.kind==='decor'&&o.type==='text'){
+    propertyPanel.innerHTML=`<div class="sectionTitle">Textfeld</div><div class="emptyState" style="margin-bottom:12px"><b>Text direkt bearbeiten:</b><br>Doppelklick auf das Textfeld auf der Zeichenfläche.<br><span class="kbd">Enter</span> = bestätigen · <span class="kbd">Strg</span>+<span class="kbd">Enter</span> = Zeilenumbruch</div><div class="field"><label>Schriftgröße</label><input id="propFontSize" type="number" min="8" max="160" step="1" value="${o.fontSize}"></div><div class="field"><label>Textfarbe</label><input id="propTextColor" type="color" value="${validColor(o.color,'#1f2937')}"></div>`;
+    bindProp('propFontSize','change',v=>o.fontSize=clamp(int(v,24),8,160));bindProp('propTextColor','input',v=>o.color=validColor(v,'#1f2937'));
+  }else if(single.kind==='decor'&&o.type==='rect'){
+    propertyPanel.innerHTML=`<div class="sectionTitle">Hintergrund-Rechteck</div><div class="field"><label>Farbe</label><input id="propRectColor" type="color" value="${validColor(o.color,'#dbeafe')}"></div><div class="field"><label>Breite</label><input id="propRectWidth" type="number" min="10" step="1" value="${Math.round(o.width)}"></div><div class="field"><label>Höhe</label><input id="propRectHeight" type="number" min="10" step="1" value="${Math.round(o.height)}"><small>Die Größe kann direkt beim Erstellen durch Aufziehen bestimmt oder hier exakt geändert werden.</small></div>`;
+    bindProp('propRectColor','input',v=>o.color=validColor(v,'#dbeafe'));bindProp('propRectWidth','change',v=>o.width=Math.max(10,num(v,10)));bindProp('propRectHeight','change',v=>o.height=Math.max(10,num(v,10)));
+  }else{
+    const from=nodeById(o.from),to=nodeById(o.to),inputArc=from?.type==='place'&&to?.type==='transition',type=normalizeArcType(o.arcType);propertyPanel.innerHTML=`<div class="sectionTitle">Kante</div><div class="field"><label>Von</label><input value="${esc(from?.name||'?')}" disabled></div><div class="field"><label>Nach</label><input value="${esc(to?.name||'?')}" disabled></div><div class="field"><label>Gewichtung</label><input id="propWeight" type="number" min="1" step="1" value="${o.weight}"><small>Normal: Tokenverbrauch/-erzeugung. Tester/Hemmer: Prüfschwelle.</small></div><div class="field"><label>Typ</label><select id="propArcType" ${inputArc?'':'disabled'}><option value="normal" ${type==='normal'?'selected':''}>Normal</option><option value="test" ${type==='test'?'selected':''}>Tester (Test)</option><option value="inhibitor" ${type==='inhibitor'?'selected':''}>Hemmer (Inhibitor)</option></select><small>${inputArc?'Tester und Hemmer sind – wie in HPSim – nur von einer Stelle zu einer Transition vorgesehen. Tester = blau, Hemmer = rot.':'Ausgangskanten Transition → Stelle sind normale Kanten.'}</small></div>`;
+    bindProp('propWeight','change',v=>o.weight=Math.max(1,int(v,1)));if(inputArc)bindProp('propArcType','change',v=>o.arcType=normalizeArcType(v));
+  }
+}
+function bindProp(id,event,fn){const el=document.getElementById(id);if(!el)return;el.addEventListener(event,e=>{pauseForEdit();pushHistorySnapshot();fn(e.target.value);render()})}
+
+canvas.addEventListener('pointerdown',e=>{
+  if(e.target.closest?.('.inlineTextEditor'))return;
+  if(e.button!==0)return;
+  const ng=e.target.closest?.('[data-node-id]'),eg=e.target.closest?.('[data-edge-id]'),dg=e.target.closest?.('[data-decor-id]'),multi=e.ctrlKey||e.metaKey||e.shiftKey;
+  if(ng){app.lastTextPointer=null;const id=ng.dataset.nodeId;
+    if(app.tool==='connect'){handleConnectClick(id);return}
+    if(app.tool==='select'){
+      if(multi){toggleSelection('node',id);render();return}
+      if(!isSelected('node',id))selectOnly('node',id);else app.selected={kind:'node',id};
+      const p=svgPoint(e),group=selectedItems().filter(s=>s.kind==='node'||s.kind==='decor').map(s=>s.kind==='node'?{kind:'node',o:nodeById(s.id)}:{kind:'decor',o:decorById(s.id)}).filter(x=>x.o).map(x=>({kind:x.kind,id:x.o.id,x:x.o.x,y:x.o.y}));
+      app.drag={pointerId:e.pointerId,startX:p.x,startY:p.y,items:group,moved:false,historyPushed:false};render();canvas.setPointerCapture?.(e.pointerId);return;
+    }
+    selectOnly('node',id);render();return;
+  }
+  if(dg&&app.tool==='select'){
+    const id=dg.dataset.decorId,d=decorById(id);
+    // Robuster Doppelklick auf Textfelder auch im Modus „Auswählen / Ziehen“.
+    // PointerEvent.detail ist je nach Browser nicht zuverlässig, deshalb wird
+    // zusätzlich der zeitliche Abstand zweier Klicks auf dasselbe Textfeld geprüft.
+    if(d?.type==='text'&&!multi){
+      const now=performance.now(),last=app.lastTextPointer;
+      if(last&&last.id===id&&(now-last.time)<=500){
+        e.preventDefault();e.stopPropagation();app.lastTextPointer=null;app.drag=null;startTextEdit(id);return;
+      }
+      app.lastTextPointer={id,time:now};
+    }else{
+      app.lastTextPointer=null;
+    }
+    if(multi){toggleSelection('decor',id);render();return}
+    const changed=!isSelected('decor',id);if(changed)selectOnly('decor',id);else app.selected={kind:'decor',id};
+    const p=svgPoint(e),group=selectedItems().filter(s=>s.kind==='node'||s.kind==='decor').map(s=>s.kind==='node'?{kind:'node',o:nodeById(s.id)}:{kind:'decor',o:decorById(s.id)}).filter(x=>x.o).map(x=>({kind:x.kind,id:x.o.id,x:x.o.x,y:x.o.y}));
+    app.drag={pointerId:e.pointerId,startX:p.x,startY:p.y,items:group,moved:false,historyPushed:false};if(changed)render();canvas.setPointerCapture?.(e.pointerId);return;
+  }
+  if(eg&&app.tool==='select'){app.lastTextPointer=null;
+    const id=eg.dataset.edgeId;if(multi)toggleSelection('edge',id);else selectOnly('edge',id);render();return;
+  }
+  if(!ng&&!eg&&!dg){app.lastTextPointer=null;
+    const p=svgPoint(e);if(app.tool==='place'){addPlace(p.x,p.y);return}if(app.tool==='transition'){addTransition(p.x,p.y);return}if(app.tool==='text'){addTextDecoration(p.x,p.y);return}if(app.tool==='rect'){startRectDecoration(p.x,p.y,e.pointerId);return}
+    if(app.tool==='select'){
+      const base=multi?new Set(app.selection):new Set();if(!multi)clearSelection();
+      app.lasso={pointerId:e.pointerId,startX:p.x,startY:p.y,x:p.x,y:p.y,base,moved:false};
+      render();try{canvas.setPointerCapture?.(e.pointerId)}catch{}return;
+    }
+  }
+});
+canvas.addEventListener('pointermove',e=>{
+  if(app.rectDraw&&e.pointerId===app.rectDraw.pointerId){const p=svgPoint(e),d=decorById(app.rectDraw.id);if(!d)return;d.x=Math.min(app.rectDraw.startX,p.x);d.y=Math.min(app.rectDraw.startY,p.y);d.width=Math.max(1,Math.abs(p.x-app.rectDraw.startX));d.height=Math.max(1,Math.abs(p.y-app.rectDraw.startY));render();return}
+  if(app.lasso&&e.pointerId===app.lasso.pointerId){const p=svgPoint(e);app.lasso.x=p.x;app.lasso.y=p.y;if(!app.lasso.moved&&Math.hypot(p.x-app.lasso.startX,p.y-app.lasso.startY)>=3)app.lasso.moved=true;if(app.lasso.moved){applyMarqueeSelection();render()}return}
+  if(!app.drag||e.pointerId!==app.drag.pointerId)return;pauseForEdit();const p=svgPoint(e),dx=p.x-app.drag.startX,dy=p.y-app.drag.startY;
+  if(!app.drag.moved&&Math.hypot(dx,dy)<1)return;
+  if(!app.drag.historyPushed){pushHistorySnapshot();app.drag.historyPushed=true}app.drag.moved=true;
+  for(const start of app.drag.items||[]){const o=start.kind==='node'?nodeById(start.id):decorById(start.id);if(!o)continue;o.x=clamp(start.x+dx,0,2950);o.y=clamp(start.y+dy,0,1740)}render();
+});
+canvas.addEventListener('pointerup',e=>{
+  if(app.rectDraw&&e.pointerId===app.rectDraw.pointerId){const d=decorById(app.rectDraw.id);if(d){d.width=Math.max(10,d.width);d.height=Math.max(10,d.height)}app.rectDraw=null;setTool('select')}
+  if(app.lasso&&e.pointerId===app.lasso.pointerId){applyMarqueeSelection();app.lasso=null;render()}
+  app.drag=null;try{canvas.releasePointerCapture(e.pointerId)}catch{}
+});
+canvas.addEventListener('pointercancel',()=>{app.drag=null;app.rectDraw=null;app.lasso=null;render()});
+
+canvas.addEventListener('dblclick',e=>{
+  if(e.target.closest?.('.inlineTextEditor'))return;
+  const dg=e.target.closest?.('[data-decor-id]');
+  if(dg){const d=decorById(dg.dataset.decorId);if(d?.type==='text'){e.preventDefault();e.stopPropagation();startTextEdit(d.id);return}}
+  const eg=e.target.closest?.('[data-edge-id]');if(!eg)return;e.preventDefault();e.stopPropagation();selectOnly('edge',eg.dataset.edgeId);render();
+  setTimeout(()=>{const input=document.getElementById('propWeight');if(input){input.focus();input.select()}},0);
+});
+
+// Navigation auf der Zeichenfläche: rechte Maustaste = Pan, Strg + Mausrad = Zoom.
+canvasWrap.addEventListener('contextmenu',e=>e.preventDefault());
+canvasWrap.addEventListener('pointerdown',e=>{
+  if(e.button!==2)return;
+  e.preventDefault();e.stopPropagation();
+  app.pan={pointerId:e.pointerId,startX:e.clientX,startY:e.clientY,startLeft:canvasWrap.scrollLeft,startTop:canvasWrap.scrollTop};
+  canvasWrap.classList.add('panning');
+  try{canvasWrap.setPointerCapture(e.pointerId)}catch{}
+},{capture:true});
+canvasWrap.addEventListener('pointermove',e=>{
+  if(!app.pan||e.pointerId!==app.pan.pointerId)return;
+  e.preventDefault();
+  canvasWrap.scrollLeft=app.pan.startLeft-(e.clientX-app.pan.startX);
+  canvasWrap.scrollTop=app.pan.startTop-(e.clientY-app.pan.startY);
+});
+function endPan(e){
+  if(!app.pan)return;
+  const pid=app.pan.pointerId;app.pan=null;canvasWrap.classList.remove('panning');
+  try{canvasWrap.releasePointerCapture(pid)}catch{}
+}
+canvasWrap.addEventListener('pointerup',endPan);
+canvasWrap.addEventListener('pointercancel',endPan);
+
+function applyZoom(newZoom,anchorClientX=null,anchorClientY=null){
+  const oldZoom=app.zoom;newZoom=clamp(newZoom,.25,4);if(Math.abs(newZoom-oldZoom)<1e-9)return;
+  const r=canvasWrap.getBoundingClientRect();
+  const vx=(anchorClientX??(r.left+r.width/2))-r.left,vy=(anchorClientY??(r.top+r.height/2))-r.top;
+  const worldX=(canvasWrap.scrollLeft+vx)/oldZoom,worldY=(canvasWrap.scrollTop+vy)/oldZoom;
+  app.zoom=newZoom;canvas.style.width=(3000*newZoom)+'px';canvas.style.height=(1800*newZoom)+'px';
+  canvasWrap.scrollLeft=worldX*newZoom-vx;canvasWrap.scrollTop=worldY*newZoom-vy;
+  const z=document.getElementById('zoomValue');if(z)z.textContent=Math.round(newZoom*100)+'%';
+}
+canvasWrap.addEventListener('wheel',e=>{
+  if(!e.ctrlKey)return;
+  e.preventDefault();
+  const factor=Math.exp(-e.deltaY*.0015);applyZoom(app.zoom*factor,e.clientX,e.clientY);
+},{passive:false});
+function handleConnectClick(id){
+  if(!app.connectFrom){app.connectFrom=id;setFooter('Quelle gewählt. Jetzt Ziel anklicken.');render();return}
+  if(app.connectFrom===id){app.connectFrom=null;setFooter('Verbindung abgebrochen. Quelle neu wählen.');render();return}
+  const a=nodeById(app.connectFrom),b=nodeById(id);if(a?.type===b?.type){toast('Ungültig: Petri-Netz-Kanten nur zwischen Stelle und Transition.');return}
+  addEdge(app.connectFrom,id,1);app.connectFrom=null;setFooter('Kante erstellt. Weitere Quelle anklicken.');app.tool='connect';document.querySelectorAll('.tool').forEach(b=>b.classList.toggle('active',b.dataset.tool==='connect'));render();
+}
+
+function normalizeArcType(t){return t==='test'||t==='inhibitor'?t:'normal'}
+function placeCapacity(p){return Math.max(1,int(p?.capacity,100))}
+function incomingToTransition(tid){return app.model.edges.filter(e=>e.to===tid&&nodeById(e.from)?.type==='place')}
+function outgoingFromTransition(tid){return app.model.edges.filter(e=>e.from===tid&&nodeById(e.to)?.type==='place')}
+function reservedForPlace(pid,ignoreTid=null){let sum=0;for(const [tid] of app.active){if(tid===ignoreTid)continue;for(const e of outgoingFromTransition(tid)){if(e.to===pid&&normalizeArcType(e.arcType)==='normal')sum+=e.weight}}return sum}
+function hasOutputCapacity(t){for(const e of outgoingFromTransition(t.id)){if(normalizeArcType(e.arcType)!=='normal')continue;const p=nodeById(e.to);if(!p)continue;if(p.tokens+reservedForPlace(p.id)+e.weight>placeCapacity(p))return false}return true}
+function isEnabled(t){
+  if(t.type!=='transition'||app.active.has(t.id))return false;const ins=incomingToTransition(t.id);if(!ins.length)return false;
+  for(const e of ins){const p=nodeById(e.from),tokens=p?.tokens??0,type=normalizeArcType(e.arcType);if(type==='inhibitor'){if(tokens>=e.weight)return false}else if(tokens<e.weight)return false}
+  return hasOutputCapacity(t)
+}
+function createParticles(edgeId,count){const n=Math.min(Math.max(1,count),6);for(let i=0;i<n;i++)app.particles.push({edgeId,progress:-i*.08,speed:2.7})}
+function startTransition(t){
+  if(!isEnabled(t))return false;for(const e of incomingToTransition(t.id)){const p=nodeById(e.from),type=normalizeArcType(e.arcType);if(type==='normal')p.tokens-=e.weight;createParticles(e.id,type==='normal'?e.weight:1)}
+  app.active.set(t.id,{elapsed:0,duration:Math.max(.1,num(t.duration,1))});return true;
+}
+function canCompleteTransition(tid){for(const e of outgoingFromTransition(tid)){if(normalizeArcType(e.arcType)!=='normal')continue;const p=nodeById(e.to);if(p&&p.tokens+e.weight>placeCapacity(p))return false}return true}
+function completeTransition(tid){const t=nodeById(tid);if(!t)return true;if(!canCompleteTransition(tid))return false;for(const e of outgoingFromTransition(tid)){if(normalizeArcType(e.arcType)!=='normal')continue;const p=nodeById(e.to);p.tokens+=e.weight;createParticles(e.id,e.weight)}app.active.delete(tid);return true}
+function startEnabledTransitions(){let started=0;for(const t of app.model.nodes.filter(n=>n.type==='transition'))if(startTransition(t))started++;return started}
+function updateParticles(dt){for(const p of app.particles)p.progress+=p.speed*dt;app.particles=app.particles.filter(p=>p.progress<=1.15)}
+function simLoop(ts){
+  if(app.simState!=='running'){app.raf=null;return}const realDt=Math.min(.12,Math.max(0,(ts-(app.lastTs??ts))/1000));app.lastTs=ts;const dt=realDt*app.speed;app.logicalTime+=dt;updateParticles(dt);
+  const completed=[];for(const [id,a] of app.active){a.elapsed+=dt;if(a.elapsed+1e-9>=a.duration)completed.push(id)}for(const id of completed){if(!completeTransition(id)){app.simState='paused';toast('Simulation pausiert: Eine Ausgabestelle hat keine freie Kapazität.');break}}
+  if(app.simState==='running')startEnabledTransitions();updateSimStatus();render();app.raf=app.simState==='running'?requestAnimationFrame(simLoop):null;
+}
+function runSim(){app.simState='running';app.speed=num(speedSel.value,1);app.lastTs=performance.now();updateSimStatus();if(!app.raf)app.raf=requestAnimationFrame(simLoop)}
+function pauseSim(showToast=true){if(app.simState==='running')app.simState='paused';updateSimStatus();render();if(showToast)toast('Simulation pausiert.')}
+function resetSim(){app.simState='stopped';app.active.clear();app.particles=[];app.logicalTime=0;for(const n of app.model.nodes)if(n.type==='place')n.tokens=int(n.initialTokens);updateSimStatus();render()}
+function stepSim(){pauseForEdit();if(app.active.size){toast('Einzelschritt ist nur ohne laufende Transition möglich.');return}const t=app.model.nodes.find(n=>n.type==='transition'&&isEnabled(n));if(!t){toast('Keine Transition ist aktivierbar (Token, Tester/Hemmer oder Kapazität prüfen).');return}for(const e of incomingToTransition(t.id)){const type=normalizeArcType(e.arcType);if(type==='normal')nodeById(e.from).tokens-=e.weight;createParticles(e.id,type==='normal'?e.weight:1)}for(const e of outgoingFromTransition(t.id)){if(normalizeArcType(e.arcType)!=='normal')continue;nodeById(e.to).tokens+=e.weight;createParticles(e.id,e.weight)}app.logicalTime+=Math.max(.1,num(t.duration,1));render();toast('Transition „'+t.name+'“ geschaltet.')}
+function updateSimStatus(){
+  simStatus.className='statuspill '+(app.simState==='running'?'running':app.simState==='paused'?'paused':'');
+  if(app.simState==='running')simStatus.textContent=`Läuft · ${app.active.size} aktiv`;
+  else if(app.simState==='paused')simStatus.textContent=`Pausiert · ${app.active.size} aktiv`;
+  else simStatus.textContent='Bereit';
+}
+document.getElementById('startBtn').addEventListener('click',()=>{if(!app.model.nodes.length){toast('Das Netz ist leer.');return}runSim()});
+document.getElementById('pauseBtn').addEventListener('click',()=>pauseSim());
+document.getElementById('resumeBtn').addEventListener('click',runSim);
+document.getElementById('stepBtn').addEventListener('click',stepSim);
+document.getElementById('resetBtn').addEventListener('click',resetSim);
+speedSel.addEventListener('change',()=>app.speed=num(speedSel.value,1));
+
+let netNameEditSnapshot=null;netName.addEventListener('focus',()=>{netNameEditSnapshot=snapshotEditState()});netName.addEventListener('change',()=>{if(netNameEditSnapshot&&netNameEditSnapshot!==snapshotEditState())pushHistorySnapshot(netNameEditSnapshot);app.model.name=netName.value;netNameEditSnapshot=null;render()});
+function serializeProject(){return {format:'PetriNetzStudio',version:3,name:netName.value||app.model.name,canvas:{width:3000,height:1800},nodes:app.model.nodes,edges:app.model.edges,decorations:app.model.decorations||[],simulation:{logicalTime:app.logicalTime,state:app.simState==='running'?'paused':app.simState,active:[...app.active.entries()].map(([transitionId,a])=>({transitionId,elapsed:a.elapsed,duration:a.duration}))}}}
+function safeFileName(name,ext){const s=(name||'petrinetz').replace(/[<>:"/\\|?*\x00-\x1F]/g,'_').replace(/\s+/g,'_').slice(0,80)||'petrinetz';return s+(s.toLowerCase().endsWith(ext)?'':ext)}
+function downloadBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000)}
+function loadLegacyProject(raw){
+  const d=JSON.parse(raw);if(d.format!=='PetriNetzStudio'||!Array.isArray(d.nodes)||!Array.isArray(d.edges))throw new Error('Keine gültige PetriNetz-Studio-Datei.');
+  app.simState='paused';app.active.clear();app.particles=[];app.model={name:String(d.name||'Geladenes Petrinetz'),nodes:d.nodes.map(n=>{if(n.type==='place'){const cap=Math.max(1,int(n.capacity,Math.max(100,int(n.initialTokens),int(n.tokens,n.initialTokens))));return{id:String(n.id),type:'place',x:num(n.x,200),y:num(n.y,200),name:String(n.name||'Stelle'),initialTokens:Math.min(cap,int(n.initialTokens)),tokens:Math.min(cap,int(n.tokens,n.initialTokens)),capacity:cap}}return{id:String(n.id),type:'transition',x:num(n.x,200),y:num(n.y,200),name:String(n.name||'Transition'),duration:Math.max(.1,num(n.duration,1))}}),edges:d.edges.map(e=>({id:String(e.id),from:String(e.from),to:String(e.to),weight:Math.max(1,int(e.weight,1)),arcType:normalizeArcType(e.arcType)})),decorations:(d.decorations||[]).map(normalizeDecoration).filter(Boolean)};
+  app.logicalTime=Math.max(0,num(d.simulation?.logicalTime,0));for(const a of d.simulation?.active||[]){if(nodeById(String(a.transitionId))?.type==='transition')app.active.set(String(a.transitionId),{elapsed:Math.max(0,num(a.elapsed,0)),duration:Math.max(.1,num(a.duration,1))})}
+  netName.value=app.model.name;clearSelection();app.connectFrom=null;updateSimStatus();render();centerContent();resetHistory();
+}
+function applyLoadedModel(model,name){
+  app.simState='stopped';app.active.clear();app.particles=[];app.logicalTime=0;app.model=model;if(!Array.isArray(app.model.decorations))app.model.decorations=[];app.model.name=name||model.name||'Geladenes Petrinetz';netName.value=app.model.name;clearSelection();app.connectFrom=null;updateSimStatus();render();centerContent();resetHistory();
+}
+
+document.getElementById('openBtn').addEventListener('click',()=>document.getElementById('fileInput').click());
+document.getElementById('fileInput').addEventListener('change',async e=>{
+  const f=e.target.files?.[0];if(!f)return;
+  try{
+    if(f.name.toLowerCase().endsWith('.hps')){
+      const parsed=importHps(await f.arrayBuffer());
+      const base=f.name.replace(/\.hps$/i,'');applyLoadedModel(parsed,base);toast('HPS-Datei geöffnet.');
+    }else{
+      loadLegacyProject(await f.text());toast('Älteres Projekt geöffnet. Beim nächsten Speichern wird eine HPS-Datei erzeugt.');
+    }
+  }catch(err){alert('Datei konnte nicht geöffnet werden:\n'+err.message)}
+  e.target.value='';
+});
+
+document.getElementById('newBtn').addEventListener('click',()=>{if(!confirm('Neues leeres Netz erstellen? Nicht gespeicherte Änderungen gehen verloren.'))return;app.model=blankModel();netName.value=app.model.name;clearSelection();app.connectFrom=null;resetSim();setTool('select');resetHistory()});
+
+function centerContent(){
+  const xs=app.model.nodes.map(n=>n.x),ys=app.model.nodes.map(n=>n.y);for(const d of app.model.decorations||[]){xs.push(d.x);ys.push(d.y);if(d.type==='rect'){xs.push(d.x+d.width);ys.push(d.y+d.height)}else{const m=textDecorMetrics(d);xs.push(d.x+m.width);ys.push(d.y+m.height)}}
+  if(!xs.length){canvasWrap.scrollTo({left:0,top:0,behavior:'smooth'});return}const cx=(Math.min(...xs)+Math.max(...xs))/2,cy=(Math.min(...ys)+Math.max(...ys))/2;canvasWrap.scrollTo({left:Math.max(0,cx*app.zoom-canvasWrap.clientWidth/2),top:Math.max(0,cy*app.zoom-canvasWrap.clientHeight/2),behavior:'smooth'})
+}
+document.getElementById('fitBtn').addEventListener('click',centerContent);
+
+// ---- Binärer HPS-Export (HPSim/MFC-ähnliche Struktur) ----
+class ByteWriter{
+  constructor(){this.a=[]} u8(v){this.a.push(v&255)} u16(v){this.u8(v);this.u8(v>>8)} u32(v){v=Number(v)>>>0;this.u8(v);this.u8(v>>8);this.u8(v>>16);this.u8(v>>24)}
+  f64(v){const b=new ArrayBuffer(8),d=new DataView(b);d.setFloat64(0,Number(v),true);for(let i=0;i<8;i++)this.u8(d.getUint8(i))}
+  bytes(arr){for(const v of arr)this.u8(v)} blob(){return new Blob([new Uint8Array(this.a)],{type:'application/octet-stream'})}
+}
+function cp1252(s){const out=[];for(const ch of String(s)){let c=ch.charCodeAt(0);if(c<=255)out.push(c);else{const m={'€':128,'‚':130,'ƒ':131,'„':132,'…':133,'†':134,'‡':135,'ˆ':136,'‰':137,'Š':138,'‹':139,'Œ':140,'Ž':142,'‘':145,'’':146,'“':147,'”':148,'•':149,'–':150,'—':151,'˜':152,'™':153,'š':154,'›':155,'œ':156,'ž':158,'Ÿ':159};out.push(m[ch]??63)}}return out}
+function wCount(w,n){if(n<0xffff)w.u16(n);else{w.u16(0xffff);w.u32(n)}}
+function wCString(w,s){const b=cp1252(s),n=b.length;if(n<0xff)w.u8(n);else if(n<0xffff){w.u8(0xff);w.u16(n)}else{w.u8(0xff);w.u16(0xffff);w.u32(n)}w.bytes(b)}
+const STUDIO_META_MAGIC='PNSTUDIO_META_V3\n';
+function studioMetaBytes(){const enc=new TextEncoder(),magic=enc.encode(STUDIO_META_MAGIC),json=enc.encode(JSON.stringify({version:3,decorations:app.model.decorations||[]})),len=new Uint8Array(4);new DataView(len.buffer).setUint32(0,json.length,true);return [magic,len,json]}
+function extractStudioMeta(buffer){
+  try{const b=new Uint8Array(buffer),magic=new TextEncoder().encode(STUDIO_META_MAGIC);for(let i=b.length-magic.length-4;i>=0;i--){let ok=true;for(let j=0;j<magic.length;j++)if(b[i+j]!==magic[j]){ok=false;break}if(!ok)continue;const len=new DataView(buffer).getUint32(i+magic.length,true),start=i+magic.length+4;if(start+len>b.length)continue;return JSON.parse(new TextDecoder().decode(b.slice(start,start+len)))}}catch{}return null;
+}
+
+function hpsBoundary(n,toward){const dx=toward.x-n.x,dy=toward.y-n.y;if(!dx&&!dy)return{x:n.x,y:n.y};if(n.type==='place'){const r=12,L=Math.hypot(dx,dy);return{x:Math.round(n.x+r*dx/L),y:Math.round(n.y+r*dy/L)}}const hx=12,hy=4,s=1/Math.max(Math.abs(dx)/hx,Math.abs(dy)/hy);return{x:Math.round(n.x+dx*s),y:Math.round(n.y+dy*s)}}
+function hpsArcGeom(a,b){const p0=hpsBoundary(a,b),p1=hpsBoundary(b,a),dx=p1.x-p0.x,dy=p1.y-p0.y,theta=Math.atan2(dy,dx),L=10,alpha=.523;const s1={x:Math.round(p1.x-L*Math.cos(theta-alpha)),y:Math.round(p1.y-L*Math.sin(theta-alpha))},s2={x:Math.round(p1.x-L*Math.cos(theta+alpha)),y:Math.round(p1.y-L*Math.sin(theta+alpha))};return{p0,p1,s1,s2,left:Math.min(p0.x,p1.x),top:Math.min(p0.y,p1.y),right:Math.max(p0.x,p1.x),bottom:Math.max(p0.y,p1.y)}}
+function labelRect(text,x,y,where){const width=Math.max(10,Math.round(String(text).length*6.2)),h=14;let left=Math.round(x-width/2),top=where==='below'?y+18:y-34;return{left,top,right:left+width,bottom:top+h}}
+function buildHpsBlob(){
+  pauseSim(false);const places=app.model.nodes.filter(n=>n.type==='place'),trans=app.model.nodes.filter(n=>n.type==='transition');if(!places.length||!trans.length)throw new Error('Für eine HPS-Datei werden mindestens eine Stelle und eine Transition benötigt.')
+  const idMap=new Map();trans.forEach((n,i)=>idMap.set(n.id,i));places.forEach((n,i)=>idMap.set(n.id,1000000+i));app.model.edges.forEach((e,i)=>idMap.set(e.id,2000000+i));
+  const objects=[];
+  const serLabel=(text,owner,sub,rect)=>w=>{wCString(w,text);w.u32(rect.top);w.u32(rect.left);w.u32(rect.bottom);w.u32(rect.right);w.u32(owner);w.u32(sub);w.u8(1);w.u8(0);w.u8(1)};
+  for(const n of app.model.nodes){
+    const hid=idMap.get(n.id);if(n.type==='place'){
+      objects.push(['CHPosition',w=>{const l=Math.round(n.x-12),t=Math.round(n.y-12),r=Math.round(n.x+12),b=Math.round(n.y+12),cap=placeCapacity(n);w.u32(Math.min(cap,int(n.tokens)));w.u32(cap);w.u32(Math.min(cap,int(n.initialTokens)));w.u32(0);[l,t,r,b,25,hid,0].forEach(v=>w.u32(v));w.bytes(new Array(7).fill(0));w.f64(0)}]);
+      objects.push(['CHLabel',serLabel(n.name,hid,0,labelRect(n.name,n.x,n.y,'above'))]);objects.push(['CHLabel',serLabel(String(placeCapacity(n)),hid,1,labelRect(String(placeCapacity(n)),n.x,n.y,'below'))]);
+    }else{
+      objects.push(['CHTransition',w=>{const l=Math.round(n.x-12),t=Math.round(n.y-4),r=Math.round(n.x+12),b=Math.round(n.y+4),d=Math.max(0,Math.round(n.duration));[25,l,t,r,b,hid,d,d,0,0,0,0].forEach(v=>w.u32(v));w.u8(0);w.u8(0);w.u8(1);w.bytes(new Array(6).fill(0));w.f64(0)}]);
+      objects.push(['CHLabel',serLabel(n.name,hid,0,labelRect(n.name,n.x,n.y,'above'))]);objects.push(['CHLabel',serLabel(String(Math.max(0,Math.round(n.duration))),hid,1,labelRect(String(Math.round(n.duration)),n.x,n.y,'below'))]);
+    }
+  }
+  for(const e of app.model.edges){const a=nodeById(e.from),b=nodeById(e.to);if(!a||!b)continue;const hid=idMap.get(e.id),g=hpsArcGeom(a,b),typeCode=normalizeArcType(e.arcType)==='inhibitor'?1:normalizeArcType(e.arcType)==='test'?2:0;objects.push(['CHConnector',w=>{[g.left,g.top,g.right,g.bottom,g.s1.x,g.s1.y,g.s2.x,g.s2.y,hid,idMap.get(e.from),idMap.get(e.to),e.weight,0].forEach(v=>w.u32(v));[0,typeCode,0,0,0].forEach(v=>w.u16(v));w.bytes(new Array(5).fill(0));w.f64(0);wCount(w,2);w.u32(g.p0.x);w.u32(g.p0.y);w.u32(g.p1.x);w.u32(g.p1.y)}]);const mx=Math.round((g.p0.x+g.p1.x)/2),my=Math.round((g.p0.y+g.p1.y)/2),txt=String(e.weight),width=Math.max(8,Math.round(txt.length*6.2)),rect={left:mx,top:my-14,right:mx+width,bottom:my};objects.push(['CHLabel',serLabel(txt,hid,0,rect)])}
+  const w=new ByteWriter();wCount(w,objects.length);const classPids=new Map();let nextPid=1;for(const [cls,ser] of objects){if(!classPids.has(cls)){w.u16(0xffff);w.u16(10002);const nb=cp1252(cls);w.u16(nb.length);w.bytes(nb);classPids.set(cls,nextPid++);}else w.u16(0x8000|classPids.get(cls));nextPid++;ser(w)}
+  const maxX=Math.max(2400,...app.model.nodes.map(n=>Math.ceil(n.x+150))),maxY=Math.max(900,...app.model.nodes.map(n=>Math.ceil(n.y+150)));[maxX,maxY,2000000+app.model.edges.length,1000000+places.length,trans.length,10,0,1000,1000,500,0,1,0,0x00ffffff].forEach(v=>w.u32(v));for(let i=0;i<7;i++)w.u32(0);[1,1,1,0,1,1,0,0,0,0].forEach(v=>w.u8(v));
+  const [magic,len,json]=studioMetaBytes();return new Blob([new Uint8Array(w.a),magic,len,json],{type:'application/octet-stream'});
+}
+function saveProject(){try{downloadBlob(buildHpsBlob(),safeFileName(netName.value,'.hps'));toast('HPS-Datei gespeichert.')}catch(err){alert(err.message)}}
+document.getElementById('saveBtn').addEventListener('click',saveProject);
+
+// ---- HPS-Import für aktuelle PetriNetz-Studio-Dateien und ältere originale HPSim-Dateien ----
+class ByteReader{
+  constructor(buffer){this.v=new DataView(buffer);this.b=new Uint8Array(buffer);this.p=0}
+  need(n){if(this.p+n>this.v.byteLength)throw new Error('Unerwartetes Dateiende in der HPS-Datei.')}
+  u8(){this.need(1);return this.v.getUint8(this.p++)}
+  u16(){this.need(2);const x=this.v.getUint16(this.p,true);this.p+=2;return x}
+  u32(){this.need(4);const x=this.v.getUint32(this.p,true);this.p+=4;return x}
+  i32(){this.need(4);const x=this.v.getInt32(this.p,true);this.p+=4;return x}
+  f64(){this.need(8);const x=this.v.getFloat64(this.p,true);this.p+=8;return x}
+  skip(n){this.need(n);this.p+=n}
+  bytes(n){this.need(n);const x=this.b.slice(this.p,this.p+n);this.p+=n;return x}
+  count(){const n=this.u16();return n===0xffff?this.u32():n}
+  cstring(){let n=this.u8();if(n===0xff){n=this.u16();if(n===0xffff)n=this.u32()}return decodeCp1252(this.bytes(n))}
+}
+function decodeCp1252(bytes){
+  const special={128:'€',130:'‚',131:'ƒ',132:'„',133:'…',134:'†',135:'‡',136:'ˆ',137:'‰',138:'Š',139:'‹',140:'Œ',142:'Ž',145:'‘',146:'’',147:'“',148:'”',149:'•',150:'–',151:'—',152:'˜',153:'™',154:'š',155:'›',156:'œ',158:'ž',159:'Ÿ'};
+  let s='';for(const b of bytes)s+=special[b]??String.fromCharCode(b);return s;
+}
+function hpsColorRefToHex(v){
+  v=Number(v)>>>0;const r=v&255,g=(v>>>8)&255,b=(v>>>16)&255;
+  return '#'+[r,g,b].map(x=>x.toString(16).padStart(2,'0')).join('');
+}
+function importHps(buffer){
+  const meta=extractStudioMeta(buffer),r=new ByteReader(buffer),objectCount=r.count();
+  if(!objectCount||objectCount>100000)throw new Error('Keine gültige bzw. unterstützte HPS-Datei.');
+  const classes=new Map(),places=[],transitions=[],connectors=[],labels=[],legacyDecorations=[];let nextPid=1,legacyDecorCounter=1;
+  for(let i=0;i<objectCount;i++){
+    const tag=r.u16();let cls;
+    if(tag===0xffff){r.u16();const len=r.u16();cls=decodeCp1252(r.bytes(len));classes.set(nextPid++,cls)}
+    else if(tag&0x8000){cls=classes.get(tag&0x7fff);if(!cls)throw new Error('Unbekannte HPS-Klassenreferenz.');}
+    else throw new Error('Diese HPS-Datei verwendet eine Objektstruktur, die derzeit nicht importiert werden kann.');
+    nextPid++;
+    if(cls==='CHPosition'){
+      const current=r.u32(),capacity=r.u32(),initial=r.u32();r.u32();const l=r.u32(),t=r.u32(),rr=r.u32(),bb=r.u32();r.u32();const hid=r.u32();r.u32();r.skip(7);r.f64();
+      places.push({hid,current,capacity,initial,x:(l+rr)/2,y:(t+bb)/2,name:'Stelle'});
+    }else if(cls==='CHTransition'){
+      r.u32();const l=r.u32(),t=r.u32(),rr=r.u32(),bb=r.u32(),hid=r.u32(),duration=r.u32();r.u32();r.u32();r.u32();r.u32();r.u32();r.skip(3);r.skip(6);r.f64();
+      transitions.push({hid,duration,x:(l+rr)/2,y:(t+bb)/2,name:'Transition'});
+    }else if(cls==='CHConnector'){
+      r.u32();r.u32();r.u32();r.u32();r.u32();r.u32();r.u32();r.u32();const hid=r.u32(),from=r.u32(),to=r.u32(),weight=r.u32();r.u32();r.u16();const typeCode=r.u16();r.u16();r.u16();r.u16();r.skip(5);r.f64();const pointCount=r.count();for(let k=0;k<pointCount;k++){r.u32();r.u32()}
+      connectors.push({hid,from,to,weight:Math.max(1,weight),arcType:typeCode===1?'inhibitor':typeCode===2?'test':'normal'});
+    }else if(cls==='CHLabel'){
+      const text=r.cstring();const top=r.u32(),left=r.u32(),bottom=r.u32(),right=r.u32(),owner=r.u32(),sub=r.u32();r.skip(3);labels.push({text,owner,sub,top,left,bottom,right});
+    }else if(cls==='CHRect'){
+      // HPSim-Hintergrundrechteck: Position, Farbe und weitere Zeichenattribute.
+      const left=r.u32(),top=r.u32(),right=r.u32(),bottom=r.u32(),colorRef=r.u32();r.skip(15);
+      legacyDecorations.push(normalizeDecoration({id:'old_rect_'+legacyDecorCounter++,type:'rect',x:left,y:top,width:Math.max(10,right-left),height:Math.max(10,bottom-top),color:hpsColorRefToHex(colorRef)}));
+    }else if(cls==='CHText'){
+      // Freies HPSim-Textobjekt: Rechteck, COLORREF, Schriftgröße und anschließend CString.
+      const top=r.u32(),left=r.u32(),bottom=r.u32(),right=r.u32(),colorRef=r.u32(),fontHeight=r.i32();r.skip(56);const text=r.cstring();
+      legacyDecorations.push(normalizeDecoration({id:'old_text_'+legacyDecorCounter++,type:'text',x:left,y:top,text:String(text).replace(/\r\n/g,'\n').replace(/\r/g,'\n'),fontSize:clamp(Math.abs(fontHeight)||11,8,160),color:hpsColorRefToHex(colorRef)}));
+    }else{
+      throw new Error('Nicht unterstützter HPSim-Objekttyp: '+cls+'. Bitte die Datei melden, damit dieser alte Objekttyp ergänzt werden kann.');
+    }
+  }
+  if(!places.length&&!transitions.length)throw new Error('Die HPS-Datei enthält keine importierbaren Stellen oder Transitionen.');
+  const nameLabel=new Map(),valueLabel=new Map();for(const l of labels){if(l.sub===0&&!nameLabel.has(l.owner))nameLabel.set(l.owner,l.text);else if(l.sub===1&&!valueLabel.has(l.owner))valueLabel.set(l.owner,l.text)}
+  const nodes=[],hidToId=new Map();
+  for(const p of places){const id='p_'+p.hid,cap=Math.max(1,int(p.capacity,100));hidToId.set(p.hid,id);nodes.push({id,type:'place',x:p.x,y:p.y,name:nameLabel.get(p.hid)||p.name,initialTokens:Math.min(cap,int(p.initial)),tokens:Math.min(cap,int(p.current)),capacity:cap})}
+  for(const t of transitions){const id='t_'+t.hid;hidToId.set(t.hid,id);const shown=valueLabel.get(t.hid),duration=shown!==undefined&&shown!==''?num(String(shown).replace(',','.'),t.duration):t.duration;nodes.push({id,type:'transition',x:t.x,y:t.y,name:nameLabel.get(t.hid)||t.name,duration:Math.max(.1,num(duration,1))})}
+  const edges=[];for(const c of connectors){const from=hidToId.get(c.from),to=hidToId.get(c.to);if(from&&to)edges.push({id:'e_'+c.hid,from,to,weight:Math.max(1,int(c.weight,1)),arcType:normalizeArcType(c.arcType)})}
+  app.counter=Math.max(app.counter,nodes.length+edges.length+legacyDecorations.length+10);
+  const decorations=Array.isArray(meta?.decorations)?meta.decorations.map(normalizeDecoration).filter(Boolean):legacyDecorations.filter(Boolean);
+  return {name:'Geladenes Petrinetz',nodes,edges,decorations};
+}
+
+// Help + keyboard
+const help=document.getElementById('helpModal');document.getElementById('helpBtn').addEventListener('click',()=>help.classList.add('open'));document.getElementById('closeHelp').addEventListener('click',()=>help.classList.remove('open'));help.addEventListener('click',e=>{if(e.target===help)help.classList.remove('open')});
+document.addEventListener('keydown',e=>{
+  const tag=document.activeElement?.tagName,key=e.key.toLowerCase(),mod=e.ctrlKey||e.metaKey;if((e.key==='Delete'||e.key==='Backspace')&&!['INPUT','TEXTAREA'].includes(tag)){e.preventDefault();deleteSelection()}
+  if(e.key==='Escape'){if(app.textEdit){cancelTextEdit();return}app.connectFrom=null;app.lasso=null;app.drag=null;clearSelection();setTool('select');render()}
+  if(mod&&key==='c'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){e.preventDefault();copySelection();return}
+  if(mod&&key==='v'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){e.preventDefault();pasteSelection();return}
+  if(mod&&key==='a'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){e.preventDefault();app.selection=new Set([...app.model.nodes.map(n=>selKey('node',n.id)),...app.model.edges.map(x=>selKey('edge',x.id)),...(app.model.decorations||[]).map(d=>selKey('decor',d.id))]);const first=selectedItems()[0];app.selected=first||null;render();return}
+  if(mod&&key==='s'){e.preventDefault();saveProject()}
+  if(mod&&key==='z'){e.preventDefault();e.shiftKey?redo():undo();return}
+  if(mod&&key==='y'){e.preventDefault();redo();return}
+  if(e.code==='Space'&&!['INPUT','TEXTAREA','SELECT'].includes(tag)){e.preventDefault();app.simState==='running'?pauseSim(false):runSim()}
+});
+
+applyZoom(1);app.model=blankModel();netName.value=app.model.name;updateSimStatus();render();resetHistory();updateHistoryButtons();setTimeout(centerContent,80);
+</script>
+</body>
+</html>
