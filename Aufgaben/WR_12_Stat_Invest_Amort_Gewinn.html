@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="Interaktive Lernaufgabe zu Amortisationsrechnung und Gewinnvergleichsrechnung am Beispiel der KORNWERK GmbH.">
+  <title>KORNWERK | Interaktive Investitionsentscheidung</title>
+  <style>
+    :root {
+      --bg:#f5f6f2; --paper:#fff; --ink:#1d2922; --muted:#617167; --line:#dfe5dc;
+      --green:#29513d; --green-soft:#ecf4eb; --gold:#a87938; --gold-soft:#f8f0e4;
+      --red:#9b403b; --red-soft:#fbefee; --blue:#365e80;
+      --shadow:0 14px 40px rgba(27,48,34,.07); --radius:18px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+    button,input,textarea{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible, input:focus-visible, textarea:focus-visible, [role="tab"]:focus-visible{outline:3px solid #c49457;outline-offset:3px}
+    .sitebar{height:8px;background:linear-gradient(90deg,#315640 0 64%,#c19960 64% 100%)}
+    .container{max-width:1320px;margin:auto;padding:0 28px}
+    header{background:#fff;border-bottom:1px solid var(--line)}
+    .header-inner{padding:20px 0;display:flex;align-items:center;gap:24px;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:18px;min-width:0}
+    .brand img{width:min(330px,41vw);height:auto;max-height:70px;object-fit:contain;object-position:left center}
+    .brand-divider{height:43px;width:1px;background:#d6ddd5}
+    .brand-caption{font-size:.78rem;color:var(--muted);font-weight:800;letter-spacing:.095em;text-transform:uppercase;line-height:1.65}
+    .head-actions{display:flex;gap:9px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .top-action{border:1px solid #d4ded4;background:#fff;border-radius:10px;padding:10px 13px;color:var(--ink);font-size:.85rem;font-weight:700}
+    .top-action:hover{background:#f4f7f3}
+    .eyebrow{display:inline-flex;gap:8px;align-items:center;color:#48614e;font-size:.76rem;letter-spacing:.11em;font-weight:900;text-transform:uppercase}
+    .eyebrow:before{content:"";height:7px;width:7px;background:var(--gold);border-radius:50%}
+    .intro{padding:39px 0 32px}
+    .intro-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(300px,.7fr);gap:28px;align-items:stretch}
+    h1{font-size:clamp(2rem,3.7vw,3.25rem);letter-spacing:-.055em;line-height:1.13;margin:13px 0 17px;max-width:800px}
+    h1 em{font-style:normal;color:var(--green)}
+    .lede{font-size:1.08rem;color:#4b6052;max-width:830px;margin:0 0 22px}
+    .intro-stats{display:flex;gap:11px;flex-wrap:wrap}
+    .stat-pill{border:1px solid #dae4da;color:#3c5443;background:#fff;padding:8px 12px;border-radius:99px;font-weight:700;font-size:.82rem}
+    .brief{background:var(--green);color:#fff;border-radius:var(--radius);padding:25px 27px;position:relative;overflow:hidden;box-shadow:var(--shadow)}
+    .brief:after{content:"";position:absolute;right:-44px;top:-65px;width:195px;height:195px;border:35px solid rgba(255,255,255,.055);border-radius:50%;pointer-events:none}
+    .brief-kicker{font-size:.72rem;text-transform:uppercase;letter-spacing:.15em;color:#d4ddba;font-weight:800}
+    .brief h2{margin:10px 0 11px;font-size:1.32rem;letter-spacing:-.02em}
+    .brief p{margin:0;color:#ebf3e9;font-size:.96rem;position:relative;z-index:1}
+    .brief .sign{border-top:1px solid rgba(255,255,255,.23);margin-top:20px;padding-top:11px;color:#d4ddba;font-size:.8rem}
+    .workspace{display:grid;grid-template-columns:minmax(290px,350px) minmax(0,1fr);gap:24px;align-items:start;padding-bottom:70px}
+    .data-panel{position:sticky;top:18px;border:1px solid var(--line);border-radius:var(--radius);background:var(--paper);overflow:hidden;box-shadow:var(--shadow)}
+    .data-header{background:#f1f3ee;padding:20px 23px 14px;border-bottom:1px solid var(--line)}
+    .side-title{font-size:1.2rem;font-weight:900;letter-spacing:-.035em;margin:3px 0 4px}
+    .side-caption{font-size:.84rem;color:var(--muted);margin:0}
+    .data-body{padding:17px 17px 20px}
+    .mini-products{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin:0 0 18px}
+    .product{border:1px solid var(--line);border-radius:12px;padding:10px;background:#fafbf8;min-height:82px}
+    .product.one{border-top:4px solid #a18a66}.product.two{border-top:4px solid var(--green)}
+    .product small{color:#718071;font-size:.65rem;font-weight:800;letter-spacing:.09em;text-transform:uppercase;display:block}
+    .product b{display:block;letter-spacing:-.02em;font-size:.96rem;line-height:1.25;margin-top:7px}
+    .table-wrap{overflow-x:auto}
+    table{border-collapse:collapse;width:100%}
+    .numbers{font-size:.78rem;line-height:1.35}
+    th{text-align:left}
+    .numbers th{padding:8px 4px;color:#5b7060;font-size:.71rem}
+    .numbers td{padding:11px 4px;border-top:1px solid var(--line);vertical-align:top}
+    .numbers td:nth-child(1){width:46%;color:#4c5b4e}
+    .numbers td:nth-child(n+2){text-align:right;font-weight:750;font-variant-numeric:tabular-nums;white-space:nowrap}
+    .numbers th:nth-child(n+2){text-align:right}
+    .label-note{color:#67756c;font-size:.75rem;font-weight:500}
+    .assumption{background:#f7f6f2;border-radius:12px;font-size:.81rem;line-height:1.5;color:#57655a;padding:14px 15px;margin-top:17px;border-left:3px solid #b4976e}
+    .assumption strong{color:#354739}
+    .help-reminder{margin:16px 4px 0;color:#65746a;font-size:.8rem;display:flex;align-items:flex-start;gap:9px}
+    .tiny-info{border-radius:50%;border:1px solid #b8c5bb;color:#315540;width:19px;height:19px;min-width:19px;display:inline-flex;justify-content:center;align-items:center;font-size:.67rem;font-weight:900;background:#fff}
+    .module{background:#fff;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;min-width:0;box-shadow:var(--shadow)}
+    .steps-head{padding:22px 25px 18px;border-bottom:1px solid var(--line)}
+    .steps-topline{display:flex;justify-content:space-between;gap:18px;align-items:center;margin-bottom:15px}
+    .steps-topline strong{font-size:.88rem}.save-state{font-size:.78rem;color:#66756b}
+    .progress-track{height:7px;border-radius:99px;overflow:hidden;background:#e6ebe2}
+    #progress-bar{height:100%;width:0;background:var(--green);transition:width .3s}
+    .step-tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin-top:18px}
+    .step-tab{border:1px solid transparent;background:transparent;border-radius:11px;padding:10px 6px;color:#64746b;display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;font-size:.75rem;line-height:1.25;text-align:center}
+    .step-tab .num{width:28px;height:28px;border:1px solid #d3ded3;border-radius:50%;display:grid;place-items:center;font-weight:900;background:#f4f6f2}
+    .step-tab[aria-selected="true"]{background:var(--green-soft);border-color:#cadec9;color:var(--green);font-weight:800}
+    .step-tab[aria-selected="true"] .num{color:white;background:var(--green);border-color:var(--green)}
+    .step-tab.is-complete .num{background:#d9e8d8;color:#1e6337;border-color:#b5d2b2}
+    .step-tab:hover{background:#f5f7f3}
+    .step-panel{padding:29px 32px 30px}
+    .step-panel[hidden]{display:none!important}
+    .step-tag{color:#6b7b70;font-size:.75rem;text-transform:uppercase;letter-spacing:.11em;font-weight:900}
+    h2.step-title{font-size:clamp(1.47rem,2.7vw,2.05rem);margin:4px 0 9px;line-height:1.2;letter-spacing:-.035em}
+    .step-lead{margin:0 0 23px;color:#526356;max-width:720px}
+    .formula-card{background:#f5f7f3;border:1px solid #e0e6dd;border-radius:13px;padding:17px 19px;margin:19px 0 25px}
+    .formula-title{text-transform:uppercase;font-size:.7rem;color:#718176;letter-spacing:.095em;font-weight:900;margin-bottom:12px}
+    .formula-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:7px 0;font-size:.94rem;line-height:2.3}
+    .formula-label{font-weight:750}
+    .frac{display:inline-flex;vertical-align:middle;flex-direction:column;align-items:center;text-align:center;line-height:1.3;max-width:100%}
+    .frac>span:first-child{border-bottom:1.8px solid currentColor;width:100%;padding:0 9px 4px}
+    .frac>span:last-child{padding:4px 9px 0}
+    .dot{font-weight:900}
+    .calc-title{font-size:1rem;letter-spacing:-.018em;margin:0 0 13px}
+    .input-table{border:1px solid var(--line);border-radius:13px;overflow:hidden;width:100%;font-size:.9rem}
+    .input-table thead th{background:#f0f3ef;color:#4b6251;padding:13px 11px;border-bottom:1px solid var(--line);font-size:.8rem}
+    .input-table thead th:nth-child(1){width:34%}
+    .input-table tbody th{text-align:left;font-weight:700;line-height:1.45;color:#3a4a40;padding:16px 13px;border-bottom:1px solid var(--line);background:#fcfdfb}
+    .input-table tbody td{border-bottom:1px solid var(--line);padding:10px 9px;vertical-align:top}
+    .input-table tr:last-child td,.input-table tr:last-child th{border-bottom:none}
+    .unit-note{font-size:.75rem;color:#718075;display:block;font-weight:500;margin-top:3px}
+    .answer-wrap{position:relative}
+    .answer-input{width:100%;min-width:0;border:1.5px solid #cdd9cd;border-radius:8px;padding:9px 30px 9px 10px;background:#fff;font-variant-numeric:tabular-nums;outline-offset:2px;font-size:.92rem;transition:border-color .15s, background .15s}
+    .answer-input::placeholder{font-size:.78rem;color:#94a096}
+    .answer-input:focus{border-color:#568069}
+    .answer-input.is-correct{border-color:#48845b;background:#f2faf1}
+    .answer-input.is-wrong{border-color:#bc6961;background:#fff9f7}
+    .answer-input.is-empty{border-color:#d6ac5f;background:#fffdf6}
+    .answer-wrap:after{content:attr(data-unit);position:absolute;right:11px;top:10px;font-size:.78rem;color:#778778;pointer-events:none}
+    .cell-feedback{font-size:.75rem;color:#ad413e;line-height:1.4;margin:5px 0 0}
+    .cell-feedback.good{color:#287449}
+    .cell-feedback:empty{display:none}
+    .question-block{margin:25px 0 0;padding:22px;background:#fbfaf7;border:1px solid #ebe7dc;border-radius:13px}
+    .question-block h3{font-size:1rem;margin:0 0 6px;letter-spacing:-.015em}
+    .question-block p{margin:0 0 13px;color:#58665a;font-size:.9rem}
+    .choice-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .radio-card{display:flex;align-items:flex-start;gap:11px;border:1.5px solid #d8dfd6;background:#fff;border-radius:10px;padding:13px 14px;cursor:pointer;line-height:1.3}
+    .radio-card input{accent-color:var(--green);width:17px;height:17px;margin:3px 0 0;flex-shrink:0}
+    .radio-card:has(input:checked){border-color:#478461;background:var(--green-soft)}
+    .radio-card span{font-size:.89rem;font-weight:700}
+    .write-label{display:block;font-size:.87rem;font-weight:800;margin:17px 0 7px}
+    textarea{width:100%;resize:vertical;min-height:78px;line-height:1.5;border:1.5px solid #d3dcd1;border-radius:10px;padding:11px 12px;background:#fff;color:var(--ink)}
+    textarea:focus{border-color:#568069}
+    .under-note{font-size:.75rem;margin-top:7px;color:#788579}
+    .panel-footer{display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--line);margin-top:26px;padding-top:20px}
+    .btn{border:1px solid transparent;border-radius:10px;padding:11px 17px;font-weight:800;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-size:.9rem}
+    .btn-primary{background:var(--green);color:white}.btn-primary:hover{background:#1c3d2c}
+    .btn-outline{border-color:#d3ddd1;background:white;color:#395343}.btn-outline:hover{background:#f2f6f0}
+    .btn-plain{background:transparent;color:#586b5d}.btn-plain:hover{background:#f5f7f4}
+    .action-pair{display:flex;gap:8px;flex-wrap:wrap}
+    .feedback{margin-top:15px;padding:14px 16px;border-radius:10px;border:1px solid;line-height:1.5;font-size:.88rem}
+    .feedback[hidden]{display:none}
+    .feedback.success{background:#ebf5e9;color:#205b35;border-color:#b8d8b5}
+    .feedback.warning{background:#fffaef;color:#79551b;border-color:#ead5a9}
+    .feedback.error{background:var(--red-soft);color:#8b3c38;border-color:#e8c1bd}
+    .compare-table{border:1px solid var(--line);border-radius:13px;overflow:hidden;margin:18px 0 20px}
+    .compare-table th,.compare-table td{padding:15px 13px;border-bottom:1px solid var(--line);font-size:.87rem;vertical-align:top}
+    .compare-table th{background:#f3f5f1;color:#556b59}
+    .compare-table tr:last-child td{border-bottom:none}
+    .compare-table td:nth-child(2),.compare-table td:nth-child(3){font-weight:800;font-variant-numeric:tabular-nums}
+    .waiting{color:#9ca69d!important;font-weight:500!important;font-style:italic}
+    .insight{border-left:4px solid #9a7d4a;background:#f8f4eb;padding:17px 18px;border-radius:0 11px 11px 0;margin:18px 0}
+    .insight p{margin:5px 0 0;font-size:.9rem;color:#576451}
+    .scenario{display:flex;gap:15px;padding:18px;border:1px solid #dfe5dc;border-radius:13px;margin:14px 0;background:#fcfdfb}
+    .scenario-num{height:35px;width:35px;flex-shrink:0;background:#e4ece2;border-radius:10px;display:grid;place-items:center;color:#345b3d;font-weight:900}
+    .scenario-main{width:100%}
+    .scenario-main h3{margin:0 0 5px;font-size:1rem;letter-spacing:-.01em}
+    .scenario-main p{margin:0 0 11px;color:#5b6b60;font-size:.88rem}
+    .scenario-choices{display:flex;gap:20px;flex-wrap:wrap;font-size:.88rem;font-weight:700}
+    .scenario-choices label{display:flex;align-items:center;gap:7px;cursor:pointer}
+    .scenario-choices input{accent-color:var(--green);width:17px;height:17px}
+    .summary{display:none;margin-top:23px;background:#edf3e8;border:1px solid #d1dfc9;border-radius:14px;padding:21px}
+    .summary.show{display:block}
+    .summary h3{margin:0 0 8px;letter-spacing:-.018em}
+    .summary p{margin:0 0 8px}.summary p:last-child{margin-bottom:0}
+    .closing-note{text-align:center;font-size:.82rem;color:#7a877a;padding:20px 0 32px}
+    .abbr{display:inline-flex;align-items:baseline;gap:3px;white-space:nowrap}
+    .abbr-symbol{white-space:nowrap}
+    .info-button{display:inline-flex;align-items:center;justify-content:center;vertical-align:super;position:relative;top:-.18em;border:1px solid #93ad9a;background:#fff;color:#3d6b4a;border-radius:50%;width:15px;height:15px;min-width:15px;padding:0;font:bold 10px/1 system-ui;box-shadow:0 1px 1px rgba(0,0,0,.02)}
+    .info-button:hover,.info-button[aria-expanded="true"]{background:#2e5941;color:#fff;border-color:#2e5941}
+    #floating-tip{position:fixed;z-index:1000;background:#1d3024;color:#fff;border:1px solid #4f7458;border-radius:11px;padding:12px 14px;max-width:min(300px,calc(100vw - 24px));box-shadow:0 10px 32px #101b1270;font-size:.81rem;line-height:1.48;pointer-events:none;display:none}
+    #floating-tip b{display:block;color:#e2d2a9;margin-bottom:3px}
+    #floating-tip.visible{display:block}
+    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+    @media(max-width:1050px){.brand-caption{display:none}.brand-divider{display:none}.intro-grid{grid-template-columns:1.3fr 1fr}.workspace{grid-template-columns:minmax(275px,320px) minmax(0,1fr);gap:16px}.step-panel{padding:24px 20px}.input-table thead th:nth-child(1){width:31%}}
+    @media(max-width:800px){.container{padding:0 18px}.header-inner{flex-wrap:wrap}.brand img{width:280px;max-width:65vw}.intro-grid,.workspace{grid-template-columns:minmax(0,1fr)}.intro{padding:30px 0 20px}.brief{padding:21px}.data-panel{position:static}.numbers{font-size:.89rem}.data-body{padding:18px}.numbers td:nth-child(1){width:40%}.numbers td{padding:12px 6px}.step-panel{padding:25px 21px}}
+    @media(max-width:530px){.container{padding:0 12px}.header-inner{padding:14px 0}.brand img{width:205px;max-width:53vw}.top-action{padding:8px;font-size:.72rem}h1{font-size:2.1rem}.lede{font-size:.96rem}.intro{padding:27px 0 21px}.steps-head{padding:18px 13px}.step-tabs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.step-tab{font-size:.77rem;padding:9px 11px;flex-direction:row;justify-content:flex-start;gap:9px;text-align:left}.step-tab .num{width:25px;height:25px;min-width:25px}.step-panel{padding:24px 14px}.input-table{font-size:.75rem}.input-table thead th{font-size:.71rem;padding:10px 6px}.input-table tbody th{padding:13px 8px}.input-table tbody td{padding:8px 5px}.input-table thead th:nth-child(1){width:32%}.answer-input{padding:8px 22px 8px 7px;font-size:.79rem}.answer-wrap:after{right:7px;top:10px;font-size:.72rem}.unit-note{font-size:.67rem}.choice-grid{grid-template-columns:1fr}.formula-card{padding:15px 12px}.formula-row{font-size:.82rem}.compare-table th,.compare-table td{padding:12px 6px;font-size:.75rem}.scenario{padding:15px 12px;gap:10px}.btn{padding:10px 12px;font-size:.81rem}}
+    @media print{
+      @page{size:A4;margin:13mm}
+      :root{--bg:white;--shadow:none}
+      body{background:white;color:#000;font-size:11pt}
+      .sitebar,.head-actions,.steps-head,.panel-footer,.feedback,.info-button,.save-state,.closing-note,.help-reminder,.under-note{display:none!important}
+      .container{max-width:none;padding:0}.header-inner{padding:0 0 12px}.brand img{width:220px;max-height:52px}
+      .intro{padding:12px 0}.intro-grid{display:block}.brief{background:#eee!important;color:#000!important;box-shadow:none;border:1px solid #aaa;padding:12px 16px;margin-top:12px}.brief h2{margin:3px 0}.brief p,.brief .sign{color:#111}.brief .sign{margin-top:9px}
+      .intro-stats{display:none}.workspace{display:block;padding:0}.data-panel{position:static;box-shadow:none;margin-bottom:18px}.data-body{padding:10px 14px}.mini-products{display:none}.numbers{font-size:9pt}.numbers td{padding:6px 5px}.assumption{padding:9px;margin-top:8px}
+      .module{box-shadow:none;border:none;overflow:visible}.step-panel,.step-panel[hidden]{display:block!important;break-before:page;padding:7px 0 0}.step-panel:first-of-type{break-before:auto}.step-lead{margin-bottom:10px}.formula-card,.question-block{break-inside:avoid;background:white;padding:10px;margin:10px 0}.input-table{break-inside:avoid}.input-table tbody th,.input-table tbody td{padding:7px}.question-block{margin-top:12px}.calc-title{margin-top:10px}.radio-card{padding:7px}.scenario,.insight{break-inside:avoid}.summary{display:block!important}.answer-input,textarea{border:1px solid #a8aaa8!important;background:#fff!important}.cell-feedback{display:none!important}
+    }
+    @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important}}
+  </style>
+</head>
+<body>
+  <div class="sitebar"></div>
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAADmCAYAAADFuXw2AABcCUlEQVR4nO3dd1xV5R8H8A8bZIOCC/dEVJw4cAKaaTlzVmpppWWZ5SpbZmmWuW1ow1Izs5y5zYUgIm7EgQoyRBGVIftyf3/44wrIuPecc+859/J5v1694sJ9nvNVuc/hfniGmVqtVoOIiIiIiIiIiEihzOUugIiIiIiIiIiIqDwMsIiIiIiIiIiISNEYYBERERERERERkaIxwCIiIiIiIiIiIkVjgEVERERERERERIrGAIuIiIiIiIiIiBSNARYRERERERERESkaAywiIiIiIiIiIlI0BlhERERERERERKRoDLCIiIiIiIiIiEjRGGAREREREREREZGiMcAiIiIiIiIiIiJFY4BFRERERERERESKZinnxS+ci5Dz8iSjlq3byV0CERERERERERkJM7VarTbUxRhYUVkYaBERERERERFRWfQeYDG0Il0xzCIiIiIiIiKiovQWYGkTXHl5eenj0mQE4uLiKnwOgywiIiIiIiIiAvQQYJUXXDGworKUF2gxyCIiIiIiIiKq3CQNsMoKrxhckbbKCrIYYhERERERERFVXpIEWKUFVwytSKzSwiwGWURERERERESVj7nYDhhekb6U9n3EQwGIiIiIiIiIKh9RM7BKhgkMrkhfSs7G4kwsIiIiIiIiospD8AwshldkSCW/vzgTi4iIiIiIiKjyEBRgMbwiOTDEIiIiIiIiIqqcdA6wGF6RnBhiEREREREREVU+OgVYDK9ICRhiEREREREREVUuWgdYDK9ISRhiEREREREREVUegvbAYnhFSsDvQyIiIiIiIqLKQasAq+jsFoYGpCRFvx85C4uIiIiIiIjINFUYYDEUIGPC71ciIiIiIiIi06PTEkLOviIl4vclERERERERkWkrN8Di0kEyFlxKSERERERERGS6BG3iTkREREREREREZChlBlicxULGjN+/RERERERERKZDqxlYXD5IxoDfp0RERERERESmiUsIiYiIiIiIiIhI0UoNsLh5OxkrbuZOREREREREZHo4A4uIiIiIiIiIiBSNARYRERERERERESkaAywiIiIiIiIiIlK0pwIs7n9Fxo77YBERERERERGZFs7AIiIiIiIiIiIiRbOUuwA5rZ03ssLnjJ2z0QCVEBERERERERFRWSpdgKVN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rw8xCn8JIlRZO1w5OTpi8qTJuBQVhfDwk7hx4wYepqbC0tIS7m5uaNHCB106d0a1atVEXV8Ic3NzPDfgOXTv1h2hJ0Jx5cpV3E66jcxHmTC3MIejoyPqeHnBx8cH7du158btRERGyExdYhfGC+ciNB97eXkZvCBTVtaywJIYXIkXFxen+bhl63blPJOIiIiIiIiIlO6pUwiLvtkvGgKQYTC8Eo/hFREREREREZFpeSrAIiIiIiIiIiIiUhIGWEREREREREREpGgMsIiIiIiIiIiISNFKDbC4DxYZK+5/RURERERERGR6OAOLiIiIiIiIiIgUTasAi7OwyBjw+5SIiIiIiIjINJUZYHH5FRkzfv8SERERERERmQ4uISQiIiIiIiIiIkUrN8DiZu5kLLh5OxEREREREZHpstTlyXFxcfDy8tJXLSYvIixY7hJMEsNVIiIiIiIiItNW4RJCzmYhY8LvVyIiIiIiIiLTo9UeWFxKSErFpYNEREREREREpk/QJu4MsUgJ+H1IREREREREVDloHWCVnN3C8IDkVPL7j7OviIiIiIiIiEyXTjOwGGKREjC8IiIiIiIiIqpcdF5CyBCL5MTwioiIiIiIiKjyEbQHFkMskgPDKyIiIiIiIqLKSVCABTDEIsNieEVERERERERUeZmp1Wq1mA4unIt46nNeXl5iuiTSKC0YZXhFREREREREVLkInoFVqLQwgbOxSAoMr4iIiIiIiIgIkGAGVlGlzcYCOCOLtFdW+MngioiIiIiIiKjykjTAAsoOsQAGWVS28mbtMbwiIiIiIiIiqtwkD7AKlRdkFWKgVXlps8yUwRURERERERERAXoMsAppE2QRFcXgioiIiIiIiIiK0nuAVRTDLCoLQysiIiIiIiIiKotBA6ySGGhVXgysiIiIiIiIiEhbsgZYREREREREREREFTGXuwAiIiIiIiIiIqLyMMAiIiIiIiIiIiJFY4BFRERERERERESKxgCLiIiIiIiIiIgUjQEWEREREREREREpGgMsIiIiIiIiIiJSNAZYRERERERERESkaAywiIiIiIiIiIhI0RhgERERERERERGRojHAIiIiIiIiIiIiRWOARUREREREREREisYAi4iIiIiIiIiIFI0BFhERERERERERKRoDLCIiIiIiIiIiUjQGWEREREREREREpGgMsIiIiIiIiIiISNEYYBERERERERERkaIxwCIiIiIiIiIiIkVjgEVERERERERERIrGAIuIiIiIiIiIiBSNARYRERERERERESkaAywiIiIiIiIiIlI0BlhERERERERERKRoDLCIiIiIiIiIiEjRGGAREREREREREZGiMcAiIiIiIiIiIiJFY4BFRERERERERESKxgCLiIiIiIiIiIgUjQEWEREREREREREpGgMsIiIiIiIiIiJSNAZYRERERERERESkaAywiIiIiIiIiIhI0f4HwyAodfSC5JAAAAAASUVORK5CYII=" alt="KORNWERK – regionale Müsliriegel seit 2018">
+        <div class="brand-divider" aria-hidden="true"></div>
+        <div class="brand-caption">Lernauftrag<br>Produktion &amp; Controlling</div>
+      </div>
+      <div class="head-actions">
+        <button class="top-action" type="button" onclick="window.print()">⎙ Drucken</button>
+        <button class="top-action" type="button" id="reset-btn">↺ Neu beginnen</button>
+      </div>
+    </div>
+  </header>
+  <div class="container">
+    <section class="intro" aria-labelledby="main-title">
+      <div class="intro-grid">
+        <div>
+          <div class="eyebrow">Statische Investitionsrechnung · Praxisfall 01</div>
+          <h1 id="main-title">Zwei Anlagen.<br><em>Eine Entscheidung.</em></h1>
+          <p class="lede">Die <strong>KORNWERK <span class="abbr" data-term="GmbH">GmbH</span></strong> produziert Müsliriegel für regionale Supermärkte. Die Nachfrage steigt – jetzt muss eine neue Verpackungsanlage angeschafft werden.</p>
+          <div class="intro-stats">
+            <span class="stat-pill">4 Arbeitsschritte</span>
+            <span class="stat-pill">2 Investitionsalternativen</span>
+            <span class="stat-pill">2 verschiedene Empfehlungen?</span>
+          </div>
+        </div>
+        <div class="brief">
+          <div class="brief-kicker">Interner Auftrag</div>
+          <h2>Die Geschäftsführung braucht eure Empfehlung.</h2>
+          <p>Prüft zuerst, wann das investierte Geld zurückgeflossen ist. Ermittelt danach, welche Anlage den höheren Jahresgewinn erzielt. Vergleicht die Ergebnisse und entscheidet begründet.</p>
+          <div class="sign">— Geschäftsführung KORNWERK</div>
+        </div>
+      </div>
+    </section>
+
+    <div class="workspace">
+      <aside class="data-panel" aria-label="Angebotsdaten – während der Aufgaben sichtbar">
+        <div class="data-header">
+          <div class="eyebrow">Unterlagen</div>
+          <div class="side-title">Die zwei Angebote</div>
+          <p class="side-caption">Erträge und Betriebskosten beziehen sich auf ein durchschnittliches Jahr.</p>
+        </div>
+        <div class="data-body">
+          <div class="mini-products">
+            <div class="product one"><small>Alternative 1</small><b>PackStart 120</b></div>
+            <div class="product two"><small>Alternative 2</small><b>PackPro 210</b></div>
+          </div>
+          <div class="table-wrap">
+            <table class="numbers">
+              <thead><tr><th scope="col">Angabe</th><th scope="col">Anlage 1</th><th scope="col">Anlage 2</th></tr></thead>
+              <tbody>
+                <tr><td>Anschaffungsauszahlung <span class="abbr" data-term="I0">I₀</span></td><td>120.000 €</td><td>210.000 €</td></tr>
+                <tr><td>Restwert <span class="abbr" data-term="Rn">Rₙ</span></td><td>16.000 €</td><td>42.000 €</td></tr>
+                <tr><td>Nutzungsdauer <span class="abbr" data-term="n">n</span></td><td>8 Jahre</td><td>8 Jahre</td></tr>
+                <tr><td>Kalkulationszinssatz <span class="abbr" data-term="i">i</span></td><td>5 %</td><td>5 %</td></tr>
+                <tr><td>Erträge <span class="abbr" data-term="E">E</span> = Einzahlungen <span class="abbr" data-term="e">e</span></td><td>200.000 €</td><td>285.000 €</td></tr>
+                <tr><td>Betriebskosten = Auszahlungen <span class="abbr" data-term="a">a</span></td><td>160.000 €</td><td>225.000 €</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="assumption"><strong>Vereinfachte Annahme:</strong> Die jährlichen Erträge entsprechen den Einzahlungen; die Betriebskosten entsprechen den Auszahlungen. Weitere Zahlungsströme fallen nicht an.</div>
+          <p class="help-reminder"><span class="tiny-info" aria-hidden="true">i</span> Tippe oder klicke auf die kleinen Infozeichen neben Abkürzungen, um ihre Bedeutung zu sehen.</p>
+        </div>
+      </aside>
+
+      <main class="module">
+        <div class="steps-head">
+          <div class="steps-topline"><strong id="progress-text">Dein Fortschritt · 0 von 4 Schritten geprüft</strong><span class="save-state" id="save-state">Eingaben werden lokal gespeichert</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Bearbeitungsfortschritt" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0" id="progress-track"><div id="progress-bar"></div></div>
+          <nav class="step-tabs" role="tablist" aria-label="Arbeitsschritte">
+            <button class="step-tab" id="tab-0" type="button" role="tab" aria-controls="panel-0" aria-selected="true" data-nav="0"><span class="num">1</span><span>Amortisation</span></button>
+            <button class="step-tab" id="tab-1" type="button" role="tab" aria-controls="panel-1" aria-selected="false" tabindex="-1" data-nav="1"><span class="num">2</span><span>Gewinnvergleich</span></button>
+            <button class="step-tab" id="tab-2" type="button" role="tab" aria-controls="panel-2" aria-selected="false" tabindex="-1" data-nav="2"><span class="num">3</span><span>Gegenüberstellung</span></button>
+            <button class="step-tab" id="tab-3" type="button" role="tab" aria-controls="panel-3" aria-selected="false" tabindex="-1" data-nav="3"><span class="num">4</span><span>Entscheidung</span></button>
+          </nav>
+        </div>
+
+        <section class="step-panel" id="panel-0" role="tabpanel" aria-labelledby="tab-0">
+          <div class="step-tag">Schritt 1 von 4</div>
+          <h2 class="step-title">Amortisationsrechnung</h2>
+          <p class="step-lead">Wie lange dauert es, bis KORNWERK die Anschaffungsauszahlung durch die jährlichen Mittelrückflüsse wieder erwirtschaftet hat?</p>
+          <div class="formula-card">
+            <div class="formula-title">Formelsammlung</div>
+            <div class="formula-row"><span class="formula-label">Mittelrückfluss</span> = <span class="abbr" data-term="e">e</span> − <span class="abbr" data-term="a">a</span></div>
+            <div class="formula-row"><span class="formula-label">Amortisationsdauer</span> = <span class="frac"><span><span class="abbr" data-term="I0">I₀</span></span><span><span class="abbr" data-term="durchschn.">durchschn.</span> Mittelrückfluss</span></span></div>
+          </div>
+          <h3 class="calc-title">1a · Berechne den Mittelrückfluss und die Amortisationsdauer beider Anlagen.</h3>
+          <table class="input-table">
+            <thead><tr><th scope="col">Berechnung</th><th scope="col">Alternative 1<br>PackStart 120</th><th scope="col">Alternative 2<br>PackPro 210</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Mittelrückfluss <span class="unit-note">€ pro Jahr</span></th><td><div class="answer-wrap" data-unit="€"><input id="mr1" class="answer-input" data-step="0" inputmode="decimal" autocomplete="off" aria-label="Mittelrückfluss Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-mr1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="mr2" class="answer-input" data-step="0" inputmode="decimal" autocomplete="off" aria-label="Mittelrückfluss Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-mr2" aria-live="polite"></p></div></td></tr>
+              <tr><th scope="row">Amortisationsdauer <span class="unit-note">in Jahren</span></th><td><div class="answer-wrap" data-unit=""><input id="dur1" class="answer-input" data-step="0" inputmode="decimal" autocomplete="off" aria-label="Amortisationsdauer Alternative 1 in Jahren" placeholder="Jahre"><p class="cell-feedback" id="fb-dur1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit=""><input id="dur2" class="answer-input" data-step="0" inputmode="decimal" autocomplete="off" aria-label="Amortisationsdauer Alternative 2 in Jahren" placeholder="Jahre"><p class="cell-feedback" id="fb-dur2" aria-live="polite"></p></div></td></tr>
+            </tbody>
+          </table>
+          <div class="question-block">
+            <h3>1b · Welche Anlage ist nach der Amortisationsrechnung vorteilhafter?</h3>
+            <p>Wähle die Anlage mit der kürzeren Amortisationsdauer.</p>
+            <div class="choice-grid">
+              <label class="radio-card"><input type="radio" name="choice-amort" value="1" data-step="0"><span>Alternative 1<br>PackStart 120</span></label>
+              <label class="radio-card"><input type="radio" name="choice-amort" value="2" data-step="0"><span>Alternative 2<br>PackPro 210</span></label>
+            </div>
+            <label class="write-label" for="why-amort">Begründe deine Entscheidung mit den berechneten Werten.</label>
+            <textarea id="why-amort" data-step="0" rows="3" placeholder="Ich würde diese Anlage wählen, weil …"></textarea>
+            <div class="under-note">Deine Begründung wird gespeichert, aber nicht automatisch inhaltlich bewertet.</div>
+          </div>
+          <div class="feedback" id="feedback-0" aria-live="polite" hidden></div>
+          <div class="panel-footer"><button type="button" class="btn btn-outline" id="check-0">Ergebnisse prüfen</button><button type="button" class="btn btn-primary" data-next="1">Weiter zum Gewinnvergleich →</button></div>
+        </section>
+
+        <section class="step-panel" id="panel-1" role="tabpanel" aria-labelledby="tab-1" hidden>
+          <div class="step-tag">Schritt 2 von 4</div>
+          <h2 class="step-title">Gewinnvergleichsrechnung</h2>
+          <p class="step-lead">Welche Anlage erzielt den höheren durchschnittlichen Gewinn pro Jahr? Berücksichtige neben den Betriebskosten auch die kalkulatorischen Abschreibungen und Zinsen.</p>
+          <div class="formula-card">
+            <div class="formula-title">Formelsammlung</div>
+            <div class="formula-row"><span class="formula-label">Gewinn</span> = <span class="abbr" data-term="E">E</span> − <span class="abbr" data-term="K">K</span></div>
+            <div class="formula-row"><span class="abbr" data-term="K">K</span> = Betriebskosten + <span class="abbr" data-term="kalk.">kalk.</span> Abschreibungen + <span class="abbr" data-term="kalk.">kalk.</span> Zinsen</div>
+            <div class="formula-row"><span class="abbr" data-term="kalk.">kalk.</span> Abschreibungen = <span class="frac"><span><span class="abbr" data-term="I0">I₀</span> − <span class="abbr" data-term="Rn">Rₙ</span></span><span><span class="abbr" data-term="n">n</span></span></span></div>
+            <div class="formula-row"><span class="abbr" data-term="durchschn.">durchschn.</span> gebundenes Kapital = <span class="frac"><span><span class="abbr" data-term="I0">I₀</span> + <span class="abbr" data-term="Rn">Rₙ</span></span><span>2</span></span></div>
+            <div class="formula-row"><span class="abbr" data-term="kalk.">kalk.</span> Zinsen = <span class="abbr" data-term="i">i</span> · <span class="abbr" data-term="durchschn.">durchschn.</span> gebundenes Kapital</div>
+          </div>
+          <h3 class="calc-title">2a · Berechne die fünf Rechengrößen für beide Anlagen.</h3>
+          <table class="input-table">
+            <thead><tr><th scope="col">Rechengröße</th><th scope="col">Alternative 1<br>PackStart 120</th><th scope="col">Alternative 2<br>PackPro 210</th></tr></thead>
+            <tbody>
+              <tr><th scope="row"><span class="abbr" data-term="kalk.">Kalk.</span> Abschreibungen<span class="unit-note">€ pro Jahr</span></th><td><div class="answer-wrap" data-unit="€"><input id="dep1" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Kalkulatorische Abschreibungen Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-dep1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="dep2" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Kalkulatorische Abschreibungen Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-dep2" aria-live="polite"></p></div></td></tr>
+              <tr><th scope="row"><span class="abbr" data-term="durchschn.">Durchschn.</span> gebundenes Kapital<span class="unit-note">€</span></th><td><div class="answer-wrap" data-unit="€"><input id="kap1" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Durchschnittlich gebundenes Kapital Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-kap1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="kap2" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Durchschnittlich gebundenes Kapital Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-kap2" aria-live="polite"></p></div></td></tr>
+              <tr><th scope="row"><span class="abbr" data-term="kalk.">Kalk.</span> Zinsen<span class="unit-note">€ pro Jahr</span></th><td><div class="answer-wrap" data-unit="€"><input id="zins1" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Kalkulatorische Zinsen Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-zins1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="zins2" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Kalkulatorische Zinsen Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-zins2" aria-live="polite"></p></div></td></tr>
+              <tr><th scope="row">Gesamtkosten <span class="abbr" data-term="K">K</span><span class="unit-note">€ pro Jahr</span></th><td><div class="answer-wrap" data-unit="€"><input id="k1" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Gesamtkosten Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-k1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="k2" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Gesamtkosten Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-k2" aria-live="polite"></p></div></td></tr>
+              <tr><th scope="row">Gewinn (<span class="abbr" data-term="E">E</span> − <span class="abbr" data-term="K">K</span>)<span class="unit-note">€ pro Jahr</span></th><td><div class="answer-wrap" data-unit="€"><input id="gew1" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Jährlicher Gewinn Alternative 1 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-gew1" aria-live="polite"></p></div></td><td><div class="answer-wrap" data-unit="€"><input id="gew2" class="answer-input" data-step="1" inputmode="decimal" autocomplete="off" aria-label="Jährlicher Gewinn Alternative 2 in Euro" placeholder="Betrag"><p class="cell-feedback" id="fb-gew2" aria-live="polite"></p></div></td></tr>
+            </tbody>
+          </table>
+          <div class="question-block">
+            <h3>2b · Welche Anlage ist nach der Gewinnvergleichsrechnung vorteilhafter?</h3>
+            <p>Wähle die Anlage mit dem höheren durchschnittlichen Jahresgewinn.</p>
+            <div class="choice-grid">
+              <label class="radio-card"><input type="radio" name="choice-profit" value="1" data-step="1"><span>Alternative 1<br>PackStart 120</span></label>
+              <label class="radio-card"><input type="radio" name="choice-profit" value="2" data-step="1"><span>Alternative 2<br>PackPro 210</span></label>
+            </div>
+            <label class="write-label" for="why-profit">Begründe deine Entscheidung mit den berechneten Werten.</label>
+            <textarea id="why-profit" data-step="1" rows="3" placeholder="Nach diesem Verfahren ist die Anlage … besser, weil …"></textarea>
+            <div class="under-note">Deine Begründung wird gespeichert, aber nicht automatisch inhaltlich bewertet.</div>
+          </div>
+          <div class="feedback" id="feedback-1" aria-live="polite" hidden></div>
+          <div class="panel-footer"><button type="button" class="btn btn-plain" data-next="0">← Zurück</button><div class="action-pair"><button type="button" class="btn btn-outline" id="check-1">Ergebnisse prüfen</button><button type="button" class="btn btn-primary" data-next="2">Ergebnisse vergleichen →</button></div></div>
+        </section>
+
+        <section class="step-panel" id="panel-2" role="tabpanel" aria-labelledby="tab-2" hidden>
+          <div class="step-tag">Schritt 3 von 4</div>
+          <h2 class="step-title">Ergebnisse gegenüberstellen</h2>
+          <p class="step-lead">Übertrage deine berechneten Werte gedanklich in die Entscheidungsvorlage: Die Tabelle übernimmt automatisch deine bisherigen Eingaben. Fehlende Werte werden als offen angezeigt.</p>
+          <table class="compare-table">
+            <thead><tr><th scope="col">Kriterium</th><th scope="col">Alternative 1</th><th scope="col">Alternative 2</th></tr></thead>
+            <tbody>
+              <tr><td>Amortisationsdauer</td><td id="summary-dur1" class="waiting">Noch offen</td><td id="summary-dur2" class="waiting">Noch offen</td></tr>
+              <tr><td>Gewinn pro Jahr</td><td id="summary-gew1" class="waiting">Noch offen</td><td id="summary-gew2" class="waiting">Noch offen</td></tr>
+            </tbody>
+          </table>
+          <div class="question-block">
+            <h3>3a · Führen die beiden Verfahren zur gleichen Empfehlung?</h3>
+            <p>Beziehe dich auf die beiden vorangegangenen Rechnungen.</p>
+            <div class="choice-grid">
+              <label class="radio-card"><input type="radio" name="choice-agree" value="gleich" data-step="2"><span>Ja, beide bevorzugen dieselbe Anlage.</span></label>
+              <label class="radio-card"><input type="radio" name="choice-agree" value="verschieden" data-step="2"><span>Nein, die Verfahren bevorzugen unterschiedliche Anlagen.</span></label>
+            </div>
+            <label class="write-label" for="why-compare">3b · Erkläre, warum die beiden Rechnungen zu unterschiedlichen Empfehlungen führen können.</label>
+            <textarea id="why-compare" data-step="2" rows="4" placeholder="Die Amortisationsrechnung untersucht …, während die Gewinnvergleichsrechnung …"></textarea>
+          </div>
+          <div class="feedback" id="feedback-2" aria-live="polite" hidden></div>
+          <div class="panel-footer"><button type="button" class="btn btn-plain" data-next="1">← Zurück</button><div class="action-pair"><button type="button" class="btn btn-outline" id="check-2">Vergleich prüfen</button><button type="button" class="btn btn-primary" data-next="3">Zur Entscheidung →</button></div></div>
+        </section>
+
+        <section class="step-panel" id="panel-3" role="tabpanel" aria-labelledby="tab-3" hidden>
+          <div class="step-tag">Schritt 4 von 4</div>
+          <h2 class="step-title">Entscheidung der Geschäftsführung</h2>
+          <p class="step-lead">Eine Investition kann nach dem einen Verfahren besser und nach dem anderen schlechter sein. Entscheidend ist, welches Ziel das Unternehmen verfolgt.</p>
+          <div class="scenario">
+            <div class="scenario-num" aria-hidden="true">A</div>
+            <div class="scenario-main">
+              <h3>Die Liquidität hat Vorrang</h3>
+              <p>„Wir möchten das investierte Geld möglichst schnell wieder zurückerhalten.“ Welche Anlage passt besser?</p>
+              <div class="scenario-choices"><label><input type="radio" name="case-liquidity" value="1" data-step="3"> Alternative 1</label><label><input type="radio" name="case-liquidity" value="2" data-step="3"> Alternative 2</label></div>
+            </div>
+          </div>
+          <div class="scenario">
+            <div class="scenario-num" aria-hidden="true">B</div>
+            <div class="scenario-main">
+              <h3>Der jährliche Gewinn hat Vorrang</h3>
+              <p>„Wir möchten im Durchschnitt jedes Jahr möglichst viel Gewinn erwirtschaften.“ Welche Anlage passt besser?</p>
+              <div class="scenario-choices"><label><input type="radio" name="case-profit" value="1" data-step="3"> Alternative 1</label><label><input type="radio" name="case-profit" value="2" data-step="3"> Alternative 2</label></div>
+            </div>
+          </div>
+          <div class="question-block">
+            <h3>4 · Formuliere deine eigene Investitionsempfehlung.</h3>
+            <p>Gib an, <strong>welche Anlage</strong> du empfehlen würdest und <strong>unter welcher Zielsetzung</strong> diese Entscheidung sinnvoll ist.</p>
+            <label class="write-label" for="own-decision">Deine Empfehlung an die Geschäftsführung</label>
+            <textarea id="own-decision" data-step="3" rows="5" placeholder="Ich empfehle der KORNWERK-Geschäftsführung …, wenn … . Das liegt daran, dass …"></textarea>
+            <div class="under-note">Es gibt mehrere begründbare Empfehlungen. Die Textantwort wird nicht automatisch bewertet.</div>
+          </div>
+          <div class="feedback" id="feedback-3" aria-live="polite" hidden></div>
+          <div class="summary" id="final-summary" aria-live="polite">
+            <h3>Merke: Es kommt auf das Ziel an.</h3>
+            <p><strong>Amortisationsrechnung:</strong> Vorteilhaft ist die Anlage, bei der das eingesetzte Geld schneller zurückfließt.</p>
+            <p><strong>Gewinnvergleichsrechnung:</strong> Vorteilhaft ist die Anlage mit dem höheren durchschnittlichen Jahresgewinn.</p>
+            <p><strong>Fazit:</strong> Die Verfahren können zu unterschiedlichen Empfehlungen führen. Unternehmen müssen daher abwägen, ob die schnelle Rückgewinnung des eingesetzten Geldes oder ein höherer durchschnittlicher Gewinn wichtiger ist.</p>
+          </div>
+          <div class="panel-footer"><button type="button" class="btn btn-plain" data-next="2">← Zurück</button><div class="action-pair"><button type="button" class="btn btn-outline" id="check-3">Entscheidung prüfen</button><button type="button" class="btn btn-primary" onclick="window.print()">Ergebnisse drucken ⎙</button></div></div>
+        </section>
+      </main>
+    </div>
+    <div class="closing-note">KORNWERK ist ein erfundenes Unternehmen. Diese Lernaufgabe verwendet vereinfachte jährliche Durchschnittswerte. Deine Eingaben werden – sofern vom Browser unterstützt – nur auf diesem Gerät gespeichert.</div>
+  </div>
+  <div id="floating-tip" role="tooltip"></div>
+  <script>
+  'use strict';
+  (function(){
+    const definitions = {
+      'GmbH':['GmbH','Gesellschaft mit beschränkter Haftung: eine Rechtsform von Unternehmen.'],
+      'I0':['I₀ – Anschaffungsauszahlung','Der Geldbetrag, den KORNWERK zu Beginn für die neue Anlage bezahlt. Die Null steht für den Anschaffungszeitpunkt.'],
+      'Rn':['Rₙ – Restwert','Der geschätzte Wert der Anlage am Ende der Nutzungsdauer. Der Index n verweist auf das Ende des Nutzungszeitraums.'],
+      'n':['n – Nutzungsdauer','Die Anzahl der Jahre, in denen die Anlage voraussichtlich genutzt wird.'],
+      'i':['i – Kalkulationszinssatz','Der Zinssatz für die kalkulatorischen Zinsen. Hier 5 %; für die Rechnung wird 0,05 eingesetzt.'],
+      'E':['E – Erträge','Die jährlichen Erträge des Unternehmens aus dem Einsatz der Anlage. In dieser vereinfachten Aufgabe entsprechen sie den Einzahlungen.'],
+      'e':['e – Einzahlungen','Das Geld, das dem Unternehmen im Durchschnitt pro Jahr zufließt.'],
+      'a':['a – Auszahlungen','Das Geld, das dem Unternehmen im Durchschnitt pro Jahr abfließt. In diesem Fall entsprechen die Auszahlungen den Betriebskosten.'],
+      'K':['K – Gesamtkosten','Die jährlichen Betriebskosten plus kalkulatorische Abschreibungen plus kalkulatorische Zinsen.'],
+      'kalk.':['kalk. – kalkulatorisch','Rechnerisch angesetzt, zum Beispiel für die Wertminderung einer Anlage oder die Verzinsung des durchschnittlich gebundenen Kapitals.'],
+      'durchschn.':['durchschn. – durchschnittlich','Ein Mittelwert über den betrachteten Zeitraum: hier entweder pro Jahr oder als durchschnittlich gebundenes Kapital.']
+    };
+    const tip=document.getElementById('floating-tip');let activeTip=null,pinned=false;
+    function hideTip(){tip.classList.remove('visible');if(activeTip)activeTip.setAttribute('aria-expanded','false');activeTip=null;pinned=false;}
+    function showTip(btn,lock){const id=btn.dataset.tipKey;const def=definitions[id];if(!def)return;
+      if(activeTip && activeTip!==btn)activeTip.setAttribute('aria-expanded','false');activeTip=btn;pinned=!!lock;
+      tip.replaceChildren();const b=document.createElement('b');b.textContent=def[0];const p=document.createElement('span');p.textContent=def[1];tip.append(b,p);tip.classList.add('visible');
+      btn.setAttribute('aria-expanded',String(pinned));
+      let rect=btn.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;
+      let left=Math.min(Math.max(12,rect.left+rect.width/2-w/2),window.innerWidth-w-12);
+      let top=rect.bottom+11;if(top+h>window.innerHeight-12)top=Math.max(12,rect.top-h-11);
+      tip.style.left=left+'px';tip.style.top=top+'px';
+    }
+    document.querySelectorAll('[data-term]').forEach(function(el){
+      const key=el.getAttribute('data-term');if(!definitions[key])return;
+      const button=document.createElement('button');button.type='button';button.className='info-button';button.textContent='i';
+      button.dataset.tipKey=key;button.setAttribute('aria-label','Erklärung: '+definitions[key][0]);button.setAttribute('aria-expanded','false');
+      el.appendChild(button);
+      button.addEventListener('mouseenter',()=>{if(!pinned)showTip(button,false)});
+      button.addEventListener('mouseleave',()=>{if(!pinned && document.activeElement!==button)hideTip()});
+      button.addEventListener('focus',()=>{if(!pinned)showTip(button,false)});
+      button.addEventListener('blur',()=>{if(!pinned)hideTip()});
+      button.addEventListener('click',ev=>{ev.preventDefault();ev.stopPropagation();if(pinned&&activeTip===button)hideTip();else showTip(button,true)});
+    });
+    document.addEventListener('click',e=>{if(pinned && !e.target.closest('.info-button'))hideTip()});
+    document.addEventListener('keydown',e=>{if(e.key==='Escape')hideTip()});
+    window.addEventListener('scroll',()=>{if(activeTip)hideTip()},true);
+    window.addEventListener('resize',hideTip);
+
+    const storageKey='kornwerk-investitionsentscheidung-v1';
+    const answers={mr1:40000,mr2:60000,dur1:3,dur2:3.5,dep1:13000,dep2:21000,kap1:68000,kap2:126000,zins1:3400,zins2:6300,k1:176400,k2:252300,gew1:23600,gew2:32700};
+    const hints={
+      mr1:'Ziehe die jährlichen Auszahlungen von den Einzahlungen ab.',mr2:'Ziehe die jährlichen Auszahlungen von den Einzahlungen ab.',
+      dur1:'Teile die Anschaffungsauszahlung durch den jährlichen Mittelrückfluss.',dur2:'Teile die Anschaffungsauszahlung durch den jährlichen Mittelrückfluss.',
+      dep1:'Anschaffungsauszahlung minus Restwert, dann durch die Nutzungsdauer teilen.',dep2:'Anschaffungsauszahlung minus Restwert, dann durch die Nutzungsdauer teilen.',
+      kap1:'Anschaffungsauszahlung und Restwert addieren, dann durch zwei teilen.',kap2:'Anschaffungsauszahlung und Restwert addieren, dann durch zwei teilen.',
+      zins1:'Verwende den Zinssatz 0,05 und das durchschnittlich gebundene Kapital.',zins2:'Verwende den Zinssatz 0,05 und das durchschnittlich gebundene Kapital.',
+      k1:'Betriebskosten, kalkulatorische Abschreibungen und kalkulatorische Zinsen addieren.',k2:'Betriebskosten, kalkulatorische Abschreibungen und kalkulatorische Zinsen addieren.',
+      gew1:'Jährliche Erträge minus jährliche Gesamtkosten rechnen.',gew2:'Jährliche Erträge minus jährliche Gesamtkosten rechnen.'
+    };
+    const fieldsByStep=[['mr1','mr2','dur1','dur2'],['dep1','dep2','kap1','kap2','zins1','zins2','k1','k2','gew1','gew2'],[],[]];
+    let currentStep=0,completed=[false,false,false,false];
+
+    function numeric(text){
+      let s=String(text||'').trim().replace(/[\s\u00a0€]/g,'');
+      if(!s)return null;
+      s=s.replace(/(?:Jahre?|proJahr)$/i,'').replace(/'/g,'');
+      if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');
+      else if(/^[-+]?\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+      if(!/^[-+]?(?:\d+(?:\.\d*)?|\.\d+)$/.test(s))return null;
+      const n=Number(s);return Number.isFinite(n)?n:null;
+    }
+    function isRight(id){const n=numeric(document.getElementById(id).value);return n!==null&&Math.abs(n-answers[id])<=(id.startsWith('dur')?0.02:0.05);}
+    function getChoice(name){const found=document.querySelector('input[name="'+name+'"]:checked');return found?found.value:null;}
+    function textReady(id){return document.getElementById(id).value.trim().length>=18;}
+    function setFieldState(id){const inp=document.getElementById(id);const fb=document.getElementById('fb-'+id);const n=numeric(inp.value);
+      const good=isRight(id);inp.classList.toggle('is-correct',good);inp.classList.toggle('is-wrong',!good&&n!==null);inp.classList.toggle('is-empty',n===null);
+      inp.setAttribute('aria-invalid',String(n!==null&&!good));
+      fb.classList.toggle('good',good);fb.textContent=good?'✓ Richtig':(n===null?'Bitte einen Zahlenwert eintragen.':hints[id]);return good;
+    }
+    function feedback(step,type,msg){const el=document.getElementById('feedback-'+step);el.hidden=false;el.className='feedback '+type;el.textContent=msg;}
+    function clearFeedback(step){const fb=document.getElementById('feedback-'+step);fb.hidden=true;fb.textContent='';}
+    function setCompleted(step,val){completed[step]=!!val;updateProgress();save();}
+    function updateProgress(){const n=completed.filter(Boolean).length;document.getElementById('progress-text').textContent='Dein Fortschritt · '+n+' von 4 Schritten geprüft';document.getElementById('progress-bar').style.width=(25*n)+'%';document.getElementById('progress-track').setAttribute('aria-valuenow',String(n));
+      document.querySelectorAll('.step-tab').forEach((tab,i)=>{tab.classList.toggle('is-complete',completed[i]);tab.querySelector('.num').textContent=completed[i]?'✓':String(i+1)});
+    }
+    function checkNumbers(step,choiceName,correctChoice,reason){
+      let correct=0;for(const id of fieldsByStep[step])if(setFieldState(id))correct++;
+      const choice=getChoice(choiceName);const reasonOk=textReady(reason);
+      const all=correct===fieldsByStep[step].length&&choice===correctChoice&&reasonOk;
+      setCompleted(step,all);
+      if(all){feedback(step,'success','Sehr gut! Alle Rechenergebnisse und deine Auswahl sind richtig. Deine schriftliche Begründung ist erfasst; prüfe selbst, ob du dich auf die berechneten Werte beziehst.');}
+      else {let parts=[correct+' von '+fieldsByStep[step].length+' Rechenergebnissen stimmen.'];
+        if(!choice)parts.push('Wähle noch eine Alternative.');else if(choice!==correctChoice)parts.push('Prüfe, ob hier der kleinere beziehungsweise größere Wert vorteilhaft ist.');
+        if(!reasonOk)parts.push('Ergänze eine kurze Begründung mit den Ergebnissen.');
+        feedback(step,'warning',parts.join(' '));
+      }
+    }
+    document.getElementById('check-0').addEventListener('click',()=>checkNumbers(0,'choice-amort','1','why-amort'));
+    document.getElementById('check-1').addEventListener('click',()=>checkNumbers(1,'choice-profit','2','why-profit'));
+    document.getElementById('check-2').addEventListener('click',()=>{
+      const ok=getChoice('choice-agree')==='verschieden',reasonOk=textReady('why-compare');setCompleted(2,ok&&reasonOk);
+      if(ok&&reasonOk)feedback(2,'success','Richtig: Die beiden Verfahren führen zu unterschiedlichen Empfehlungen. Deine Erläuterung ist erfasst; prüfe, ob du Rückflussdauer und Jahresgewinn deutlich unterscheidest.');
+      else feedback(2,'warning',!getChoice('choice-agree')?'Wähle aus, ob die beiden Verfahren dieselbe Anlage bevorzugen.':(!ok?'Sieh dir die jeweils vorteilhafte Anlage aus Schritt 1 und Schritt 2 nochmals an.':'Schreibe noch eine kurze Erklärung zu den unterschiedlichen Zielgrößen.'));
+    });
+    document.getElementById('check-3').addEventListener('click',()=>{
+      const l=getChoice('case-liquidity'),p=getChoice('case-profit'),t=textReady('own-decision');const ok=l==='1'&&p==='2';setCompleted(3,ok&&t);
+      if(ok&&t){feedback(3,'success','Deine beiden zielbezogenen Entscheidungen sind richtig. Deine eigene Empfehlung ist festgehalten. Vergleiche sie mit dem Merksatz.');document.getElementById('final-summary').classList.add('show');}
+      else feedback(3,'warning',(!l||!p?'Beantworte beide Fragen zur Zielsetzung. ':'')+(!ok&&l&&p?'Überlege: Welche Anlage zahlt sich schneller zurück und welche erzielt mehr Gewinn? ':'')+(!t?'Formuliere deine eigene Empfehlung mit einer passenden Bedingung.':''));
+    });
+
+    function updateComparison(){
+      for(const id of ['dur1','dur2','gew1','gew2']){
+        const target=document.getElementById('summary-'+id);const raw=numeric(document.getElementById(id).value);
+        if(raw===null){target.textContent='Noch offen';target.classList.add('waiting')}
+        else {target.textContent=id.startsWith('dur')?(new Intl.NumberFormat('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2}).format(raw)+' Jahre'):(new Intl.NumberFormat('de-DE',{maximumFractionDigits:2}).format(raw)+' €');target.classList.remove('waiting')}
+      }
+    }
+    function goToStep(index,shouldScroll=true){if(index<0||index>3)return;
+      currentStep=index;document.querySelectorAll('.step-panel').forEach((section,i)=>section.hidden=i!==index);
+      document.querySelectorAll('.step-tab').forEach((tab,i)=>{tab.setAttribute('aria-selected',String(i===index));tab.tabIndex=i===index?0:-1});
+      updateComparison();save();
+      const panel=document.getElementById('panel-'+index);if(shouldScroll){if(window.matchMedia('(max-width:800px)').matches){document.querySelector('.module').scrollIntoView({behavior:'smooth',block:'start'})}else{panel.scrollIntoView({behavior:'smooth',block:'nearest'})}}
+    }
+    document.querySelectorAll('[data-nav]').forEach(tab=>tab.addEventListener('click',()=>goToStep(Number(tab.dataset.nav))));
+    document.querySelectorAll('[data-next]').forEach(button=>button.addEventListener('click',()=>goToStep(Number(button.dataset.next))));
+    document.querySelector('.step-tabs').addEventListener('keydown',e=>{
+      if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();
+      const next=e.key==='Home'?0:e.key==='End'?3:(currentStep+(e.key==='ArrowRight'?1:3))%4;
+      goToStep(next);document.getElementById('tab-'+next).focus();
+    });
+    function collect(){const inputs={};document.querySelectorAll('input.answer-input,textarea').forEach(el=>inputs[el.id]=el.value);
+      const selected={};document.querySelectorAll('input[type="radio"]:checked').forEach(el=>selected[el.name]=el.value);
+      return {inputs,selected,completed,currentStep};
+    }
+    function save(){try{localStorage.setItem(storageKey,JSON.stringify(collect()));document.getElementById('save-state').textContent='Lokal gespeichert ✓'}catch(e){document.getElementById('save-state').textContent='Speicherung im Browser nicht verfügbar'}}
+    function load(){try{const state=JSON.parse(localStorage.getItem(storageKey)||'null');if(!state)return;
+      Object.entries(state.inputs||{}).forEach(([id,v])=>{const el=document.getElementById(id);if(el&&(el.matches('textarea')||el.matches('input.answer-input')))el.value=v});
+      Object.entries(state.selected||{}).forEach(([name,val])=>{const el=[...document.querySelectorAll('input[type="radio"]')].find(x=>x.name===name&&x.value===val);if(el)el.checked=true});
+      completed=Array.isArray(state.completed)&&state.completed.length===4?state.completed.map(Boolean):completed;
+      currentStep=Number.isInteger(state.currentStep)&&state.currentStep>=0&&state.currentStep<=3?state.currentStep:0;
+      if(completed[3])document.getElementById('final-summary').classList.add('show');
+      updateProgress();
+    }catch(e){/* Browser ohne lokalen Speicher; Aufgaben bleiben nutzbar. */}}
+    document.querySelectorAll('input.answer-input,textarea,input[type="radio"]').forEach(el=>{
+      el.addEventListener(el.type==='radio'?'change':'input',()=>{
+        const step=Number(el.dataset.step);if(completed[step])setCompleted(step,false);
+        if(step===3)document.getElementById('final-summary').classList.remove('show');
+        if(el.classList.contains('answer-input')){el.classList.remove('is-correct','is-wrong','is-empty');el.removeAttribute('aria-invalid');const fb=document.getElementById('fb-'+el.id);fb.textContent='';}
+        clearFeedback(step);updateComparison();save();
+      });
+    });
+    document.getElementById('reset-btn').addEventListener('click',()=>{
+      if(!window.confirm('Alle bisherigen Eingaben und den gespeicherten Fortschritt löschen?'))return;
+      document.querySelectorAll('input.answer-input,textarea').forEach(el=>{el.value='';el.classList.remove('is-correct','is-wrong','is-empty');el.removeAttribute('aria-invalid')});
+      document.querySelectorAll('input[type="radio"]').forEach(el=>el.checked=false);
+      document.querySelectorAll('.cell-feedback').forEach(el=>el.textContent='');for(let i=0;i<4;i++)clearFeedback(i);
+      document.getElementById('final-summary').classList.remove('show');completed=[false,false,false,false];
+      try{localStorage.removeItem(storageKey)}catch(e){}updateProgress();goToStep(0);
+    });
+    load();updateComparison();goToStep(currentStep,false);
+  })();
+  </script>
+</body>
+</html>

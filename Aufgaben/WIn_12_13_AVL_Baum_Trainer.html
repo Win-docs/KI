@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f8fc">
+  <title>AVL-Baum-Trainer · Einfügen, Balancefaktoren & Rotationen</title>
+  <style>
+    :root{--ink:#17233b;--muted:#63718a;--line:#dce5ef;--paper:#fff;--bg:#f5f7fc;--blue:#355bca;--blue-soft:#eaf0ff;--mint:#177f59;--mint-soft:#e8f7ef;--rose:#c34443;--rose-soft:#fff0ee;--amber:#a4640d;--amber-soft:#fff5de;--shadow:0 16px 48px rgba(31,48,89,.07)}
+    *{box-sizing:border-box}
+    body{margin:0;font:16px/1.5 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:radial-gradient(circle at 8% 0%,#e8efff,transparent 34%),radial-gradient(circle at 98% 80%,#e8f6f3,transparent 35%),var(--bg);min-height:100vh}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #9ab0fa;outline-offset:3px}
+    .shell{max-width:1450px;margin:0 auto;padding:36px clamp(15px,3.7vw,52px) 60px}
+    .eyebrow{text-transform:uppercase;letter-spacing:.15em;font-weight:800;font-size:.76rem;color:var(--blue);margin:0 0 9px}
+    .topline{display:flex;gap:20px;align-items:flex-start;justify-content:space-between;margin-bottom:26px}
+    h1{font-size:clamp(2.15rem,4.2vw,3.3rem);line-height:1.14;letter-spacing:-.055em;margin:0 0 10px}
+    .subhead{color:var(--muted);font-size:1.025rem;max-width:760px;margin:0}
+    .tag{flex:none;display:inline-flex;align-items:center;gap:7px;color:#425474;background:#fff;border:1px solid var(--line);border-radius:999px;padding:9px 13px;font-size:.84rem;font-weight:700;box-shadow:0 5px 12px rgba(20,46,100,.035)}
+    .tag-dot{width:8px;height:8px;border-radius:50%;background:#4fb69a}
+    .panel{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow)}
+    .setup{max-width:800px;padding:clamp(24px,4vw,42px)}
+    h2,h3,p{margin-top:0}
+    .setup h2{font-size:1.5rem;letter-spacing:-.025em;margin-bottom:8px}
+    .muted{color:var(--muted)}
+    .setup label{display:block;font-size:.91rem;font-weight:750;margin:25px 0 8px}
+    .sequence-input{border:1.5px solid #bfcadd;border-radius:13px;padding:15px 17px;width:100%;background:#fbfcff;color:var(--ink);font-size:1.06rem;letter-spacing:.012em;transition:border-color .2s}
+    .sequence-input:focus{border-color:var(--blue);outline:3px solid #dce6ff}
+    .micro{font-size:.84rem;color:var(--muted);margin:8px 0 0}
+    .examples{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:22px 0 28px}
+    .examples span{color:var(--muted);font-size:.84rem;font-weight:700;margin-right:5px}
+    .chip{border:1px solid var(--line);border-radius:999px;background:#fff;padding:7px 13px;color:#344562;font-size:.86rem;font-weight:650}
+    .chip:hover{background:#edf2ff;border-color:#b4c5f8}
+    .btn{border:0;border-radius:11px;padding:12px 19px;display:inline-flex;align-items:center;justify-content:center;gap:9px;font-weight:770;transition:transform .13s,background .16s}
+    .btn:active{transform:translateY(1px)}
+    .primary{color:#fff;background:var(--blue);box-shadow:0 5px 15px #355bca29}
+    .primary:hover{background:#2849b2}
+    .secondary{background:#edf2fb;color:#355078}
+    .secondary:hover{background:#e2eafd}
+    .btn:disabled{cursor:not-allowed;opacity:.5}
+    .setup-footer{padding-top:25px;margin-top:30px;border-top:1px solid var(--line);display:flex;gap:13px;align-items:flex-start;font-size:.9rem;color:var(--muted)}
+    .math-mark{background:var(--blue-soft);border-radius:9px;padding:4px 9px;color:var(--blue);font-weight:800;white-space:nowrap}
+    .error-inline{color:var(--rose);font-size:.89rem;font-weight:700;min-height:1.3em;margin-top:9px}
+    .hidden{display:none!important}
+    .status-strip{background:#fff;border:1px solid var(--line);border-radius:18px;padding:17px 21px;margin-bottom:18px;display:flex;align-items:center;gap:20px;flex-wrap:wrap;box-shadow:0 5px 22px rgba(31,48,89,.035)}
+    .next-number{display:flex;gap:14px;align-items:center;border-right:1px solid var(--line);padding-right:20px}
+    .number-badge{display:grid;place-items:center;width:58px;height:58px;border-radius:15px;background:#edf2ff;color:#264cba;font-weight:820;font-size:1.72rem;letter-spacing:-.04em}
+    .current-caption{font-size:.76rem;text-transform:uppercase;letter-spacing:.09em;color:var(--muted);font-weight:800}
+    .current-title{font-weight:800;font-size:1.13rem}
+    .queue{flex:1;min-width:225px}
+    .queue-title{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:.81rem;color:var(--muted);font-weight:750;margin-bottom:7px}
+    .queue-track{height:7px;background:#edf1f8;border-radius:12px;overflow:hidden;margin-bottom:10px}
+    .queue-fill{height:100%;background:var(--blue);border-radius:12px;transition:width .5s}
+    .queue-nums{display:flex;gap:5px;flex-wrap:wrap}
+    .queue-item{padding:3px 7px;min-width:30px;text-align:center;border-radius:7px;background:#f2f5fa;color:#8a96aa;font-size:.78rem;font-weight:750}
+    .queue-item.done{background:#eaf7ef;color:#23845f}
+    .queue-item.now{background:#e6eeff;color:#2b54c6;box-shadow:inset 0 0 0 1px #9fb5f4}
+    .exercise-grid{display:grid;grid-template-columns:minmax(0,1fr) 350px;gap:18px;align-items:start}
+    .board{overflow:hidden}
+    .board-head{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:21px 24px 14px}
+    .board-head h2{font-size:1.14rem;letter-spacing:-.02em;margin:0}
+    .board-head p{font-size:.82rem;margin:3px 0 0;color:var(--muted)}
+    .view-tag{font-size:.78rem;color:#687a99;border:1px solid var(--line);border-radius:7px;padding:5px 9px;white-space:nowrap;background:#fafcff}
+    .tree-scroll{overflow-x:auto;overflow-y:hidden;min-height:340px;scrollbar-color:#b4c0d5 transparent;scrollbar-width:thin;background:linear-gradient(#ffffffdb,#ffffffee),radial-gradient(#bac7e1 1px,transparent 1px);background-size:auto,24px 24px;border-block:1px solid #eef2f8;text-align:center}
+    .tree-scroll svg{display:block;max-width:none;margin:0 auto;overflow:visible}
+    .branch{stroke:#27374d;stroke-width:4;stroke-linecap:round}
+    .branch.turning{stroke:#4b77d9;stroke-width:4.7}
+    .node-box{fill:white;stroke:#27374d;stroke-width:2.4}
+    .node-box.path{stroke:#5a7fe0;stroke-width:3}
+    .node-box.inserted{fill:#fff4db;stroke:#d58c21;stroke-width:3}
+    .node-value{font-size:22px;font-weight:820;fill:#15233b;text-anchor:middle;dominant-baseline:central}
+    .factor{font-size:18px;font-weight:830;text-anchor:middle;dominant-baseline:middle;paint-order:stroke;stroke:#fff;stroke-width:5;stroke-linejoin:round}
+    .factor.ok{fill:#12845b}.factor.bad{fill:#c2413b}
+    .placeholder{cursor:pointer;outline:none}
+    .placeholder circle{fill:#f1f5ff;stroke:#9cafdf;stroke-width:2;stroke-dasharray:4 4;transition:fill .15s,stroke .15s}
+    .placeholder:hover circle,.placeholder:focus-visible circle{fill:#dfe9ff;stroke:#355bca;stroke-dasharray:none}
+    .placeholder .plus{font-size:26px;font-weight:500;fill:#456ac8;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+    .placeholder .slot-text{font-size:12px;fill:#8190a9;text-anchor:middle;pointer-events:none;font-weight:700}
+    .balance-edit{display:flex;align-items:center;justify-content:center;width:57px;height:40px}
+    .balance-edit input{width:53px;height:36px;border:2px solid #7190df;border-radius:9px;background:#eef3ff;color:#1e429d;text-align:center;font-weight:850;font-size:17px;padding:0 2px;box-shadow:0 2px 8px #a9bcf847;-moz-appearance:textfield;appearance:textfield}
+    .balance-edit input::-webkit-inner-spin-button,.balance-edit input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+    .balance-edit input.wrong{border-color:var(--rose);background:var(--rose-soft);color:var(--rose)}
+    .legend{display:flex;align-items:center;flex-wrap:wrap;column-gap:19px;row-gap:8px;padding:14px 24px;color:var(--muted);font-size:.8rem}
+    .legend strong{color:var(--ink)}
+    .legend-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px}
+    .legend .green{background:#15845f}.legend .red{background:#c44b42}.legend .gold{background:#d58c21}
+    .stage-card{padding:23px;position:relative}
+    .stage-label{font-size:.77rem;font-weight:850;color:var(--blue);text-transform:uppercase;letter-spacing:.12em;margin-bottom:6px}
+    .stage-card h2{font-size:1.35rem;line-height:1.25;letter-spacing:-.03em;margin-bottom:10px}
+    .stage-card p{font-size:.91rem;color:#5c6c83;margin-bottom:17px}
+    .stage-tracker{display:flex;gap:7px;margin-bottom:23px}
+    .step{height:5px;border-radius:5px;background:#e9edf5;flex:1}
+    .step.active{background:#5c80df}.step.complete{background:#50b799}
+    .side-note{background:#f3f6fc;border-radius:12px;padding:12px 13px;font-size:.85rem;color:#526581;margin:16px 0}
+    .formula{font-weight:790;color:#314f8c}
+    .select-options{display:grid;gap:9px;margin:19px 0}
+    .choice{display:flex;gap:11px;align-items:center;border:1.5px solid #dce4ef;border-radius:12px;padding:12px 11px;cursor:pointer;transition:.14s;font-weight:700;font-size:.9rem}
+    .choice:hover{border-color:#9db4ee;background:#f7f9ff}
+    .choice:has(input:checked){border-color:#537ad9;background:#ebf1ff}
+    .choice input{width:17px;height:17px;accent-color:#355bca;flex:none}
+    .choice small{display:block;color:#7e8aa0;font-weight:550;font-size:.76rem;line-height:1.4;margin-top:2px}
+    /* Kleine Hilfen für die vier Rotationsarten (Maus, Tastatur, Touch) */
+    .rotation-option{position:relative;min-width:0}
+    .rotation-option .choice{margin:0;padding-right:43px;min-height:57px}
+    .help-trigger{position:absolute;right:11px;top:50%;transform:translateY(-50%);display:grid;place-items:center;width:26px;height:26px;border:1.5px solid #aebed9;border-radius:50%;background:#f1f5ff;color:#345ab7;font-size:.83rem;font-weight:850;line-height:1;z-index:2;cursor:help}
+    .help-trigger:hover,.help-trigger:focus-visible,.help-trigger[aria-expanded="true"]{background:#dce7ff;border-color:#6485d4}
+    .rotation-tooltip{visibility:hidden;opacity:0;pointer-events:none;position:absolute;right:0;bottom:calc(100% + 9px);width:min(310px,calc(100vw - 52px));padding:12px 14px;background:#243455;color:white;border:1px solid #37496c;border-radius:10px;box-shadow:0 12px 28px #14234040;font-size:.79rem;line-height:1.5;font-weight:450;z-index:10;transition:opacity .15s}
+    .rotation-tooltip strong{font-weight:800;display:block;margin-bottom:3px}
+    .rotation-tooltip::after{content:"";position:absolute;right:19px;bottom:-6px;width:10px;height:10px;background:#243455;transform:rotate(45deg)}
+    .help-trigger:hover + .rotation-tooltip,.help-trigger:focus-visible + .rotation-tooltip,.help-trigger[aria-expanded="true"] + .rotation-tooltip{visibility:visible;opacity:1;pointer-events:auto}
+    .stage-action{width:100%;margin-top:4px}
+    .feedback{min-height:0;margin-top:12px;border-radius:11px;font-size:.88rem;line-height:1.45}
+    .feedback:not(:empty){padding:12px 13px}
+    .feedback.error{background:var(--rose-soft);color:#a23934;border:1px solid #ffd8d5}
+    .feedback.success{background:var(--mint-soft);color:#176b4e;border:1px solid #c7edda}
+    .feedback.info{background:var(--blue-soft);color:#3152a6;border:1px solid #d5e0ff}
+    .side-footer{border-top:1px solid var(--line);margin-top:18px;padding-top:15px;display:flex;align-items:center;gap:8px;color:#7c899e;font-size:.8rem}
+    .side-footer svg{flex:none}
+    .rotation-status{border:1px solid #d2e0fa;background:#eff4ff;border-radius:13px;padding:15px;color:#29499c;font-weight:790;line-height:1.45;margin:16px 0}
+    .finish-big{font-size:2.6rem;margin:2px 0 8px}
+    .mini-heading{font-weight:800;color:#37517b;font-size:.82rem;text-transform:uppercase;letter-spacing:.07em;margin:0 0 4px}
+    .page-footer{margin-top:22px;font-size:.81rem;color:#8290a7;text-align:center}
+    @media (max-width:1030px){.exercise-grid{grid-template-columns:1fr}.stage-card{order:-1}.side-note{margin-bottom:14px}.board-head{padding:17px}.legend{padding:13px 17px}}
+    @media (max-width:600px){.shell{padding:24px 12px 40px}.topline{display:block}.tag{margin-top:17px}.setup{padding:21px}.status-strip{padding:15px}.next-number{border:0;padding-right:0}.queue{flex-basis:100%}.board-head{align-items:flex-start}.view-tag{display:none}.stage-card{padding:20px}.number-badge{width:50px;height:50px}.legend{column-gap:10px}}
+    @media (prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="topline">
+    <div>
+      <div class="eyebrow">Interaktives Informatik-Training</div>
+      <h1>AVL-Bäume verstehen.</h1>
+      <p class="subhead">Füge Schlüssel selbst ein, bestimme die Balancefaktoren und entscheide, ob der Baum gedreht werden muss. Du erhältst sofort Rückmeldung.</p>
+    </div>
+    <div class="tag"><span class="tag-dot"></span>Schritt für Schritt · Ohne Anmeldung</div>
+  </header>
+
+  <section id="setup" class="panel setup" aria-labelledby="setup-title">
+    <div class="eyebrow">Deine Übung</div>
+    <h2 id="setup-title">Mit welcher Zahlenfolge möchtest du üben?</h2>
+    <p class="muted">Die Zahlen werden nacheinander in einen anfangs leeren AVL-Baum eingefügt. Du kontrollierst jeden einzelnen Schritt.</p>
+    <label for="sequence">Zahlen in Einfügereihenfolge</label>
+    <input id="sequence" class="sequence-input" value="7, 2, 8, 1, 4, 3, 5, 6, 9" spellcheck="false" autocomplete="off" inputmode="text" aria-describedby="input-hint input-error">
+    <div class="micro" id="input-hint">Trenne die Zahlen durch Kommas, Leerzeichen oder Semikolons. 1–18 verschiedene ganze Zahlen.</div>
+    <div id="input-error" class="error-inline" role="alert"></div>
+    <div class="examples"><span>Zum Ausprobieren:</span>
+      <button type="button" class="chip" data-example="30, 20, 10">Rechtsrotation</button>
+      <button type="button" class="chip" data-example="10, 20, 30">Linksrotation</button>
+      <button type="button" class="chip" data-example="30, 10, 20">Links-Rechts-Rotation</button>
+      <button type="button" class="chip" data-example="10, 30, 20">Rechts-Links-Rotation</button>
+    </div>
+    <button type="button" id="start" class="btn primary">Übung starten <span aria-hidden="true">→</span></button>
+    <div class="setup-footer"><span class="math-mark">Balance = R − L</span><span>Wir verwenden die <strong>Notation aus deiner Abbildung</strong>: links tiefer = negativ (−1, −2), rechts tiefer = positiv (+1, +2); gleich hohe Teilbäume = 0.</span></div>
+  </section>
+
+  <section id="exercise" class="hidden" aria-label="AVL-Übungsbereich">
+    <div class="status-strip">
+      <div class="next-number">
+        <div class="number-badge" id="current-number">–</div>
+        <div><div class="current-caption" id="number-caption">Jetzt einfügen</div><div class="current-title" id="current-title">Schlüssel</div></div>
+      </div>
+      <div class="queue">
+        <div class="queue-title"><span>Deine Zahlenfolge</span><span id="progress-label">0 von 0</span></div>
+        <div class="queue-track"><div id="queue-fill" class="queue-fill" style="width:0%"></div></div>
+        <div id="queue-nums" class="queue-nums" aria-label="Fortschritt"></div>
+      </div>
+      <button type="button" class="btn secondary" id="edit-sequence">↺ Neue Zahlenfolge</button>
+    </div>
+
+    <div class="exercise-grid">
+      <section class="panel board" aria-label="Darstellung des AVL-Baums">
+        <div class="board-head"><div><h2>Dein AVL-Baum</h2><p id="board-subtitle">Wähle eine freie Einfügestelle im Baum.</p></div><div class="view-tag">Interaktiv · bei Bedarf seitlich scrollen ↔</div></div>
+        <div id="tree-scroll" class="tree-scroll" tabindex="0" aria-label="Baumdiagramm. Bei breiten Bäumen horizontal scrollbar.">
+          <svg id="tree-svg" xmlns="http://www.w3.org/2000/svg" role="group" aria-label="Binärer Suchbaum mit Balancefaktoren"></svg>
+        </div>
+        <div class="legend"><span><span class="legend-dot green"></span><strong>−1, 0, +1</strong> im Gleichgewicht</span><span><span class="legend-dot red"></span><strong>−2, +2</strong> Rotation nötig</span><span><span class="legend-dot gold"></span>Neu eingefügt</span></div>
+      </section>
+      <aside class="panel stage-card">
+        <div id="stage-content"></div>
+        <div id="feedback" class="feedback" role="status" aria-live="polite"></div>
+        <div class="side-footer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 11v5m0-8h.01" stroke-linecap="round"/></svg>Erst bei richtiger Lösung geht es weiter.</div>
+      </aside>
+    </div>
+  </section>
+  <footer class="page-footer">AVL-Baum-Trainer · Läuft vollständig lokal im Browser, ohne Server oder Datenspeicherung.</footer>
+</main>
+<script>
+'use strict';
+(() => {
+  const $ = (id) => document.getElementById(id);
+  const state = {tree:null, numbers:[], index:0, phase:'setup', insertedId:null, pathIds:[], answers:{}, incorrect:new Set(), selectedRotation:'', analysis:null, runId:0};
+  // Balancefaktor = Höhe(rechts) − Höhe(links).
+  // Beim reinen Einfügen tritt der Kind-Faktor 0 im Rotationsfall nicht auf;
+  // der Vollständigkeit halber wird er für das Löschen mit erklärt.
+  const rotationOptions = [
+    {value:'NONE',title:'Keine Drehung',description:'Der Baum bleibt ausgeglichen.',tooltip:'Alle Knoten haben Balancefaktoren von −1, 0 oder +1. Es ist keine Rotation nötig.'},
+    {value:'LL',title:'Rechtsrotation',description:'Bei −2 am Knoten und −1 oder 0 am linken Kind.',tooltip:'Der Knoten hat Balance −2 und sein linkes Kind −1 oder 0. Drehe den Knoten einmal nach rechts. Bei einer Einfügeaufgabe tritt beim linken Kind normalerweise −1 auf; 0 ist insbesondere beim Löschen möglich.'},
+    {value:'RR',title:'Linksrotation',description:'Bei +2 am Knoten und +1 oder 0 am rechten Kind.',tooltip:'Der Knoten hat Balance +2 und sein rechtes Kind +1 oder 0. Drehe den Knoten einmal nach links. Bei einer Einfügeaufgabe tritt beim rechten Kind normalerweise +1 auf; 0 ist insbesondere beim Löschen möglich.'},
+    {value:'LR',title:'Links-Rechts-Rotation',description:'Bei −2 am Knoten und +1 am linken Kind.',tooltip:'Der Knoten hat Balance −2 und sein linkes Kind +1. Drehe zuerst das linke Kind nach links und anschließend den unausgeglichenen Knoten nach rechts.'},
+    {value:'RL',title:'Rechts-Links-Rotation',description:'Bei +2 am Knoten und −1 am rechten Kind.',tooltip:'Der Knoten hat Balance +2 und sein rechtes Kind −1. Drehe zuerst das rechte Kind nach rechts und anschließend den unausgeglichenen Knoten nach links.'}
+  ];
+  function rotationName(type){return rotationOptions.find(option=>option.value===type)?.title || type;}
+  let nextNodeId = 1;
+
+  function makeNode(value) {return {id:nextNodeId++, value, left:null, right:null};}
+  function copyTree(node) {return node ? {id:node.id,value:node.value,left:copyTree(node.left),right:copyTree(node.right)} : null;}
+  function height(node) {return node ? 1+Math.max(height(node.left),height(node.right)) : 0;}
+  function factor(node) {return node ? height(node.right)-height(node.left) : 0;}
+  function findNode(node,id) {if(!node)return null; if(node.id===id)return node; return findNode(node.left,id)||findNode(node.right,id);}
+  function pathToValue(root,value) {const path=[];let node=root;while(node){path.push(node.id);if(value===node.value)break;node=value<node.value?node.left:node.right;}return path;}
+  function correctSlot(root,value){let parent=null,side='root',node=root;while(node){parent=node;side=value<node.value?'left':'right';node=node[side];}return {parentId:parent?.id??null,side};}
+  function locateImbalance(root,value){
+    const path=pathToValue(root,value);
+    for(let i=path.length-1;i>=0;i--){
+      const node=findNode(root,path[i]), bf=factor(node);
+      if(bf < -1) return {type:factor(node.left)<=0?'LL':'LR', pivotId:node.id,pivotValue:node.value};
+      if(bf > 1) return {type:factor(node.right)>=0?'RR':'RL',pivotId:node.id,pivotValue:node.value};
+    }
+    return {type:'NONE',pivotId:null,pivotValue:null};
+  }
+  function rotateLeft(node){const right=node.right;node.right=right.left;right.left=node;return right;}
+  function rotateRight(node){const left=node.left;node.left=left.right;left.right=node;return left;}
+  function rotateAt(root,pivotId,direction){
+    let parent=null, side=null, node=root, stack=[{node:root,parent:null,side:null}];
+    while(stack.length){const cur=stack.pop();if(!cur.node)continue;if(cur.node.id===pivotId){parent=cur.parent;side=cur.side;node=cur.node;break;}
+      stack.push({node:cur.node.right,parent:cur.node,side:'right'});
+      stack.push({node:cur.node.left,parent:cur.node,side:'left'});
+    }
+    if(!node||node.id!==pivotId)throw Error('Drehpunkt nicht gefunden');
+    const replacement=direction==='left'?rotateLeft(node):rotateRight(node);
+    if(parent){parent[side]=replacement;return root;}return replacement;
+  }
+  function buildRotationFrames(root,analysis){
+    let current=copyTree(root);
+    const frames=[{tree:copyTree(current),caption:'Ausgangsbaum'}];
+    if(analysis.type==='NONE')return frames;
+    const pivot=findNode(current,analysis.pivotId);
+    if(analysis.type==='LR'){
+      const child=pivot.left;
+      current=rotateAt(current,child.id,'left');
+      frames.push({tree:copyTree(current),caption:`Schritt 1 von 2: Linksdrehung bei ${child.value}`});
+      current=rotateAt(current,analysis.pivotId,'right');
+      frames.push({tree:copyTree(current),caption:`Schritt 2 von 2: Rechtsdrehung bei ${pivot.value}`});
+    }else if(analysis.type==='RL'){
+      const child=pivot.right;
+      current=rotateAt(current,child.id,'right');
+      frames.push({tree:copyTree(current),caption:`Schritt 1 von 2: Rechtsdrehung bei ${child.value}`});
+      current=rotateAt(current,analysis.pivotId,'left');
+      frames.push({tree:copyTree(current),caption:`Schritt 2 von 2: Linksdrehung bei ${pivot.value}`});
+    }else{
+      const dir=analysis.type==='LL'?'right':'left';
+      current=rotateAt(current,analysis.pivotId,dir);
+      frames.push({tree:copyTree(current),caption:`${dir==='right'?'Rechts':'Links'}drehung bei ${pivot.value}`});
+    }
+    return frames;
+  }
+  function parseSequence(text){
+    const words=text.trim().split(/[,;\s]+/).filter(Boolean);
+    if(!words.length)throw Error('Gib mindestens eine ganze Zahl ein.');
+    if(words.length>18)throw Error('Bitte höchstens 18 Zahlen eingeben, damit der Baum übersichtlich bleibt.');
+    if(words.some(w=>!/^[-+]?\d+$/.test(w)))throw Error('Bitte nur ganze Zahlen eingeben, getrennt durch Kommas oder Leerzeichen.');
+    const nums=words.map(Number);
+    if(nums.some(n=>!Number.isSafeInteger(n)||Math.abs(n)>999))throw Error('Bitte nur ganze Zahlen zwischen −999 und +999 verwenden.');
+    if(new Set(nums).size!==nums.length)throw Error('Jede Zahl darf nur einmal vorkommen. Entferne bitte doppelte Werte.');
+    return nums;
+  }
+  function setFeedback(message='',type=''){$('feedback').textContent=message;$('feedback').className='feedback'+(type?' '+type:'');}
+  function start(){
+    let numbers;
+    try{numbers=parseSequence($('sequence').value);}catch(err){$('input-error').textContent=err.message;return;}
+    $('input-error').textContent='';
+    state.runId++;nextNodeId=1;
+    Object.assign(state,{tree:null,numbers,index:0,phase:'insert',insertedId:null,pathIds:[],answers:{},incorrect:new Set(),selectedRotation:'',analysis:null});
+    $('setup').classList.add('hidden');$('exercise').classList.remove('hidden');setFeedback();render();
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  function changeSequence(){state.runId++;state.phase='setup';$('setup').classList.remove('hidden');$('exercise').classList.add('hidden');$('input-error').textContent='';$('sequence').focus();}
+  function renderStatus(){
+    const done=state.phase==='done';
+    $('current-number').textContent=done?'✓':state.numbers[state.index];
+    $('number-caption').textContent=done?'Geschafft':'Aktueller Schlüssel';
+    $('current-title').textContent=done?'Baum vollständig':`Element ${state.index+1} von ${state.numbers.length}`;
+    $('progress-label').textContent=`${state.index} von ${state.numbers.length} eingefügt`;
+    $('queue-fill').style.width=`${100*state.index/state.numbers.length}%`;
+    $('queue-nums').innerHTML=state.numbers.map((n,i)=>`<span class="queue-item ${i<state.index||done?'done':i===state.index?'now':''}">${n}</span>`).join('');
+    const subtitles={insert:'Klicke auf das richtige Pluszeichen, um die Zahl einzufügen.',balance:'Trage die Balancefaktoren in die blauen Eingabefelder ein.',rotate:'Betrachte die Faktoren und wähle die richtige Drehung.',animate:'Beobachte, wie die Teilbäume langsam umgehängt werden.',done:'Fertig – der entstandene AVL-Baum.'};
+    $('board-subtitle').textContent=subtitles[state.phase]||'';
+  }
+  function steps(active){let s='';for(let i=1;i<=3;i++){s+=`<span class="step ${i<active?'complete':i===active?'active':''}"></span>`;}return `<div class="stage-tracker" aria-label="Schritt ${active} von 3">${s}</div>`;}
+  function renderPanel(){
+    let html='';
+    if(state.phase==='insert'){
+      html=`${steps(1)}<div class="stage-label">Schritt 1 · Einfügen</div><h2>Wo gehört die ${state.numbers[state.index]} hin?</h2><p>Vergleiche den neuen Schlüssel mit den vorhandenen Knoten. <strong>Klicke auf das Pluszeichen</strong> an der richtigen freien Stelle im Baum.</p><div class="side-note"><strong>Suchbaum-Regel:</strong><br>kleinere Werte nach <strong>links</strong>, größere nach <strong>rechts</strong>.</div>`;
+    } else if(state.phase==='balance'){
+      html=`${steps(2)}<div class="stage-label">Schritt 2 · Balance prüfen</div><h2>Welche Faktoren haben die Knoten?</h2><p>Trage die Balancefaktoren in <strong>alle blauen Felder</strong> entlang des Einfügepfads ein. Unveränderte Knoten behalten ihre bisherigen Werte.</p><div class="side-note"><div class="formula">Balance = Höhe(rechts) − Höhe(links)</div>−1 oder −2: links tiefer.<br>+1 oder +2: rechts tiefer.<br>0: beide Seiten gleich hoch.<br><small>Ein leerer Teilbaum hat Höhe 0; ein Blatt Höhe 1.</small></div><button class="btn primary stage-action" id="check-balance">Balancefaktoren prüfen →</button>`;
+    } else if(state.phase==='rotate'){
+      html=`${steps(3)}<div class="stage-label">Schritt 3 · Rotation</div><h2>Welche Drehung ist nötig?</h2><p>Betrachte den Baum nach dem Einfügen. Wähle, ob und wie du ihn wieder ins Gleichgewicht bringst.</p><form id="rotation-form"><div class="select-options">${rotationOptions.map(({value,title,description,tooltip})=>`<div class="rotation-option"><label class="choice"><input type="radio" name="rotation" value="${value}" ${state.selectedRotation===value?'checked':''}><span>${title}<small>${description}</small></span></label><button type="button" class="help-trigger" data-rotation-help="${value}" aria-label="Erklärung: ${title}" aria-expanded="false" aria-describedby="rotation-tooltip-${value}">?</button><div class="rotation-tooltip" id="rotation-tooltip-${value}" role="tooltip"><strong>${title}</strong>${tooltip}</div></div>`).join('')}</div><button type="submit" class="btn primary stage-action">Drehung prüfen →</button></form><div class="side-note">Bei einer Doppeldrehung siehst du <strong>beide Drehschritte</strong> nacheinander.</div>`;
+    } else if(state.phase==='animate'){
+      html=`${steps(3)}<div class="stage-label">Richtig entschieden!</div><h2>So wird gedreht</h2><p>Die Animation zeigt, wie die Knoten ihre Position wechseln und die Teilbäume neu verbunden werden.</p><div class="rotation-status" id="rotation-status">Die Rotation beginnt gleich …</div><p>Danach erscheint automatisch die nächste Zahl.</p>`;
+    } else if(state.phase==='done'){
+      html=`<div class="finish-big" aria-hidden="true">🎉</div><div class="stage-label">Übung abgeschlossen</div><h2>Alle ${state.numbers.length} Elemente eingefügt!</h2><p>Du hast die Einfügestellen, Balancefaktoren und benötigten Rotationen überprüft. Dein fertiger Baum ist AVL-balanciert.</p><div class="side-note"><div class="mini-heading">Geschafft</div>Jeder Knoten besitzt jetzt einen Balancefaktor zwischen −1 und +1.</div><button class="btn primary stage-action" id="repeat">Mit dieser Folge neu starten ↻</button><button class="btn secondary stage-action" id="new-sequence">Andere Zahlen ausprobieren</button>`;
+    }
+    $('stage-content').innerHTML=html;
+  }
+  function computeLayout(root,includeSlots,forcedWidth){
+    let index=0,maxDepth=0;
+    const nodes=[],slots=[];
+    const separation=includeSlots?86:111;
+    function visit(node,depth,parentId,side){
+      maxDepth=Math.max(maxDepth,depth);
+      if(!node){if(includeSlots)slots.push({index:index++,depth,parentId,side});return;}
+      visit(node.left,depth+1,node.id,'left');
+      nodes.push({id:node.id,value:node.value,index:index++,depth,parentId,side,node});
+      visit(node.right,depth+1,node.id,'right');
+    }
+    if(root)visit(root,0,null,'root');else {slots.push({index:0,depth:0,parentId:null,side:'root'});index=1;maxDepth=0;}
+    const width=Math.max(forcedWidth||0,680,(index-1)*separation+220);
+    const offset=(width-(index-1)*separation)/2;
+    for(const p of [...nodes,...slots]){p.x=offset+p.index*separation;p.y=94+p.depth*116;}
+    const nodeMap=new Map(nodes.map(n=>[n.id,n]));
+    return {nodes,slots,nodeMap,width,height:Math.max(320,94+maxDepth*116+105)};
+  }
+  function svgLine(parent,child,animated=false){
+    const klass='branch'+(animated?' turning':'');
+    return `<line class="${klass}" x1="${parent.x}" y1="${parent.y+24}" x2="${child.x}" y2="${child.y-24}"/>`;
+  }
+  function svgNodeMarkup(p,options={}){
+    const node=p.node;
+    const editable=options.editable&&state.pathIds.includes(p.id);
+    const isNew=options.markInserted&&p.id===state.insertedId;
+    const isPath=editable;
+    const klass='node-box'+(isNew?' inserted':isPath?' path':'');
+    let factorMarkup='';
+    if(options.hideFactors){
+      factorMarkup='';
+    } else if(editable){
+      const raw=state.answers[p.id]??'';
+      const wrong=state.incorrect.has(p.id);
+      factorMarkup=`<foreignObject x="${p.x+30}" y="${p.y-45}" width="61" height="45"><div xmlns="http://www.w3.org/1999/xhtml" class="balance-edit"><input type="number" min="-9" max="9" step="1" inputmode="numeric" data-balance="${p.id}" class="${wrong?'wrong':''}" value="${raw}" aria-label="Balancefaktor des Knotens ${p.value}" placeholder="?" /></div></foreignObject>`;
+    } else {
+      const bf=factor(node);
+      factorMarkup=`<text class="factor ${Math.abs(bf)>1?'bad':'ok'}" x="${p.x+43}" y="${p.y-36}">${bf>0?'+':''}${bf}</text>`;
+    }
+    return `<g><rect class="${klass}" x="${p.x-32}" y="${p.y-24}" width="64" height="48" rx="9"/><text class="node-value" x="${p.x}" y="${p.y+1}">${p.value}</text>${factorMarkup}</g>`;
+  }
+  function drawTree(tree=state.tree,options={}){
+    const includeSlots=options.includeSlots??state.phase==='insert';
+    const lay=computeLayout(tree,includeSlots);
+    const svg=$('tree-svg');
+    svg.setAttribute('viewBox',`0 0 ${lay.width} ${lay.height}`);
+    svg.setAttribute('width',lay.width);svg.setAttribute('height',lay.height);
+    const lines=lay.nodes.filter(n=>n.parentId!==null).map(n=>svgLine(lay.nodeMap.get(n.parentId),n)).join('');
+    const slots=includeSlots?lay.slots.map(p=>`<g class="placeholder" role="button" tabindex="0" data-slot="true" data-parent="${p.parentId??''}" data-side="${p.side}" aria-label="${p.side==='root'?'Als Wurzel einsetzen':`Als ${p.side==='left'?'linkes':'rechtes'} Kind von ${findNode(tree,p.parentId)?.value} einsetzen`}"><circle cx="${p.x}" cy="${p.y}" r="22"/><text class="plus" x="${p.x}" y="${p.y+1}">+</text><text class="slot-text" x="${p.x}" y="${p.y+39}">${p.side==='root'?'Wurzel':p.side==='left'?'links':'rechts'}</text></g>`).join(''):'';
+    const marks=lay.nodes.map(p=>svgNodeMarkup(p,{editable:state.phase==='balance',markInserted:state.phase==='balance'||state.phase==='rotate'})).join('');
+    svg.innerHTML=lines+slots+marks;
+  }
+  function render(){renderStatus();renderPanel();drawTree();}
+  function chooseSlot(parentId,side){
+    if(state.phase!=='insert')return;
+    const value=state.numbers[state.index],correct=correctSlot(state.tree,value);
+    if(correct.parentId!==parentId||correct.side!==side){setFeedback('Diese Stelle passt noch nicht. Vergleiche die neue Zahl noch einmal mit den Werten auf dem Suchpfad.','error');return;}
+    const inserted=makeNode(value);
+    if(parentId===null)state.tree=inserted;
+    else findNode(state.tree,parentId)[side]=inserted;
+    state.insertedId=inserted.id;
+    state.pathIds=pathToValue(state.tree,value);
+    state.answers={};state.incorrect=new Set();state.phase='balance';
+    state.analysis=locateImbalance(state.tree,value);
+    setFeedback('Richtig eingefügt! Jetzt fehlen noch die Balancefaktoren.','success');render();
+  }
+  function checkBalance(){
+    if(state.phase!=='balance')return;
+    document.querySelectorAll('input[data-balance]').forEach(el=>state.answers[el.dataset.balance]=el.value.trim());
+    const invalid=[];
+    for(const id of state.pathIds){
+      const answer=state.answers[id];
+      if(answer===''||answer===undefined||!/^[-+]?\d+$/.test(answer)||Number(answer)!==factor(findNode(state.tree,id)))invalid.push(id);
+    }
+    state.incorrect=new Set(invalid);
+    if(invalid.length){
+      document.querySelectorAll('input[data-balance]').forEach(el=>el.classList.toggle('wrong',state.incorrect.has(Number(el.dataset.balance))));
+      setFeedback(`${invalid.length===1?'Ein Balancefaktor stimmt':'Noch '+invalid.length+' Balancefaktoren stimmen'} nicht. Kontrolliere die Höhe des linken und des rechten Teilbaums.`, 'error');
+      return;
+    }
+    state.phase='rotate';state.selectedRotation='';
+    setFeedback('Alle Balancefaktoren sind richtig! Entscheide jetzt über die Rotation.','success');render();
+  }
+  function checkRotation(){
+    if(state.phase!=='rotate')return;
+    if(!state.selectedRotation){setFeedback('Wähle zuerst eine der fünf Möglichkeiten aus.','error');return;}
+    if(state.selectedRotation!==state.analysis.type){setFeedback('Die gewählte Drehung passt noch nicht. Suche den tiefsten Knoten auf dem Einfügepfad, dessen Balancefaktor −2 oder +2 ist.','error');return;}
+    state.phase='animate';setFeedback('Richtig entschieden!','success');render();
+    const myRun=state.runId;
+    runRotation(myRun).catch(e=>{console.error(e);if(myRun===state.runId){setFeedback('Die Animation konnte nicht dargestellt werden. Du kannst die Übung neu starten.','error');}});
+  }
+  const pause=(ms)=>new Promise(resolve=>setTimeout(resolve,ms));
+  function animateBetween(before,after,duration,token){
+    return new Promise(resolve=>{
+      const startLayout=computeLayout(before,false),endLayout=computeLayout(after,false);
+      const width=Math.max(startLayout.width,endLayout.width),height=Math.max(startLayout.height,endLayout.height);
+      const a=computeLayout(before,false,width),b=computeLayout(after,false,width);
+      const svg=$('tree-svg');
+      const oldParent=new Map(a.nodes.map(p=>[p.id,p.parentId]));
+      const newParent=new Map(b.nodes.map(p=>[p.id,p.parentId]));
+      const oldPositions=a.nodeMap,newPositions=b.nodeMap;
+      svg.setAttribute('width',width);svg.setAttribute('height',height);svg.setAttribute('viewBox',`0 0 ${width} ${height}`);
+      const easing=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+      let began=null;
+      function frame(time){
+        if(state.runId!==token){resolve();return;}
+        if(began===null)began=time;
+        const t=Math.min(1,(time-began)/duration),q=easing(t);
+        const points=new Map();
+        for(const p of b.nodes){const o=oldPositions.get(p.id)||p;points.set(p.id,{...p,x:o.x+(p.x-o.x)*q,y:o.y+(p.y-o.y)*q});}
+        const connections=q<.5?oldParent:newParent;
+        const links=[...connections].filter(([,parent])=>parent!==null).map(([childId,parentId])=>{
+          const child=points.get(childId),parent=points.get(parentId);
+          if(!parent||!child)return '';
+          const changed=oldParent.get(childId)!==newParent.get(childId);
+          return svgLine(parent,child,changed);
+        }).join('');
+        const marks=b.nodes.map(p=>svgNodeMarkup(points.get(p.id),{editable:false,markInserted:false,hideFactors:true})).join('');
+        svg.innerHTML=links+marks;
+        if(t<1)requestAnimationFrame(frame);else resolve();
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  async function runRotation(token){
+    if(state.analysis.type==='NONE'){
+      $('rotation-status').textContent='Keine Drehung erforderlich – der Baum bleibt balanciert.';
+      await pause(1350);if(token===state.runId)advance();return;
+    }
+    const frames=buildRotationFrames(state.tree,state.analysis);
+    $('rotation-status').textContent=`${rotationName(state.analysis.type)} bei Knoten ${state.analysis.pivotValue} erkannt.`;
+    await pause(700);
+    for(let i=1;i<frames.length;i++){
+      if(token!==state.runId)return;
+      $('rotation-status').textContent=frames[i].caption;
+      await animateBetween(frames[i-1].tree,frames[i].tree,1700,token);
+      if(token!==state.runId)return;
+      await pause(600);
+    }
+    if(token!==state.runId)return;
+    state.tree=frames[frames.length-1].tree;
+    $('rotation-status').textContent='Fertig gedreht! Alle betroffenen Balancefaktoren sind aktualisiert.';
+    drawTree(state.tree,{includeSlots:false});
+    await pause(1250);
+    if(token===state.runId)advance();
+  }
+  function advance(){
+    state.index++;
+    state.phase=state.index>=state.numbers.length?'done':'insert';
+    state.insertedId=null;state.pathIds=[];state.answers={};state.incorrect=new Set();state.selectedRotation='';state.analysis=null;
+    setFeedback();render();
+    if(state.phase==='done')$('progress-label').textContent=`${state.numbers.length} von ${state.numbers.length} eingefügt`;
+  }
+  $('start').addEventListener('click',start);
+  $('sequence').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();start();}});
+  document.querySelectorAll('[data-example]').forEach(btn=>btn.addEventListener('click',()=>{$('sequence').value=btn.dataset.example;$('input-error').textContent='';}));
+  $('edit-sequence').addEventListener('click',changeSequence);
+  $('tree-svg').addEventListener('click',e=>{
+    const slot=e.target.closest('[data-slot]');if(slot){const parent=slot.dataset.parent;chooseSlot(parent===''?null:Number(parent),slot.dataset.side);}
+  });
+  $('tree-svg').addEventListener('keydown',e=>{
+    if(e.key!=='Enter'&&e.key!==' ')return;
+    const slot=e.target.closest('[data-slot]');if(slot){e.preventDefault();const parent=slot.dataset.parent;chooseSlot(parent===''?null:Number(parent),slot.dataset.side);}
+  });
+  $('stage-content').addEventListener('click',e=>{
+    const help=e.target.closest('[data-rotation-help]');
+    if(help){
+      const opening=help.getAttribute('aria-expanded')!=='true';
+      document.querySelectorAll('[data-rotation-help]').forEach(button=>button.setAttribute('aria-expanded','false'));
+      help.setAttribute('aria-expanded',String(opening));
+      return;
+    }
+    if(e.target.closest('#check-balance'))checkBalance();
+    if(e.target.closest('#repeat'))start();
+    if(e.target.closest('#new-sequence'))changeSequence();
+  });
+  document.addEventListener('click',e=>{
+    if(!e.target.closest('[data-rotation-help]'))document.querySelectorAll('[data-rotation-help]').forEach(button=>button.setAttribute('aria-expanded','false'));
+  });
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')document.querySelectorAll('[data-rotation-help]').forEach(button=>button.setAttribute('aria-expanded','false'));
+  });
+  $('stage-content').addEventListener('submit',e=>{if(e.target.id==='rotation-form'){e.preventDefault();checkRotation();}});
+  $('stage-content').addEventListener('change',e=>{if(e.target.name==='rotation'){state.selectedRotation=e.target.value;setFeedback();}});
+  $('tree-svg').addEventListener('input',e=>{if(e.target.matches('input[data-balance]')){state.answers[e.target.dataset.balance]=e.target.value;e.target.classList.remove('wrong');state.incorrect.delete(Number(e.target.dataset.balance));}});
+})();
+</script>
+</body>
+</html>

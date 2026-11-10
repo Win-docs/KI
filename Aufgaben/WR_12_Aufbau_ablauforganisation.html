@@ -1,0 +1,502 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Vorschau – Geschäftsprozess H5P</title><style>.h5p-business-process-bavaria{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#172033;background:#eef3f8;line-height:1.5}.h5p-business-process-bavaria *{box-sizing:border-box}.bpb-app{max-width:1180px;margin:0 auto;background:#fff;box-shadow:0 18px 60px rgba(23,32,51,.12);overflow:hidden}.bpb-hero{position:relative;padding:34px 42px 26px;background:linear-gradient(135deg,#0f2846 0%,#173f68 56%,#1d557f 100%);color:#fff;overflow:hidden}.bpb-hero h1{margin:.2rem 0 0;max-width:760px;font-size:clamp(2rem,4vw,3.6rem);line-height:1.03;letter-spacing:-.035em}.bpb-hero__eyebrow,.bpb-kicker{font-size:.76rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}.bpb-hero__eyebrow{color:#9ed9ff}.bpb-hero__subtitle{font-size:1.2rem;margin:.65rem 0 0;color:#d6ebf8}.bpb-factory{position:absolute;right:30px;bottom:40px;width:300px;height:150px;opacity:.95}.bpb-factory__building{position:absolute;right:20px;bottom:15px;width:190px;height:82px;background:#f3b957;clip-path:polygon(0 25%,17% 0,34% 25%,51% 0,68% 25%,85% 0,100% 25%,100% 100%,0 100%);border-bottom:10px solid #c67a2c}.bpb-factory__building span{position:absolute;bottom:17px;left:28px;font-weight:900;letter-spacing:.13em;font-size:.72rem;color:#27384c}.bpb-factory__chimney{position:absolute;right:48px;bottom:80px;width:28px;height:68px;background:#8e9bab}.bpb-factory__truck{position:absolute;right:210px;bottom:7px;font-size:2.4rem}.bpb-factory__bike{position:absolute;right:5px;bottom:3px;font-size:2rem}.bpb-progress-wrap{margin-top:28px;display:flex;align-items:center;gap:10px;max-width:620px}.bpb-progress{height:7px;background:rgba(255,255,255,.2);border-radius:99px;overflow:hidden;flex:1}.bpb-progress__bar{height:100%;background:#5ee0b1;transition:width .35s ease}.bpb-progress__text{font-size:.8rem;font-weight:700;color:#d9ecf8}.bpb-step{display:none;padding:40px 42px 48px;min-height:560px}.bpb-step.is-active{display:block}.bpb-section-head{max-width:850px;margin-bottom:28px}.bpb-section-head .bpb-kicker{color:#286c98}.bpb-section-head h2{font-size:clamp(1.7rem,3vw,2.65rem);letter-spacing:-.025em;margin:.3rem 0 .45rem;line-height:1.12}.bpb-section-head p{font-size:1.05rem;color:#506176;margin:0}.bpb-scenario-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.bpb-card{border:1px solid #dce5ed;border-radius:18px;padding:22px;background:#fff;box-shadow:0 6px 20px rgba(22,44,69,.06)}.bpb-card--accent{background:linear-gradient(180deg,#f2f9ff,#fff)}.bpb-card__icon{font-size:2rem}.bpb-card h3{margin:.5rem 0}.bpb-card p{color:#506176}.bpb-concept-strip{margin:28px 0 0;padding:20px 24px;border-radius:18px;background:#f3f7fb;display:flex;align-items:center;justify-content:center;gap:28px;text-align:center}.bpb-concept-strip div:not(.bpb-arrow){display:flex;flex-direction:column}.bpb-concept-strip span{font-size:.9rem;color:#61748a}.bpb-arrow{font-size:1.7rem;color:#286c98}.bpb-nav{display:flex;justify-content:space-between;gap:12px;margin-top:34px;padding-top:22px;border-top:1px solid #e8eef3}.bpb-btn{border:0;border-radius:11px;padding:12px 18px;font-weight:800;font-size:.95rem;cursor:pointer}.bpb-btn--primary,.bpb-btn--next{background:#173f68;color:#fff}.bpb-btn--primary:hover,.bpb-btn--next:hover{background:#0f2f50}.bpb-btn--ghost{background:#edf3f8;color:#25435e}.bpb-process-line{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;position:relative}.bpb-process-peek{position:relative;border:1px solid #d9e3ec;background:#fff;border-radius:16px;padding:16px;text-align:left;min-height:112px;cursor:pointer;transition:.2s;box-shadow:0 4px 16px rgba(25,51,77,.06)}.bpb-process-peek:hover,.bpb-process-peek.is-open{transform:translateY(-3px);border-color:#69a9d1;box-shadow:0 10px 22px rgba(25,51,77,.12)}.bpb-process-peek span{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:#173f68;color:#fff;font-weight:900}.bpb-process-peek strong{display:block;margin-top:10px}.bpb-process-peek small{display:none;color:#566b7e;margin-top:6px}.bpb-process-peek.is-open small{display:block}.bpb-tip{margin-top:22px;background:#fff6de;border-left:5px solid #edb94f;padding:15px 18px;border-radius:10px}.bpb-assignment-layout{display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.8fr);gap:22px}.bpb-card-bank,.bpb-lanes{border-radius:18px}.bpb-card-bank{background:#f4f7fa;padding:18px}.bpb-card-bank h3{margin-top:0}.bpb-card-bank__items{display:grid;gap:9px;min-height:120px}.bpb-drag-card{display:flex;align-items:center;gap:10px;width:100%;border:1px solid #d1dce6;background:#fff;border-radius:11px;padding:10px 12px;text-align:left;cursor:grab;font-weight:700;color:#253a50}.bpb-drag-card:hover{border-color:#6fa6c9}.bpb-drag-card.is-selected{outline:3px solid #79bde6}.bpb-drag-card.is-correct{border-color:#32a66d;background:#eefaf4}.bpb-drag-card.is-wrong{border-color:#d46060;background:#fff2f2}.bpb-drag-card__num{display:inline-grid;place-items:center;min-width:27px;height:27px;border-radius:8px;background:#173f68;color:#fff;font-size:.8rem}.bpb-lanes{display:grid;gap:10px}.bpb-dropzone{border:2px dashed #cfdbe5;border-radius:14px;min-height:84px;padding:10px;display:grid;grid-template-columns:185px 1fr;gap:10px;align-items:start;background:#fff;transition:.15s}.bpb-dropzone:hover,.bpb-dropzone:focus,.bpb-dropzone.is-over{border-color:#4e99c9;background:#f7fbfe;outline:none}.bpb-dropzone__head{display:flex;gap:8px;align-items:center;padding:8px}.bpb-dropzone__head span{font-size:1.4rem}.bpb-dropzone__items{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.bpb-dropzone__items .bpb-drag-card{font-size:.86rem;padding:8px}.bpb-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:22px}.bpb-feedback{display:none;margin-top:16px;padding:14px 16px;border-radius:12px}.bpb-feedback.is-visible{display:block}.bpb-feedback.is-good{background:#eaf8f1;border:1px solid #91d4b3}.bpb-feedback.is-hint{background:#fff7e7;border:1px solid #edce8e}.bpb-swimlane-legend{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}.bpb-swimlane-legend span{padding:7px 10px;border-radius:99px;font-size:.78rem;font-weight:800}.c-absatz,.bpb-flow-node--absatz{background:#e7f3ff!important;border-color:#7ab5e0!important}.c-produktion,.bpb-flow-node--produktion{background:#edf8ef!important;border-color:#79bd84!important}.c-fuehrung,.bpb-flow-node--fuehrung{background:#f5eefe!important;border-color:#a985d2!important}.c-finanzierung,.bpb-flow-node--finanzierung{background:#fff5df!important;border-color:#d6aa4f!important}.c-beschaffung,.bpb-flow-node--beschaffung{background:#fceee8!important;border-color:#d48b6c!important}.c-verwaltung,.bpb-flow-node--verwaltung{background:#eef1ff!important;border-color:#8f9be6!important}.bpb-flow-scroll{overflow:auto;padding:6px 0 18px}.bpb-flow{display:flex;align-items:stretch;min-width:1600px}.bpb-flow-node{width:122px;min-height:112px;border:2px solid;border-radius:16px;padding:12px;display:flex;flex-direction:column}.bpb-flow-node>span{font-size:.72rem;font-weight:900;opacity:.65}.bpb-flow-node strong{font-size:.98rem;margin:4px 0}.bpb-flow-node small{font-size:.76rem;color:#47596b}.bpb-flow-arrow{display:grid;place-items:center;width:23px;color:#7790a4;font-weight:900}.bpb-key-insight{display:flex;gap:16px;padding:21px;border-radius:18px;background:#142f4d;color:#fff;margin:12px 0 24px}.bpb-key-insight__icon{font-size:2rem}.bpb-key-insight p{margin:.3rem 0 0;color:#d9e9f6}.bpb-compare{display:grid;grid-template-columns:1fr auto 1fr;gap:18px;align-items:center}.bpb-compare>div:not(.bpb-compare__bridge){padding:20px;border-radius:16px;border:1px solid #dbe5ed;background:#f8fafc}.bpb-compare h3{font-size:1.45rem;margin:.2rem 0}.bpb-compare__label{font-size:.72rem;font-weight:900;letter-spacing:.1em;color:#3c78a2}.bpb-compare__bridge{font-size:2rem;color:#2f719b}.bpb-classify{display:grid;gap:10px}.bpb-classify-row{display:grid;grid-template-columns:1fr minmax(210px,270px);gap:16px;align-items:center;padding:13px 15px;border:1px solid #dbe4ec;border-radius:12px}.bpb-classify-row>div{display:flex;gap:12px;align-items:center}.bpb-classify-row>div span{display:grid;place-items:center;min-width:28px;height:28px;border-radius:50%;background:#edf3f8;font-weight:800}.bpb-classify-row select,.bpb-cloze select{padding:9px;border-radius:9px;border:1px solid #c7d3dd;background:#fff;font:inherit}.bpb-classify-row.is-correct,.bpb-cloze select.is-correct{border-color:#3aa66f;background:#edf9f3}.bpb-classify-row.is-wrong,.bpb-cloze select.is-wrong{border-color:#d56767;background:#fff1f1}.bpb-incident{display:grid;grid-template-columns:.65fr 1.6fr;gap:22px}.bpb-incident__visual{min-height:260px;border-radius:20px;background:linear-gradient(145deg,#4a2833,#7a3e45);color:#fff;padding:26px;display:flex;flex-direction:column;justify-content:flex-end;box-shadow:inset 0 0 0 1px rgba(255,255,255,.12)}.bpb-incident__visual span{font-size:3.8rem;margin-bottom:auto}.bpb-incident__visual strong{font-size:1.7rem}.bpb-incident__visual small{font-size:.95rem;color:#f1dfe1}.bpb-incident__question{display:grid;gap:9px}.bpb-incident__question h3{margin:0}.bpb-incident__question label{display:flex;gap:10px;align-items:flex-start;border:1px solid #dbe4ec;border-radius:11px;padding:11px 13px;cursor:pointer}.bpb-incident__question label.is-correct{border-color:#48ae79;background:#eefaf4}.bpb-incident__question label.is-wrong{border-color:#d56767;background:#fff1f1}.bpb-cloze{font-size:1.1rem;background:#f5f8fb;border-radius:18px;padding:22px 24px}.bpb-cloze p{margin:.65rem 0}.bpb-result{margin-top:24px;padding:22px;border-radius:18px;background:#edf7f2;display:grid;grid-template-columns:auto 1fr;gap:22px;align-items:center}.bpb-result[hidden]{display:none}.bpb-result.is-retry{background:#fff6e5}.bpb-result__ring{width:112px;height:112px;border-radius:50%;display:grid;place-items:center;background:#173f68;box-shadow:inset 0 0 0 9px rgba(255,255,255,.2)}.bpb-result__ring span{color:#fff;font-size:1.7rem;font-weight:900}.bpb-result h3{font-size:1.6rem;margin:.2rem 0}.bpb-result p{color:#4d6174}.bpb-result .bpb-btn{margin-top:8px}
+@media(max-width:900px){.bpb-factory{opacity:.28;right:-25px}.bpb-scenario-grid{grid-template-columns:1fr}.bpb-process-line{grid-template-columns:repeat(2,1fr)}.bpb-assignment-layout{grid-template-columns:1fr}.bpb-dropzone{grid-template-columns:150px 1fr}.bpb-incident{grid-template-columns:1fr}.bpb-incident__visual{min-height:190px}.bpb-compare{grid-template-columns:1fr}.bpb-compare__bridge{transform:rotate(90deg);text-align:center}.bpb-classify-row{grid-template-columns:1fr}}
+@media(max-width:600px){.bpb-hero,.bpb-step{padding-left:20px;padding-right:20px}.bpb-hero h1{font-size:2.15rem}.bpb-process-line{grid-template-columns:1fr}.bpb-dropzone{grid-template-columns:1fr}.bpb-dropzone__items{grid-template-columns:1fr}.bpb-concept-strip{flex-direction:column;gap:10px}.bpb-arrow{transform:rotate(90deg)}.bpb-result{grid-template-columns:1fr}.bpb-result__ring{width:90px;height:90px}.bpb-nav{align-items:stretch}.bpb-nav .bpb-btn{flex:1}.bpb-classify-row select{width:100%}}
+@media(prefers-reduced-motion:reduce){.h5p-business-process-bavaria *{scroll-behavior:auto!important;transition:none!important}}
+</style></head><body style="margin:0;background:#eef3f8"><div id="app"></div><script>window.H5P={};H5P.EventDispatcher=function(){};H5P.EventDispatcher.prototype.trigger=function(){};H5P.EventDispatcher.prototype.triggerXAPIScored=function(){};</script><script>var H5P = H5P || {};
+
+H5P.BusinessProcessBavaria = (function (EventDispatcher) {
+  'use strict';
+
+  function BusinessProcessBavaria(params, contentId, extras) {
+    EventDispatcher.call(this);
+    this.params = Object.assign({
+      title: 'Vom Kundenauftrag zum fertigen E‑Bike',
+      subtitle: 'Aufbauorganisation trifft Ablauforganisation',
+      companyName: 'AlpinaBike GmbH',
+      passingPercentage: 60
+    }, params || {});
+    this.contentId = contentId;
+    this.extras = extras || {};
+    this.score = 0;
+    this.maxScore = 29;
+    this.answerGiven = false;
+    this.finished = false;
+    this.root = null;
+    this.selectedProcessCard = null;
+  }
+
+  BusinessProcessBavaria.prototype = Object.create(EventDispatcher.prototype);
+  BusinessProcessBavaria.prototype.constructor = BusinessProcessBavaria;
+
+  BusinessProcessBavaria.prototype.getTitle = function () {
+    return this.params.title;
+  };
+
+  BusinessProcessBavaria.prototype.getScore = function () {
+    return this.score;
+  };
+
+  BusinessProcessBavaria.prototype.getMaxScore = function () {
+    return this.maxScore;
+  };
+
+  BusinessProcessBavaria.prototype.getAnswerGiven = function () {
+    return this.answerGiven;
+  };
+
+  BusinessProcessBavaria.prototype.getCurrentState = function () {
+    return {
+      score: this.score,
+      maxScore: this.maxScore,
+      finished: this.finished
+    };
+  };
+
+  BusinessProcessBavaria.prototype.attach = function ($container) {
+    var self = this;
+    $container.addClass('h5p-business-process-bavaria');
+    $container.html('');
+    this.root = document.createElement('div');
+    this.root.className = 'bpb-app';
+    this.root.innerHTML = this.renderApp();
+    $container.get(0).appendChild(this.root);
+    this.bindNavigation();
+    this.bindDiscovery();
+    this.bindProcessAssignment();
+    this.bindBuildFlowQuiz();
+    this.bindIncidentQuiz();
+    this.bindFinalQuiz();
+    this.updateProgress(1);
+    window.setTimeout(function () { self.trigger('resize'); }, 50);
+  };
+
+  BusinessProcessBavaria.prototype.renderApp = function () {
+    var p = this.params;
+    return `
+      <header class="bpb-hero">
+        <div class="bpb-hero__eyebrow">Wirtschaft & Recht · Oberstufe · erhöhtes Anforderungsniveau</div>
+        <h1>${this.escapeHtml(p.title)}</h1>
+        <p class="bpb-hero__subtitle">${this.escapeHtml(p.subtitle)}</p>
+        <div class="bpb-factory" aria-hidden="true">
+          <div class="bpb-factory__sky"></div>
+          <div class="bpb-factory__building"><span>ALPINABIKE</span></div>
+          <div class="bpb-factory__chimney"></div>
+          <div class="bpb-factory__truck">🚚</div>
+          <div class="bpb-factory__bike">🚲</div>
+        </div>
+        <div class="bpb-progress-wrap" aria-label="Lernfortschritt">
+          <div class="bpb-progress"><div class="bpb-progress__bar" style="width:14%"></div></div>
+          <span class="bpb-progress__text">1 / 7</span>
+        </div>
+      </header>
+
+      <main>
+        ${this.renderIntro()}
+        ${this.renderDiscovery()}
+        ${this.renderAssignment()}
+        ${this.renderSolution()}
+        ${this.renderStructureFlowQuiz()}
+        ${this.renderIncident()}
+        ${this.renderFinal()}
+      </main>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderIntro = function () {
+    return `
+      <section class="bpb-step is-active" data-step="1">
+        <div class="bpb-section-head">
+          <span class="bpb-kicker">01 · Einstieg</span>
+          <h2>Ein Auftrag geht auf Reisen</h2>
+        </div>
+        <div class="bpb-scenario-grid">
+          <article class="bpb-card bpb-card--accent">
+            <div class="bpb-card__icon">📩</div>
+            <h3>Der Kundenauftrag</h3>
+            <p>Ein großer Fahrradfachhändler bestellt bei der <strong>${this.escapeHtml(this.params.companyName)}</strong> 100 E‑Bikes des Modells „AlpenCross X“.</p>
+          </article>
+          <article class="bpb-card">
+            <div class="bpb-card__icon">⏱️</div>
+            <h3>Die Herausforderung</h3>
+            <p>Lieferzeit: sechs Wochen. Zusätzliche Akkus und Schaltungen werden benötigt. Die vorhandene Fertigungskapazität reicht nicht vollständig aus.</p>
+          </article>
+          <article class="bpb-card">
+            <div class="bpb-card__icon">🎯</div>
+            <h3>Dein Auftrag</h3>
+            <p>Verfolge den Geschäftsprozess und finde heraus, <strong>welcher Funktionsbereich welchen Prozessschritt übernimmt</strong> – einschließlich der Verwaltung.</p>
+          </article>
+        </div>
+        <div class="bpb-concept-strip">
+          <div><strong>Aufbauorganisation</strong><span>Wer macht was?</span></div>
+          <div class="bpb-arrow">↔</div>
+          <div><strong>Ablauforganisation</strong><span>Was geschieht wann?</span></div>
+        </div>
+        ${this.navButtons(false, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderDiscovery = function () {
+    var steps = [
+      ['1','Kundenauftrag','Auftrag des Fachhändlers erfassen'],
+      ['2','Kapazität prüfen','Personal, Maschinen und Zeit prüfen'],
+      ['3','Auftrag freigeben','Entscheidung über Annahme treffen'],
+      ['4','Finanzierung prüfen','Zusätzliche Montagestation beurteilen'],
+      ['5','Material beschaffen','Akkus, Schaltungen und Bauteile bestellen'],
+      ['6','Produktion planen','Fertigungsreihenfolge und Einsatz planen'],
+      ['7','E‑Bikes fertigen','Montage und Qualitätskontrolle'],
+      ['8','Ausliefern','Ware an den Kunden übergeben'],
+      ['9','Rechnung erstellen','Rechnung erstellen und an den Kunden versenden'],
+      ['10','Zahlungseingang','Zahlungseingang überwachen und verbuchen'],
+      ['11','Kontrollieren','Zeit-, Kosten- und Qualitätsziele prüfen']
+    ];
+    var cards = steps.map(function (s) {
+      return `<button class="bpb-process-peek" type="button" aria-expanded="false"><span>${s[0]}</span><strong>${s[1]}</strong><small>${s[2]}</small></button>`;
+    }).join('');
+    return `
+      <section class="bpb-step" data-step="2">
+        <div class="bpb-section-head"><span class="bpb-kicker">02 · Prozess entdecken</span><h2>Vom Auftrag bis zur Kontrolle</h2><p>Klicke die Stationen an. Ein Geschäftsprozess ist eine sachlogische und zeitliche Folge miteinander verbundener Tätigkeiten.</p></div>
+        <div class="bpb-process-line" aria-label="Elf Prozessschritte">${cards}</div>
+        <div class="bpb-tip">💡 <strong>Beobachte:</strong> Schon dieser Ablauf deutet an, dass ein Kundenauftrag nicht nur „einer Abteilung“ gehört.</div>
+        ${this.navButtons(true, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderAssignment = function () {
+    var cards = [
+      [1,'Kundenauftrag entgegennehmen','absatz'],
+      [2,'Fertigungskapazität prüfen','produktion'],
+      [3,'Großauftrag freigeben','fuehrung'],
+      [4,'Finanzierung der Montagestation prüfen','finanzierung'],
+      [5,'Akkus und Schaltungen bestellen','beschaffung'],
+      [6,'Fertigungsreihenfolge planen','produktion'],
+      [7,'E‑Bikes montieren und prüfen','produktion'],
+      [8,'E‑Bikes ausliefern','absatz'],
+      [9,'Rechnung erstellen und versenden','verwaltung'],
+      [10,'Zahlungseingang überwachen','verwaltung'],
+      [11,'Zielerreichung kontrollieren','fuehrung']
+    ].map(function (c) {
+      return `<button type="button" draggable="true" class="bpb-drag-card" data-id="${c[0]}" data-answer="${c[2]}" aria-pressed="false"><span class="bpb-drag-card__num">${c[0]}</span>${c[1]}</button>`;
+    }).join('');
+    var lanes = [
+      ['beschaffung','🛒','Beschaffung'],
+      ['produktion','⚙️','Produktion'],
+      ['absatz','📈','Absatz'],
+      ['verwaltung','🗂️','Verwaltung'],
+      ['finanzierung','💶','Investition & Finanzierung'],
+      ['fuehrung','🧭','Unternehmensführung']
+    ].map(function (l) {
+      return `<div class="bpb-dropzone" data-zone="${l[0]}" tabindex="0" role="button" aria-label="${l[2]} – ausgewählte Karte hier zuordnen"><div class="bpb-dropzone__head"><span>${l[1]}</span><strong>${l[2]}</strong></div><div class="bpb-dropzone__items"></div></div>`;
+    }).join('');
+    return `
+      <section class="bpb-step" data-step="3">
+        <div class="bpb-section-head"><span class="bpb-kicker">03 · Hauptaufgabe</span><h2>Welcher Funktionsbereich ist zuständig?</h2><p>Ziehe die Prozessschritte in den passenden Funktionsbereich. Alternativ: Karte anklicken und anschließend den Zielbereich anklicken.</p></div>
+        <div class="bpb-assignment-layout">
+          <div class="bpb-card-bank"><h3>Prozessschritte</h3><div class="bpb-card-bank__items">${cards}</div></div>
+          <div class="bpb-lanes">${lanes}</div>
+        </div>
+        <div class="bpb-actions"><button type="button" class="bpb-btn bpb-btn--primary" data-action="check-assignment">Zuordnung prüfen</button><button type="button" class="bpb-btn bpb-btn--ghost" data-action="reset-assignment">Neu ordnen</button></div>
+        <div class="bpb-feedback" data-feedback="assignment" aria-live="polite"></div>
+        ${this.navButtons(true, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderSolution = function () {
+    var flow = [
+      ['01','Auftrag','Absatz','absatz'],['02','Kapazität','Produktion','produktion'],['03','Freigabe','Unternehmensführung','fuehrung'],['04','Finanzierung','Investition & Finanzierung','finanzierung'],['05','Material','Beschaffung','beschaffung'],['06','Planung','Produktion','produktion'],['07','Fertigung','Produktion','produktion'],['08','Lieferung','Absatz','absatz'],['09','Rechnung','Verwaltung','verwaltung'],['10','Zahlung','Verwaltung','verwaltung'],['11','Kontrolle','Unternehmensführung','fuehrung']
+    ];
+    var nodes = flow.map(function (f, i) {
+      return `<div class="bpb-flow-node bpb-flow-node--${f[3]}"><span>${f[0]}</span><strong>${f[1]}</strong><small>${f[2]}</small></div>${i < flow.length - 1 ? '<div class="bpb-flow-arrow">→</div>' : ''}`;
+    }).join('');
+    return `
+      <section class="bpb-step" data-step="4">
+        <div class="bpb-section-head"><span class="bpb-kicker">04 · Grafische Auflösung</span><h2>Der Prozess durchquert die Aufbauorganisation</h2></div>
+        <div class="bpb-swimlane-legend"><span class="c-absatz">Absatz</span><span class="c-produktion">Produktion</span><span class="c-beschaffung">Beschaffung</span><span class="c-verwaltung">Verwaltung</span><span class="c-finanzierung">Investition & Finanzierung</span><span class="c-fuehrung">Unternehmensführung</span></div>
+        <div class="bpb-flow-scroll"><div class="bpb-flow">${nodes}</div></div>
+        <div class="bpb-tip">🗂️ <strong>Verwaltung:</strong> Rechnungsstellung und Überwachung des Zahlungseingangs. <strong>Investition &amp; Finanzierung:</strong> hier ausschließlich die Finanzierung der zusätzlichen Montagestation.</div>
+        <div class="bpb-key-insight"><span class="bpb-key-insight__icon">🔗</span><div><strong>Die zentrale Erkenntnis</strong><p>Die <b>Aufbauorganisation</b> schafft Zuständigkeiten. Die <b>Ablauforganisation</b> verbindet diese Zuständigkeiten zu einem Geschäftsprozess. Wertschöpfung entsteht damit bereichsübergreifend.</p></div></div>
+        <div class="bpb-compare">
+          <div><span class="bpb-compare__label">AUFBAU</span><h3>Struktur</h3><p>Stellen, Abteilungen, Zuständigkeiten, Weisungsbeziehungen</p><strong>Wer macht was?</strong></div>
+          <div class="bpb-compare__bridge">↔</div>
+          <div><span class="bpb-compare__label">ABLAUF</span><h3>Prozess</h3><p>Reihenfolge, Zeit, Ort und Verknüpfung von Tätigkeiten</p><strong>Was geschieht wann?</strong></div>
+        </div>
+        ${this.navButtons(true, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderStructureFlowQuiz = function () {
+    var items = [
+      ['Die Beschaffung ist für den Einkauf von Materialien zuständig.','aufbau'],
+      ['Nach Feststellung des Materialbedarfs wird eine Bestellung ausgelöst.','ablauf'],
+      ['Die Produktionsleitung trägt Verantwortung für die Fertigung.','aufbau'],
+      ['Nach der Montage erfolgt die Qualitätskontrolle.','ablauf'],
+      ['Die Unternehmensführung ist den Funktionsbereichen übergeordnet.','aufbau'],
+      ['Eine Kundenbestellung löst mehrere aufeinanderfolgende Tätigkeiten aus.','ablauf'],
+      ['Aufgaben und Kompetenzen werden Stellen bzw. Abteilungen zugeordnet.','aufbau'],
+      ['Tätigkeiten werden zeitlich und sachlogisch miteinander verknüpft.','ablauf']
+    ];
+    var html = items.map(function (it, idx) {
+      return `<div class="bpb-classify-row" data-answer="${it[1]}"><div><span>${idx+1}</span>${it[0]}</div><select aria-label="Aussage ${idx+1} zuordnen"><option value="">Bitte wählen …</option><option value="aufbau">Aufbauorganisation</option><option value="ablauf">Ablauforganisation</option></select></div>`;
+    }).join('');
+    return `
+      <section class="bpb-step" data-step="5">
+        <div class="bpb-section-head"><span class="bpb-kicker">05 · Transfer</span><h2>Aufbau oder Ablauf?</h2><p>Ordne jede Aussage dem passenden Organisationsbegriff zu.</p></div>
+        <div class="bpb-classify">${html}</div>
+        <div class="bpb-actions"><button type="button" class="bpb-btn bpb-btn--primary" data-action="check-classify">Antworten prüfen</button></div>
+        <div class="bpb-feedback" data-feedback="classify" aria-live="polite"></div>
+        ${this.navButtons(true, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderIncident = function () {
+    return `
+      <section class="bpb-step" data-step="6">
+        <div class="bpb-section-head"><span class="bpb-kicker">06 · Störfall</span><h2>Die Akkus kommen zu spät!</h2></div>
+        <div class="bpb-incident">
+          <div class="bpb-incident__visual"><span>⚠️</span><strong>Lieferverzug</strong><small>Der Lieferant meldet: Akkus treffen fünf Tage später ein.</small></div>
+          <div class="bpb-incident__question"><h3>Welche Folgen können sich im Unternehmen ergeben?</h3><p>Mehrere Antworten sind richtig.</p>
+            <label><input type="checkbox" data-correct="true"> Die Beschaffung prüft einen alternativen Lieferanten.</label>
+            <label><input type="checkbox" data-correct="true"> Die Produktion passt möglicherweise den Produktionsplan an.</label>
+            <label><input type="checkbox" data-correct="true"> Der Absatz informiert gegebenenfalls den Kunden über eine Verzögerung.</label>
+            <label><input type="checkbox" data-correct="true"> Höhere Einkaufspreise können Liquidität und Rentabilität beeinflussen.</label>
+            <label><input type="checkbox" data-correct="true"> Bei erheblichen Auswirkungen kann die Unternehmensführung entscheiden müssen.</label>
+            <label><input type="checkbox" data-correct="false"> Der Lieferverzug betrifft ausschließlich die Beschaffung.</label>
+          </div>
+        </div>
+        <div class="bpb-actions"><button type="button" class="bpb-btn bpb-btn--primary" data-action="check-incident">Störfall auswerten</button></div>
+        <div class="bpb-feedback" data-feedback="incident" aria-live="polite"></div>
+        ${this.navButtons(true, true)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.renderFinal = function () {
+    return `
+      <section class="bpb-step" data-step="7">
+        <div class="bpb-section-head"><span class="bpb-kicker">07 · Abschluss</span><h2>Vier Begriffe – ein Gesamtbild</h2><p>Vervollständige den Merksatz.</p></div>
+        <div class="bpb-cloze">
+          <p>Die <select data-answer="aufbau"><option value="">…</option><option value="ablauf">Ablauforganisation</option><option value="aufbau">Aufbauorganisation</option><option value="prozess">Geschäftsprozess</option></select> legt fest, welche organisatorischen Einheiten Aufgaben übernehmen.</p>
+          <p>Die <select data-answer="ablauf"><option value="">…</option><option value="aufbau">Aufbauorganisation</option><option value="ablauf">Ablauforganisation</option><option value="wert">Wertschöpfung</option></select> legt die sachliche und zeitliche Reihenfolge von Tätigkeiten fest.</p>
+          <p>Ein <select data-answer="prozess"><option value="">…</option><option value="organigramm">Organigramm</option><option value="prozess">Geschäftsprozess</option><option value="stelle">Stelle</option></select> verbindet dabei häufig mehrere Funktionsbereiche.</p>
+          <p>So wird sichtbar: Unternehmen sind <select data-answer="system"><option value="">…</option><option value="isoliert">isolierte Abteilungen</option><option value="system">vernetzte Systeme</option><option value="linear">rein lineare Strukturen</option></select>.</p>
+        </div>
+        <div class="bpb-actions"><button type="button" class="bpb-btn bpb-btn--primary" data-action="finish">Lerncheck abschließen</button></div>
+        <div class="bpb-feedback" data-feedback="final" aria-live="polite"></div>
+        <div class="bpb-result" hidden>
+          <div class="bpb-result__ring"><span data-result-percent>0%</span></div>
+          <div><span class="bpb-kicker">Dein Ergebnis</span><h3 data-result-title></h3><p data-result-text></p><button type="button" class="bpb-btn bpb-btn--ghost" data-action="restart">Noch einmal bearbeiten</button></div>
+        </div>
+        ${this.navButtons(true, false)}
+      </section>
+    `;
+  };
+
+  BusinessProcessBavaria.prototype.navButtons = function (back, next) {
+    return `<div class="bpb-nav">${back ? '<button type="button" class="bpb-btn bpb-btn--ghost" data-nav="prev">← Zurück</button>' : '<span></span>'}${next ? '<button type="button" class="bpb-btn bpb-btn--next" data-nav="next">Weiter →</button>' : ''}</div>`;
+  };
+
+  BusinessProcessBavaria.prototype.bindNavigation = function () {
+    var self = this;
+    this.root.querySelectorAll('[data-nav]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var current = parseInt(self.root.querySelector('.bpb-step.is-active').dataset.step, 10);
+        self.showStep(btn.dataset.nav === 'next' ? current + 1 : current - 1);
+      });
+    });
+  };
+
+  BusinessProcessBavaria.prototype.showStep = function (n) {
+    var self = this;
+    n = Math.max(1, Math.min(7, n));
+    this.root.querySelectorAll('.bpb-step').forEach(function (s) { s.classList.toggle('is-active', parseInt(s.dataset.step, 10) === n); });
+    this.updateProgress(n);
+    this.root.scrollIntoView({behavior: 'smooth', block: 'start'});
+    window.setTimeout(function () { self.trigger('resize'); }, 80);
+  };
+
+  BusinessProcessBavaria.prototype.updateProgress = function (n) {
+    var pct = Math.round((n / 7) * 100);
+    this.root.querySelector('.bpb-progress__bar').style.width = pct + '%';
+    this.root.querySelector('.bpb-progress__text').textContent = n + ' / 7';
+  };
+
+  BusinessProcessBavaria.prototype.bindDiscovery = function () {
+    this.root.querySelectorAll('.bpb-process-peek').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var open = btn.getAttribute('aria-expanded') === 'true';
+        btn.setAttribute('aria-expanded', open ? 'false' : 'true');
+        btn.classList.toggle('is-open', !open);
+      });
+    });
+  };
+
+  BusinessProcessBavaria.prototype.bindProcessAssignment = function () {
+    var self = this;
+    var bank = this.root.querySelector('.bpb-card-bank__items');
+    var cards = this.root.querySelectorAll('.bpb-drag-card');
+    var zones = this.root.querySelectorAll('.bpb-dropzone');
+
+    function selectCard(card) {
+      cards.forEach(function (c) { c.classList.remove('is-selected'); c.setAttribute('aria-pressed', 'false'); });
+      self.selectedProcessCard = card;
+      card.classList.add('is-selected');
+      card.setAttribute('aria-pressed', 'true');
+    }
+
+    cards.forEach(function (card) {
+      card.addEventListener('click', function () { selectCard(card); });
+      card.addEventListener('dragstart', function (e) { e.dataTransfer.setData('text/plain', card.dataset.id); selectCard(card); });
+    });
+
+    zones.forEach(function (zone) {
+      zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.classList.add('is-over'); });
+      zone.addEventListener('dragleave', function () { zone.classList.remove('is-over'); });
+      zone.addEventListener('drop', function (e) {
+        e.preventDefault(); zone.classList.remove('is-over');
+        var id = e.dataTransfer.getData('text/plain');
+        var card = self.root.querySelector('.bpb-drag-card[data-id="' + id + '"]');
+        if (card) zone.querySelector('.bpb-dropzone__items').appendChild(card);
+      });
+      function placeSelected() {
+        if (self.selectedProcessCard) {
+          zone.querySelector('.bpb-dropzone__items').appendChild(self.selectedProcessCard);
+          self.selectedProcessCard.classList.remove('is-selected');
+          self.selectedProcessCard.setAttribute('aria-pressed', 'false');
+          self.selectedProcessCard = null;
+        }
+      }
+      zone.addEventListener('click', placeSelected);
+      zone.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); placeSelected(); } });
+    });
+
+    this.root.querySelector('[data-action="check-assignment"]').addEventListener('click', function () {
+      var score = 0;
+      cards.forEach(function (card) {
+        var zone = card.closest('.bpb-dropzone');
+        var correct = zone && zone.dataset.zone === card.dataset.answer;
+        card.classList.toggle('is-correct', !!correct);
+        card.classList.toggle('is-wrong', !correct);
+        if (correct) score += 1;
+      });
+      self.root.dataset.assignmentScore = String(score);
+      self.answerGiven = true;
+      var fb = self.root.querySelector('[data-feedback="assignment"]');
+      fb.className = 'bpb-feedback is-visible ' + (score === 11 ? 'is-good' : 'is-hint');
+      fb.innerHTML = score === 11 ? '<strong>11/11 – vollständig richtig.</strong> Du hast die Prozessschritte den zuständigen Funktionsbereichen korrekt zugeordnet.' : '<strong>' + score + '/11 richtig.</strong> Prüfe die rot markierten Karten. Frage dich: Welche Abteilung verfügt über die notwendigen Aufgaben, Kompetenzen und Ressourcen?';
+      self.trigger('resize');
+    });
+
+    this.root.querySelector('[data-action="reset-assignment"]').addEventListener('click', function () {
+      cards.forEach(function (card) { card.classList.remove('is-correct','is-wrong','is-selected'); bank.appendChild(card); });
+      self.root.dataset.assignmentScore = '0';
+      self.root.querySelector('[data-feedback="assignment"]').className = 'bpb-feedback';
+      self.selectedProcessCard = null;
+      self.trigger('resize');
+    });
+  };
+
+  BusinessProcessBavaria.prototype.bindBuildFlowQuiz = function () {
+    var self = this;
+    this.root.querySelector('[data-action="check-classify"]').addEventListener('click', function () {
+      var rows = self.root.querySelectorAll('.bpb-classify-row');
+      var score = 0;
+      rows.forEach(function (row) {
+        var ok = row.querySelector('select').value === row.dataset.answer;
+        row.classList.toggle('is-correct', ok);
+        row.classList.toggle('is-wrong', !ok);
+        if (ok) score += 1;
+      });
+      self.root.dataset.classifyScore = String(score);
+      self.answerGiven = true;
+      var fb = self.root.querySelector('[data-feedback="classify"]');
+      fb.className = 'bpb-feedback is-visible ' + (score === 8 ? 'is-good' : 'is-hint');
+      fb.innerHTML = '<strong>' + score + '/8 richtig.</strong> Aufbau = Struktur und Zuständigkeit; Ablauf = Reihenfolge und Verknüpfung von Tätigkeiten.';
+      self.trigger('resize');
+    });
+  };
+
+  BusinessProcessBavaria.prototype.bindIncidentQuiz = function () {
+    var self = this;
+    this.root.querySelector('[data-action="check-incident"]').addEventListener('click', function () {
+      var boxes = self.root.querySelectorAll('.bpb-incident input[type="checkbox"]');
+      var score = 0;
+      boxes.forEach(function (box) {
+        var should = box.dataset.correct === 'true';
+        var ok = box.checked === should;
+        box.closest('label').classList.toggle('is-correct', ok);
+        box.closest('label').classList.toggle('is-wrong', !ok);
+        if (ok) score += 1;
+      });
+      self.root.dataset.incidentScore = String(score);
+      self.answerGiven = true;
+      var fb = self.root.querySelector('[data-feedback="incident"]');
+      fb.className = 'bpb-feedback is-visible ' + (score === 6 ? 'is-good' : 'is-hint');
+      fb.innerHTML = '<strong>' + score + '/6 Aussagen korrekt bewertet.</strong> Ein Lieferproblem kann sich entlang des gesamten Geschäftsprozesses auswirken – genau darin zeigt sich die Vernetzung der Funktionsbereiche.';
+      self.trigger('resize');
+    });
+  };
+
+  BusinessProcessBavaria.prototype.bindFinalQuiz = function () {
+    var self = this;
+    this.root.querySelector('[data-action="finish"]').addEventListener('click', function () {
+      var scoreFinal = 0;
+      self.root.querySelectorAll('.bpb-cloze select').forEach(function (sel) {
+        var ok = sel.value === sel.dataset.answer;
+        sel.classList.toggle('is-correct', ok);
+        sel.classList.toggle('is-wrong', !ok);
+        if (ok) scoreFinal += 1;
+      });
+      var assignment = parseInt(self.root.dataset.assignmentScore || '0', 10);
+      var classify = parseInt(self.root.dataset.classifyScore || '0', 10);
+      var incident = parseInt(self.root.dataset.incidentScore || '0', 10);
+      self.score = assignment + classify + incident + scoreFinal;
+      self.answerGiven = true;
+      self.finished = true;
+      var percent = Math.round((self.score / self.maxScore) * 100);
+      var passed = percent >= Number(self.params.passingPercentage || 60);
+      var fb = self.root.querySelector('[data-feedback="final"]');
+      fb.className = 'bpb-feedback is-visible ' + (scoreFinal === 4 ? 'is-good' : 'is-hint');
+      fb.innerHTML = '<strong>' + scoreFinal + '/4 Begriffe richtig.</strong>';
+      var result = self.root.querySelector('.bpb-result');
+      result.hidden = false;
+      result.querySelector('[data-result-percent]').textContent = percent + '%';
+      result.querySelector('[data-result-title]').textContent = self.score + ' von ' + self.maxScore + ' Punkten';
+      result.querySelector('[data-result-text]').textContent = passed ? 'Lernziel erreicht: Du kannst Aufbau- und Ablauforganisation anhand eines Geschäftsprozesses miteinander verknüpfen.' : 'Bearbeite insbesondere die markierten Aufgaben erneut und nutze die grafische Auflösung als Orientierung.';
+      result.classList.toggle('is-passed', passed);
+      result.classList.toggle('is-retry', !passed);
+      try {
+        self.triggerXAPIScored(self.score, self.maxScore, 'completed', true, passed);
+      } catch (e) {
+        // Ergebnis bleibt auch ohne xAPI-Unterstützung vollständig nutzbar.
+      }
+      self.trigger('resize');
+    });
+
+    this.root.querySelector('[data-action="restart"]').addEventListener('click', function () {
+      self.score = 0; self.answerGiven = false; self.finished = false;
+      self.root.querySelectorAll('select').forEach(function (s) { s.value = ''; s.classList.remove('is-correct','is-wrong'); });
+      self.root.querySelectorAll('.bpb-classify-row').forEach(function (r) { r.classList.remove('is-correct','is-wrong'); });
+      self.root.querySelectorAll('input[type="checkbox"]').forEach(function (i) { i.checked = false; i.closest('label').classList.remove('is-correct','is-wrong'); });
+      self.root.querySelectorAll('.bpb-feedback').forEach(function (f) { f.className = 'bpb-feedback'; f.innerHTML = ''; });
+      self.root.querySelector('.bpb-result').hidden = true;
+      var resetAssignment = self.root.querySelector('[data-action="reset-assignment"]');
+      if (resetAssignment) resetAssignment.click();
+      self.root.dataset.classifyScore = '0';
+      self.root.dataset.incidentScore = '0';
+      self.showStep(1);
+    });
+  };
+
+  BusinessProcessBavaria.prototype.escapeHtml = function (text) {
+    return String(text || '').replace(/[&<>'"]/g, function (c) {
+      return {'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c];
+    });
+  };
+
+  return BusinessProcessBavaria;
+})(H5P.EventDispatcher);
+</script><script>var x=new H5P.BusinessProcessBavaria({title:'Vom Kundenauftrag zum fertigen E‑Bike',subtitle:'Aufbauorganisation trifft Ablauforganisation',companyName:'AlpinaBike GmbH',passingPercentage:60},1,{});var el=document.getElementById('app');var fake={addClass:function(c){el.classList.add(c)},html:function(s){el.innerHTML=s},get:function(){return el}};x.attach(fake);</script></body></html>
