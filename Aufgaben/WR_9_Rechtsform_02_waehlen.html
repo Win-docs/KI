@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#f5f7fc"><title>Rechtsform wählen · Wirtschaft und Recht</title>
+<style>
+:root{
+  /* Layout: eine Lesespalte, immer nur eine Seite sichtbar, unten fester Weiter-Balken, Info-Knöpfe als kleine Kreise hinter Fachwörtern */
+  --ink:#172033; --muted:#53607a; --paper:#f3f5fa; --card:#ffffff; --line:#d6dce8;
+  --accent:#1f56d2; --accent-ink:#ffffff; --accent-soft:#e3ebfd;
+  --good:#17703f; --good-soft:#e1f3e8; --warn:#8a5200; --warn-soft:#fdf0d5; --bad:#b0261c; --bad-soft:#fbe4e1;
+  --font-display:"Trebuchet MS","Segoe UI",system-ui,sans-serif;
+  --font-body:"Segoe UI",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --ink:#e8ecf6; --muted:#a2acc4; --paper:#0f1422; --card:#181e30; --line:#2d3652;
+    --accent:#7ba3ff; --accent-ink:#0b1330; --accent-soft:#1f2b4f;
+    --good:#6fd39b; --good-soft:#153525; --warn:#f0b95a; --warn-soft:#3a2b10; --bad:#ff8f84; --bad-soft:#3d1b18;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --ink:#e8ecf6; --muted:#a2acc4; --paper:#0f1422; --card:#181e30; --line:#2d3652;
+  --accent:#7ba3ff; --accent-ink:#0b1330; --accent-soft:#1f2b4f;
+  --good:#6fd39b; --good-soft:#153525; --warn:#f0b95a; --warn-soft:#3a2b10; --bad:#ff8f84; --bad-soft:#3d1b18;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 var(--font-body)}
+h1,h2,h3{font-family:var(--font-display);line-height:1.2;text-wrap:balance;margin:0}
+p{margin:0 0 .8em}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px}
+
+/* Kopf mit Fortschritt */
+.top{position:sticky;top:0;z-index:20;background:var(--card);border-bottom:1px solid var(--line)}
+.brand{padding:10px 0 4px;font:700 .8rem var(--font-display);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.stepper{list-style:none;margin:0;padding:0 0 10px;display:flex;gap:6px;overflow-x:auto}
+.stepper button{flex:none;min-width:40px;padding:5px 10px;border-radius:8px;border:2px solid var(--line);background:var(--card);color:var(--muted);font:700 .85rem var(--font-body);cursor:pointer}
+.stepper button.done{border-color:var(--good);color:var(--good);background:var(--good-soft)}
+.stepper button.cur{border-color:var(--accent);background:var(--accent);color:var(--accent-ink)}
+.stepper button:disabled{opacity:.45;cursor:not-allowed}
+
+/* Seiten */
+.page{display:none;padding:22px 0 130px}
+.page.on{display:block}
+.kicker{font:700 .85rem var(--font-body);color:var(--accent);margin-bottom:4px}
+.page>h1{font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:12px}
+.lead{font-size:1.08rem;color:var(--muted);max-width:68ch}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin:18px 0}
+.card h2{font-size:1.25rem;margin-bottom:10px}
+.small{font-size:.9rem;color:var(--muted)}
+.box{background:var(--accent-soft);border-radius:12px;padding:12px 16px;margin:14px 0}
+.box ul,.card ul.plain{margin:6px 0 0;padding-left:20px}
+.op{font-weight:700;color:var(--accent)}
+
+/* Info-Knöpfe */
+.t{text-decoration:underline dotted var(--accent);text-underline-offset:4px}
+.i{display:inline-grid;place-items:center;width:1.3em;height:1.3em;margin-left:.3em;padding:0;border:0;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:italic 700 .8em/1 Georgia,"Times New Roman",serif;cursor:pointer;vertical-align:.1em;position:relative}
+.i::after{content:"";position:absolute;inset:-8px}
+.i:hover{filter:brightness(1.18)}
+:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+h1:focus{outline:none}
+
+/* Dialog */
+dialog{border:0;border-radius:16px;padding:0;width:min(580px,calc(100vw - 32px));background:var(--card);color:var(--ink);box-shadow:0 20px 60px rgba(0,0,0,.35)}
+dialog::backdrop{background:rgba(10,15,30,.55)}
+.dlg-in{padding:18px 22px 24px}
+.dlg-bar{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;min-height:36px}
+.dlg-bar button{border:1px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:6px 12px;font:700 .9rem var(--font-body);cursor:pointer}
+dialog h3{font-size:1.4rem;margin-bottom:8px}
+.ex{background:var(--accent-soft);border-radius:10px;padding:10px 14px;margin-top:12px}
+
+/* Weiter-Balken */
+.pager{position:fixed;left:0;right:0;bottom:0;z-index:30;background:var(--card);border-top:1px solid var(--line)}
+.pager .wrap{display:flex;align-items:center;gap:12px;padding-top:12px;padding-bottom:12px}
+.pager .msg{flex:1;font-size:.93rem;color:var(--muted)}
+.pager .msg.ok{color:var(--good);font-weight:700}
+.btn{padding:10px 20px;border-radius:10px;border:0;background:var(--accent);color:var(--accent-ink);font:700 1rem var(--font-body);cursor:pointer}
+.btn:hover:not(:disabled){filter:brightness(1.12)}
+.btn:disabled{background:var(--line);color:var(--muted);cursor:not-allowed}
+.btn.ghost{background:transparent;color:var(--accent);border:2px solid var(--accent)}
+.btn.ghost:disabled{border-color:var(--line);color:var(--muted)}
+
+/* Haftungs-Experiment */
+.slider output{font:800 1.4rem var(--font-display);color:var(--accent);margin-left:8px}
+input[type=range]{width:100%;accent-color:var(--accent);margin-top:8px}
+.range-scale{display:flex;justify-content:space-between;font-size:.82rem;color:var(--muted)}
+.person{margin:14px 0;padding:14px;border:1px solid var(--line);border-radius:12px}
+.person h3{font-size:1.05rem;margin-bottom:4px}
+.bars{display:flex;height:30px;border-radius:8px;overflow:hidden;background:var(--line);margin-top:8px}
+.seg{height:100%;transition:width .25s}
+.seg.firm{background:var(--accent)}.seg.priv{background:var(--bad)}
+.seg.open{background:repeating-linear-gradient(45deg,var(--muted) 0 6px,transparent 6px 12px)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:8px;font-size:.9rem}
+.dot{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.dot.firm{background:var(--accent)}.dot.priv{background:var(--bad)}.dot.open{background:var(--muted)}
+.result{margin:8px 0 0;font-size:.97rem}
+
+/* Multiple Choice */
+.mc{margin:18px 0 4px;padding-top:14px;border-top:1px dashed var(--line)}
+.mc-q{font-weight:700;margin-bottom:6px}
+.mc-opt{display:block;width:100%;text-align:left;padding:10px 14px;margin:6px 0;border:2px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;cursor:pointer}
+.mc-opt:hover:not(:disabled){border-color:var(--accent)}
+.mc-opt.right{border-color:var(--good);background:var(--good-soft)}
+.mc-opt.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.mc-opt:disabled{cursor:default;color:var(--ink)}
+.mc-opt:disabled:not(.right):not(.wrong){opacity:.55}
+.mc.tf .mc-opts{display:flex;gap:10px;max-width:360px}
+.mc-fb{margin:6px 0 0;font-size:.97rem}
+.mc-fb.ok{color:var(--good)}.mc-fb.no{color:var(--bad)}
+.mc-fb span{color:var(--ink)}
+
+/* Tabelle */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;margin:14px 0}
+table{border-collapse:separate;border-spacing:0;min-width:1150px;width:100%}
+th,td{padding:9px 11px;border-bottom:1px solid var(--line);vertical-align:top;text-align:left;font-size:.88rem;background:var(--card)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+thead th{font-size:.86rem;background:var(--accent-soft)}
+tbody th{position:sticky;left:0;z-index:1;min-width:150px;border-right:1px solid var(--line)}
+thead th:first-child{position:sticky;left:0;z-index:2}
+td ul{margin:0;padding-left:16px}
+td.c{text-align:center}
+
+/* Pills & Rückmeldung */
+.pill{display:inline-block;padding:.05em .65em;border-radius:999px;font-weight:700;font-size:.84em;white-space:nowrap}
+.pill.good{background:var(--good-soft);color:var(--good)}
+.pill.warn{background:var(--warn-soft);color:var(--warn)}
+.pill.bad{background:var(--bad-soft);color:var(--bad)}
+.fb{border-radius:12px;padding:12px 16px;margin:12px 0;border:2px solid}
+.fb.good{border-color:var(--good);background:var(--good-soft)}
+.fb.warn{border-color:var(--warn);background:var(--warn-soft)}
+.fb.bad{border-color:var(--bad);background:var(--bad-soft)}
+.fb p:last-child,.fb ul:last-child{margin-bottom:0}
+.hints{margin:10px 0}
+.hints ul,.all{margin:6px 0;padding-left:0;list-style:none}
+.hints li{padding:2px 0}
+.all li{padding:8px 0;border-bottom:1px solid var(--line)}
+details{margin:10px 0;border:1px solid var(--line);border-radius:10px;padding:8px 14px}
+summary{cursor:pointer;font-weight:700}
+blockquote{margin:8px 0 4px;padding:8px 14px;border-left:4px solid var(--accent);background:var(--accent-soft);border-radius:0 8px 8px 0}
+
+/* Eingaben */
+.story{background:var(--accent-soft);border-radius:12px;padding:12px 16px;margin:8px 0 12px}
+.case h2 .tag{display:inline-block;margin-right:8px;padding:2px 10px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font-size:.9rem}
+.opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(235px,1fr));gap:8px;margin:10px 0}
+.opts.col{grid-template-columns:1fr}
+.opt{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:10px;padding:8px 12px;background:var(--card)}
+.opt:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+.opt input{width:19px;height:19px;accent-color:var(--accent);flex:none;margin:0}
+.opt label{flex:1;cursor:pointer;font-weight:700}
+.opt label.plain{font-weight:400}
+.opt.out:has(input:checked){border-color:var(--bad);background:var(--bad-soft)}
+fieldset{border:0;margin:16px 0;padding:0}
+legend{font-weight:700;padding:0;margin-bottom:4px}
+textarea,input[type=text],select{padding:10px 12px;border-radius:10px;border:2px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+textarea,input[type=text]{width:100%}
+textarea{min-height:120px;resize:vertical}
+select{width:100%}
+textarea:focus,input[type=text]:focus,select:focus{border-color:var(--accent);outline:none}
+select.okS{border-color:var(--good);background:var(--good-soft)}
+select.badS{border-color:var(--bad);background:var(--bad-soft)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}
+.chip{border:1px dashed var(--accent);background:transparent;color:var(--accent);border-radius:999px;padding:4px 12px;font:inherit;font-size:.88rem;cursor:pointer}
+.chip:hover{background:var(--accent-soft)}
+.grid5{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:12px 0}
+.lbl{display:flex;align-items:center;font-weight:700;margin-bottom:4px}
+.lbl label{cursor:default}
+.match{display:grid;grid-template-columns:1fr 240px;gap:10px 16px;align-items:center;margin:12px 0}
+.ampel{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:12px 0}
+.ampel>div{border:1px solid var(--line);border-radius:12px;padding:10px 14px}
+.ampel ul{margin:6px 0 0;padding-left:18px;font-size:.92rem}
+output.sumok{display:block;margin-top:8px;font-weight:700;color:var(--good)}
+.refs{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0 0}
+.refs span.t{border:1px solid var(--line);border-radius:8px;padding:3px 10px;text-decoration:none;background:var(--card)}
+@media (prefers-reduced-motion: reduce){.seg{transition:none}}
+@media (max-width:620px){.match{grid-template-columns:1fr}.mc.tf .mc-opts{flex-direction:column}.pager .btn{padding:10px 14px}}
+
+/* ===== Ergänzungen: Start, Spiel, Quiz, Bilder ===== */
+h1:focus{outline:none}
+.sec{font-size:1.2rem;margin:22px 0 8px}
+svg.ill{display:block;width:100%;height:auto;border-radius:14px}
+
+/* Start */
+.goal{display:flex;gap:14px;align-items:center;background:var(--accent-soft);border-radius:16px;padding:14px 18px;margin:14px 0}
+.goal svg{width:46px;height:46px;flex:none;color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:10px 0}
+.tile{border-radius:16px;padding:16px;color:#fff;display:flex;flex-direction:column;gap:6px;min-height:150px}
+.tile svg{width:46px;height:46px}
+.tile b{font:800 1.25rem var(--font-display)}
+.tile .i{background:#fff;color:#1b1b1b}
+.tile.c1{background:#d9480f}.tile.c2{background:#15803d}.tile.c3{background:#1f56d2}.tile.c4{background:#7c3aed}
+.route{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;padding:0;list-style:none}
+.route li{flex:1 1 130px;position:relative;background:var(--card);border:2px solid var(--line);border-radius:14px;padding:16px 10px 12px;text-align:center;font-size:.88rem;color:var(--muted)}
+.route li svg{width:34px;height:34px;color:var(--accent)}
+.route li b{display:block;color:var(--ink);font-size:.98rem}
+.route .n{position:absolute;top:-10px;left:-6px;width:26px;height:26px;border-radius:50%;background:var(--accent);color:var(--accent-ink);font:800 .85rem/26px var(--font-body)}
+.rules{display:flex;flex-wrap:wrap;gap:10px;margin-top:14px}
+.rules div{display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:8px 14px;font-size:.93rem}
+.rules svg{width:26px;height:26px;color:var(--accent);flex:none}
+
+/* Beispiele mit Bild */
+.duo{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:14px}
+.who{display:flex;gap:12px;align-items:center;border:2px solid var(--line);border-radius:14px;padding:10px}
+.who svg.ill{width:120px;flex:none}
+.who p{margin:0;font-size:.95rem}
+.chead{display:flex;gap:14px;align-items:center;margin-bottom:10px}
+.chead svg.ill{width:140px;flex:none}
+.chead h2{margin:4px 0 0;font-size:1.25rem}
+.chead .tag{display:inline-block;padding:2px 10px;border-radius:8px;background:var(--accent);color:var(--accent-ink);font:700 .8rem var(--font-body)}
+.biz{color:var(--muted);font-size:.95rem}
+.prog{height:10px;border-radius:999px;background:var(--line);overflow:hidden;margin:6px 0}
+.prog div{height:100%;width:0;background:var(--good);transition:width .3s}
+
+/* Quiz-Optik */
+.quiz{counter-reset:q}
+.quiz .mc{counter-increment:q;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:16px;margin:14px 0}
+.quiz .mc-q{display:flex;gap:12px;align-items:flex-start;font-size:1.05rem}
+.quiz .mc-q::before{content:counter(q);flex:none;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:800 1rem var(--font-display)}
+.quiz .mc-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+.quiz .mc-opt{position:relative;margin:0;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:12px;padding:14px 14px 14px 52px;min-height:56px;font-weight:600;text-align:left}
+.quiz .mc-opt::before{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:28px;height:28px;border-radius:8px;background:var(--accent-soft);display:grid;place-items:center;font:800 .9rem var(--font-display)}
+.quiz .mc-opt:nth-child(1)::before{content:"A"}.quiz .mc-opt:nth-child(2)::before{content:"B"}.quiz .mc-opt:nth-child(3)::before{content:"C"}.quiz .mc-opt:nth-child(4)::before{content:"D"}
+.quiz .mc-opt:hover:not(:disabled){border-color:var(--accent)}
+.quiz .mc-opt.wrong{opacity:.45;text-decoration:line-through}
+.quiz .mc-opt:disabled:not(.right):not(.wrong){opacity:.55}
+.quiz .mc-opt.right{opacity:1;border-color:var(--good);box-shadow:0 0 0 3px var(--good)}
+.quiz .mc-opt.right::after{content:" ✓"}
+.stop{text-align:center;padding:12vh 6px 8vh}
+.stop .stopmark{font:900 clamp(2.6rem,9vw,5rem) var(--font-display);color:#8e1b14;letter-spacing:.04em}
+.stop p{font-size:clamp(1.15rem,3.2vw,1.6rem);font-weight:700;color:#5b1a17;max-width:34ch;margin:18px auto 0;line-height:1.4}
+.stop .unlock{margin-top:12vh;opacity:.75}
+.stop .unlock label{font-size:.85rem;color:#5b1a17;display:block;margin-bottom:6px}
+.stop .unlock input{width:9em;padding:8px 10px;border:1px solid #c9908c;border-radius:8px;background:#fff;color:#222;font-size:1rem;text-align:center}
+.stop .unlock .btn{margin-left:6px;padding:8px 14px}
+body.stopbg{background:#fbdcda!important}
+body.stopbg .top,body.stopbg .pager{background:#fbdcda;border-color:#e8b3af}
+.argcheck li{margin:4px 0}
+@media (max-width:620px){.quiz .mc-opts{grid-template-columns:1fr}.chead svg.ill{width:100px}.who svg.ill{width:90px}}
+
+/* Ziehspiel */
+.bank{display:flex;flex-wrap:wrap;gap:10px;padding:14px;border:2px dashed var(--line);border-radius:14px;min-height:72px;margin:12px 0;background:var(--paper)}
+.bank:empty::after{content:"Alle Begriffe sind zugeordnet.";color:var(--good);font-weight:700;align-self:center}
+.gchip{touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab;border:0;border-radius:12px;padding:10px 16px;color:#fff;font:700 1rem var(--font-body);box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.gchip.sel{outline:4px solid var(--ink)}
+.gchip.hid{opacity:.25}
+.gchip.ghost{position:fixed;z-index:100;pointer-events:none;transform:translate(-50%,-50%) scale(1.06);box-shadow:0 10px 24px rgba(0,0,0,.35)}
+.gchip:disabled{color:#fff;opacity:1;cursor:default;box-shadow:none}
+.slots{display:grid;gap:12px}
+.slot{display:grid;grid-template-columns:1fr minmax(180px,230px);gap:12px;align-items:center;border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--card)}
+.slot p{margin:0}
+.slot .drop{min-height:52px;border:2px dashed var(--muted);border-radius:12px;display:grid;place-items:center;color:var(--muted);font-size:.85rem;padding:4px;text-align:center}
+.slot.over .drop{border-color:var(--accent);background:var(--accent-soft)}
+.slot.ok{border-color:var(--good);background:var(--good-soft)}
+.slot.ok .drop{border:2px solid var(--good);background:transparent}
+.slot.shake{border-color:var(--bad);animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+.gstat{font-weight:700;margin:10px 0 0}
+@media (prefers-reduced-motion: reduce){.slot.shake{animation:none}.prog div{transition:none}}
+@media (max-width:620px){.slot{grid-template-columns:1fr}}
+
+
+
+/* =============================================
+   Gemeinsames Lernapp-Design · Rechtsformen 2026
+   Offline nutzbar, responsive, ohne externe Assets
+   ============================================= */
+:root {
+  color-scheme: light;
+  --ink:#18253e; --muted:#62718b; --paper:#f5f7fc; --card:#ffffff;
+  --line:#dfe5f0; --accent:#4058d6; --accent-ink:#ffffff; --accent-soft:#edf0ff;
+  --good:#187c60; --good-soft:#e8f7ef;
+  --warn:#945d0d; --warn-soft:#fff4dc;
+  --bad:#bc4044; --bad-soft:#fff0ef;
+  --font-display:"Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-body:"Segoe UI",system-ui,-apple-system,sans-serif;
+}
+body { font-size:16px;line-height:1.65;background:var(--paper); }
+.wrap {max-width:1080px;padding-inline:24px;}
+h1,h2,h3 {letter-spacing:-.025em;}
+p {line-height:1.65;}
+.top {background:rgba(255,255,255,.96);box-shadow:0 3px 22px rgba(24,37,62,.035);backdrop-filter:blur(14px);}
+.top-inner {display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:77px;}
+.logo-box {display:flex;align-items:center;gap:12px;min-width:0;text-decoration:none;color:var(--ink);}
+.logo-mark {width:43px;height:43px;display:grid;place-items:center;background:var(--accent);color:white;border-radius:13px;box-shadow:0 8px 15px rgba(64,88,214,.16);flex:none;}
+.logo-mark svg {width:25px;height:25px;}
+.logo-box strong {font-size:.96rem;display:block;line-height:1.24;letter-spacing:-.02em;}
+.logo-box small {color:var(--muted);display:block;font-weight:700;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px;}
+.app-switch {display:flex;align-items:center;gap:6px;text-decoration:none;font-size:.87rem;font-weight:750;white-space:nowrap;color:var(--accent);padding:9px 13px;border:1px solid #d9e0fa;border-radius:11px;background:#f6f7ff;transition:background .15s;}
+.app-switch:hover {background:var(--accent-soft);}
+.app-switch svg {width:16px;height:16px;}
+.step-wrap {display:flex;align-items:center;gap:16px;border-top:1px solid #f0f2f8;padding-block:9px 11px;}
+.step-title {font-size:.77rem;letter-spacing:.11em;text-transform:uppercase;font-weight:800;color:var(--muted);white-space:nowrap;}
+.stepper {flex:1;justify-content:flex-end;padding:0;gap:9px;}
+.stepper li {display:flex;}
+.stepper button {min-width:0;border:1px solid var(--line);border-radius:999px;padding:6px 15px;font-size:.85rem;background:#f8faff;color:#6c7890;}
+.stepper button.cur {color:white;background:var(--accent);border-color:var(--accent);box-shadow:0 5px 12px rgba(64,88,214,.15);}
+.stepper button.done {background:var(--good-soft);color:var(--good);border-color:#b5e2cc;}
+.top-progress {height:4px;background:#eef1f9;overflow:hidden;}
+.top-progress > span {display:block;height:100%;width:0%;background:linear-gradient(90deg,#4058d6,#7b79f2);transition:width .2s ease;}
+.hero {position:relative;isolation:isolate;overflow:hidden;border:1px solid #e0e6fa;background:linear-gradient(117deg,#eef2ff 0%,#f9faff 58%,#fff 100%);border-radius:27px;padding:clamp(26px,5vw,48px);margin-top:27px;margin-bottom:10px;box-shadow:0 18px 50px rgba(30,49,104,.055);}
+.hero::before {content:"";position:absolute;width:300px;height:300px;border-radius:50%;background:rgba(94,118,231,.10);right:-100px;top:-170px;z-index:-1;}
+.hero::after {content:"";position:absolute;width:180px;height:180px;border:30px solid rgba(92,109,207,.07);border-radius:50%;right:2%;bottom:-130px;z-index:-1;}
+.hero-eyebrow {display:inline-flex;align-items:center;gap:8px;font-size:.75rem;font-weight:850;letter-spacing:.14em;text-transform:uppercase;color:#4058b9;margin:0 0 13px;}
+.hero-eyebrow::before {content:"";width:8px;height:8px;border-radius:50%;background:currentColor;}
+.hero h1 {font-size:clamp(2.1rem,5.3vw,3.6rem);font-weight:850;letter-spacing:-.05em;line-height:1.08;max-width:730px;margin-bottom:14px;}
+.hero h1 span {color:var(--accent);}
+.hero p {font-size:clamp(.99rem,1.6vw,1.12rem);max-width:64ch;color:#5d6e88;margin:0 0 21px;}
+.hero-tags {display:flex;gap:9px;flex-wrap:wrap;}
+.hero-tags span {display:inline-flex;align-items:center;gap:7px;border:1px solid #dce3fa;background:rgba(255,255,255,.82);color:#344b85;border-radius:999px;padding:6px 12px;font-size:.81rem;font-weight:750;}
+.hero-tags svg {width:15px;height:15px;}
+.page {padding:27px 0 125px;}
+.page >h1 {font-size:clamp(1.45rem,3vw,2.05rem);margin-bottom:15px;letter-spacing:-.035em;}
+.kicker {font-size:.73rem;letter-spacing:.16em;font-weight:850;color:var(--accent);text-transform:uppercase;margin-bottom:8px;}
+.lead {font-size:1.01rem;line-height:1.65;color:#566781;margin-bottom:21px;}
+.card {border:1px solid var(--line);border-radius:20px;padding:clamp(16px,2.7vw,26px);margin:17px 0;box-shadow:0 8px 26px rgba(30,44,86,.035);}
+.card h2 {font-size:1.19rem;margin-bottom:12px;}
+.card.case {margin:22px 0;}
+.case .chead {gap:16px;margin-bottom:16px;}
+.chead h2 {font-size:1.2rem;}
+.chead .tag,.case h2 .tag {border-radius:999px;background:var(--accent-soft);color:var(--accent);font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;padding:5px 11px;}
+.biz {font-size:.87rem;}
+.story {background:#f3f6ff;border:1px solid #e8edfd;padding:16px 18px;border-radius:14px;}
+.box {border:1px solid #dce4ff;}
+.btn {border-radius:12px;padding:11px 21px;font-size:.93rem;font-weight:800;box-shadow:0 5px 13px rgba(64,88,214,.11);}
+.btn.ghost {box-shadow:none;border-width:1px;background:#fff;}
+.btn:disabled {box-shadow:none;}
+.pager {box-shadow:0 -8px 30px rgba(28,45,80,.045);}
+.pager .wrap {gap:13px;min-height:77px;}
+.pager .msg {font-size:.88rem;line-height:1.45;}
+.pager .msg.ok {color:var(--good);}
+.pager .btn {white-space:nowrap;}
+.mc-q {font-size:1.03rem;}
+.quiz .mc {border-width:1px;border-radius:17px;padding:19px;box-shadow:0 8px 25px rgba(26,42,80,.03);}
+.quiz .mc-q::before {width:37px;height:37px;background:#edf0ff;color:var(--accent);font-size:1rem;}
+.quiz .mc-opt {border-width:1px;min-height:62px;border-radius:11px;background:#fbfcff;transition:border-color .16s, background .16s;}
+.quiz .mc-opt:hover:not(:disabled) {background:var(--accent-soft);}
+.quiz .mc-opt.right {border:2px solid var(--good);box-shadow:0 0 0 2px var(--good-soft);background:var(--good-soft);}
+.quiz .mc-opt.wrong {text-decoration:line-through;background:var(--bad-soft);}
+.quiz .mc-opt::before {border-radius:7px;}
+.tbl-wrap {background:white;border-radius:17px;box-shadow:0 5px 22px rgba(24,37,62,.032);}
+table {min-width:1100px;}
+th,td {padding:12px 13px;}
+thead th {background:#ecf1ff;color:#344771;}
+tbody tr:hover td,tbody tr:hover th {background:#f9faff;}
+tbody th {box-shadow:2px 0 4px rgba(22,38,69,.04);}
+fieldset {margin:20px 0;}
+fieldset legend {font-size:.95rem;margin-bottom:8px;}
+.opts {gap:10px;}
+.opt {border-width:1px;background:#fbfcff;border-radius:13px;min-height:48px;}
+.opt:has(input:checked) {border:2px solid var(--accent);background:var(--accent-soft);}
+.opt.out:has(input:checked) {border:2px solid var(--bad);background:var(--bad-soft);}
+textarea,input[type=text],select {border-width:1px;border-radius:11px;background:#fbfcff;}
+textarea:focus,input[type=text]:focus,select:focus {outline:3px solid #c6d1fb;outline-offset:1px;}
+input[type=radio],input[type=checkbox] {accent-color:var(--accent);}
+.chip {background:#f8faff;border:1px solid #dce3fa;color:#4058b8;border-radius:9px;font-size:.82rem;}
+.chip:hover {background:#edf0ff;}
+.fb {border-width:1px;border-radius:13px;padding:14px 17px;}
+.pill {padding:3px 10px;}
+.prog {height:9px;background:#e7eafa;}
+.prog div {background:linear-gradient(90deg,var(--accent),#7e83ed);}
+.ampel {grid-template-columns:repeat(auto-fit,minmax(280px,1fr));}
+.ampel>div {border-radius:14px;padding:15px 17px; background:#fbfcff;}
+.ampel>div:has(.pill.good) {border-color:#bce3d1;background:#f7fdf9;}
+.ampel>div:has(.pill.warn) {border-color:#f0dbb4;background:#fffdf9;}
+.ampel>div:has(.pill.bad) {border-color:#f1ccd0;background:#fffbfb;}
+.choose-page {padding-bottom:38px;}
+.choose-page .card {margin:20px 0;}
+.choose-page .card>h2 {display:flex;align-items:center;gap:12px;border-bottom:1px solid var(--line);padding-bottom:15px;margin-bottom:20px;}
+.choose-page .card>h2::before {content:'01';display:grid;place-items:center;flex:none;width:36px;height:36px;border-radius:11px;background:var(--accent-soft);font-size:.77rem;color:var(--accent);letter-spacing:0;}
+.choose-page #ideaOut .card>h2::before {content:'02';}
+.choose-page .card:has(#finForms)>h2::before {content:'03';}
+.choose-page .opts.col {grid-template-columns:repeat(auto-fit,minmax(220px,1fr));}
+.choose-page .opts.col .opt {min-height:55px;}
+.choose-page .card:has(#finForms) {border-top:3px solid var(--accent);}
+.choose-page #finBtn {margin-top:4px;}
+.help-line {display:flex;align-items:center;gap:9px;color:var(--muted);font-size:.85rem;margin-bottom:18px;}
+.help-line svg {width:18px;height:18px;flex:none;}
+.completion-card {display:none;border:1px solid #b8e3d1;border-radius:19px;background:linear-gradient(110deg,#f0fbf4,#f9fdfa);padding:20px 23px;margin-top:25px;}
+.completion-card.on {display:block;}
+.completion-card h2 {font-size:1.25rem;margin-bottom:6px;}
+.completion-card p {margin-bottom:14px;color:#466b5f;}
+.completion-card a {display:inline-flex;text-decoration:none;align-items:center;gap:7px;}
+.app-footnote {border-top:1px solid var(--line);padding:22px 0 33px;color:var(--muted);font-size:.81rem;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;}
+.app-footnote a {color:var(--accent);font-weight:750;text-decoration:none;}
+@media (max-width:720px) {
+ .wrap {padding-inline:17px;}
+ .top-inner {min-height:67px;}
+ .logo-box strong {font-size:.88rem;}
+ .logo-mark {width:39px;height:39px;}
+ .step-title {display:none;}
+ .stepper {justify-content:space-between;}
+ .stepper li {flex:1;}
+ .stepper button {width:100%;padding-inline:6px;font-size:.77rem;}
+ .hero {margin-top:17px;padding:25px 22px;border-radius:20px;}
+ .hero h1 {font-size:clamp(2.05rem,7.7vw,2.9rem);}
+ .hero-tags {gap:6px;}
+ .hero-tags span {padding:5px 9px;font-size:.76rem;}
+ .page {padding-top:21px;}
+ .pager .wrap {gap:8px;min-height:76px;padding-block:10px;}
+ .pager .btn {padding:10px 12px;font-size:.83rem;}
+ .pager .msg {font-size:.76rem;}
+ .app-switch {font-size:.78rem;padding:8px 10px;}
+ .quiz .mc-opts {grid-template-columns:1fr;}
+ .choose-page .opts.col {grid-template-columns:1fr;}
+ body[data-app="choice"] .step-title {display:block;font-size:.7rem;white-space:normal;}
+ body[data-app="choice"] .step-wrap .small {display:none;}
+}
+@media (max-width:410px){
+ .logo-box {gap:8px;}
+ .logo-box strong {font-size:.78rem;}
+ .logo-box small {font-size:.63rem;}
+ .app-switch {font-size:.73rem;padding:7px;}
+ .pager .msg:not(.ok){font-size:.69rem;}
+}
+@media (prefers-reduced-motion:reduce){.top-progress>span,.quiz .mc-opt {transition:none;}}
+
+/* ===== WWG Lernapp Designsystem v1.0 – Anwendung Rechtsform wählen ===== */
+:root{color-scheme:light;--ink:#18253e;--muted:#62718b;--paper:#f5f7fc;--card:#fff;--line:#dfe5f0;--accent:#4058d6;--accent-ink:#fff;--accent-soft:#edf0ff;--good:#188356;--good-soft:#effaf4;--warn:#945d0d;--warn-soft:#fff4dc;--bad:#bc4044;--bad-soft:#fff0ef;--font-display:"Segoe UI",system-ui,-apple-system,sans-serif;--font-body:"Segoe UI",system-ui,-apple-system,sans-serif}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:light;--ink:#18253e;--muted:#62718b;--paper:#f5f7fc;--card:#fff;--line:#dfe5f0;--accent:#4058d6;--accent-ink:#fff;--accent-soft:#edf0ff;--good:#188356;--good-soft:#effaf4;--warn:#945d0d;--warn-soft:#fff4dc;--bad:#bc4044;--bad-soft:#fff0ef}}
+body{font:16px/1.65 var(--font-body);background:var(--paper)}
+h1,h2,h3{letter-spacing:-.025em}p{line-height:1.65}button,input,textarea,select{font-family:inherit}
+.wrap{max-width:1080px;padding:0 24px}
+.top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.98);box-shadow:0 3px 22px rgba(24,37,62,.045);backdrop-filter:blur(12px)}
+.top-inner{display:flex;align-items:center;justify-content:space-between;gap:20px;min-height:77px}
+.logo-box{display:flex;align-items:center;gap:12px}
+.logo-mark{width:43px;height:43px;border-radius:13px;background:var(--accent);display:grid;place-items:center;color:#fff;flex:none;box-shadow:0 8px 15px rgba(64,88,214,.16)}
+.logo-mark svg{width:26px;height:26px}
+.logo-box small{color:var(--muted);display:block;font-weight:750;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:2px}
+.logo-box strong{display:block;font-size:1rem;line-height:1.22}
+.save-hint{display:inline-flex;align-items:center;gap:10px;font-size:.86rem;color:#5d6f8f;font-weight:730;white-space:nowrap}
+.save-hint:before{content:"";height:10px;width:10px;border-radius:50%;background:#22a06b;box-shadow:0 0 0 4px #e5f8ee;flex:none}
+.save-hint.warning:before{background:#d6a12b;box-shadow:0 0 0 4px #fff4d5}
+.step-wrap{display:flex;align-items:center;gap:16px;border-top:1px solid #f0f2f8;padding-top:9px;padding-bottom:11px}
+.step-title{font-size:.74rem;letter-spacing:.085em;text-transform:uppercase;color:var(--muted);font-weight:800;white-space:nowrap}
+.stepper{display:flex;justify-content:flex-end;gap:8px;list-style:none;padding:0;margin:0;flex:1;overflow-x:auto}
+.stepper li{display:flex;flex:none}
+.stepper button{border:1.5px solid #d9e0ef;border-radius:999px;padding:7px 15px;font:750 .83rem var(--font-body);color:#64738f;background:#fff;min-width:0;white-space:nowrap}
+.stepper button.cur{color:#fff;background:var(--accent);border-color:var(--accent);box-shadow:0 6px 14px rgba(64,88,214,.16)}
+.stepper button.done{background:var(--good-soft);border-color:#bfe8d1;color:var(--good)}
+.stepper button:disabled{opacity:.64}
+.top-progress{height:5px;background:#eef1fa;overflow:hidden}
+.top-progress>span{display:block;height:100%;background:linear-gradient(90deg,#4058d6,#7b79f2);width:0;transition:width .2s ease}
+.hero{border:1px solid #e0e6fa;background:linear-gradient(115deg,#eef2ff,#fafbff 67%,#fff);border-radius:18px;padding:20px 28px 19px;margin:16px 0 10px;box-shadow:0 7px 22px rgba(30,49,104,.035);isolation:auto}
+.hero:before,.hero:after{display:none}
+.hero h1{font-size:clamp(1.75rem,3.8vw,2.5rem);line-height:1.23;letter-spacing:-.035em;margin:0 0 7px;max-width:none}
+.hero h1 span{color:var(--accent)}
+.hero p{font-size:.96rem;color:#5d6e88;margin:0;max-width:75ch}
+.page{display:none;padding:19px 0 130px}
+.page.on{display:block}
+.page>h1{font-size:clamp(1.5rem,3vw,2.1rem);margin-bottom:12px}
+.kicker{font-size:.73rem;letter-spacing:.14em;font-weight:850;color:var(--accent);margin-bottom:9px}
+.lead{font-size:1.01rem;line-height:1.65;color:#566781;margin-bottom:19px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:19px;padding:clamp(18px,2.8vw,26px);margin:17px 0;box-shadow:0 8px 26px rgba(30,44,86,.035)}
+.card h2{font-size:1.16rem;margin-bottom:10px}
+.choice-step .card>h2{display:block;border-bottom:none;padding-bottom:0;margin-bottom:14px}
+.choice-step .card>h2:before,.choice-step #ideaOut .card>h2:before,.choice-step .card:has(#finForms)>h2:before{display:none}
+.choice-step .card:has(#finForms){border-top:1px solid var(--line)}
+.choice-step .opts.col{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.choice-step .opts.col .opt{min-height:55px}
+fieldset{margin:20px 0}fieldset legend{font-size:.95rem;margin-bottom:8px}
+.opts{gap:10px}.opt{border:1px solid var(--line);background:#fbfcff;border-radius:13px;min-height:48px}
+.opt:has(input:checked){border:2px solid var(--accent);background:var(--accent-soft)}
+textarea,input[type=text],select{border:1px solid var(--line);border-radius:11px;background:#fbfcff}
+textarea:focus,input[type=text]:focus,select:focus{outline:3px solid #c6d1fb;outline-offset:1px}
+input[type=radio]{accent-color:var(--accent)}
+.btn{border:1.5px solid var(--accent);border-radius:11px;background:var(--accent);color:#fff;padding:11px 19px;font-size:.92rem;font-weight:800;box-shadow:none}
+.btn.ghost{background:#fff;color:var(--accent);border:1.5px solid var(--accent);box-shadow:none}
+.btn:disabled{opacity:.43;cursor:not-allowed;background:var(--accent);color:#fff}
+.btn:hover:not(:disabled){filter:brightness(1.08)}
+.chip{background:#f8faff;border:1px solid #dce3fa;color:#4058b8;border-radius:9px;font-size:.82rem}
+.chip:hover{background:#edf0ff}
+.fb{border-width:1px;border-radius:13px;padding:14px 17px}
+.ampel{grid-template-columns:repeat(auto-fit,minmax(280px,1fr))}
+.ampel>div{border-radius:14px;padding:15px 17px;background:#fbfcff}
+.ampel>div:has(.pill.good){border-color:#bce3d1;background:#f7fdf9}
+.ampel>div:has(.pill.warn){border-color:#f0dbb4;background:#fffdf9}
+.ampel>div:has(.pill.bad){border-color:#f1ccd0;background:#fffbfb}
+.completion-card{display:none;border:1px solid #b8e3d1;border-radius:19px;background:linear-gradient(110deg,#f0fbf4,#f9fdfa);padding:20px 23px;margin:22px 0}
+.completion-card.on{display:block}
+.completion-card h2{font-size:1.25rem;margin:0 0 7px}
+.completion-card p{margin-bottom:0;color:#466b5f}
+.pager{position:fixed;bottom:0;left:0;right:0;z-index:19;border-top:1px solid var(--line);background:rgba(255,255,255,.98);box-shadow:0 -8px 30px rgba(28,45,80,.04)}
+.pager .wrap{display:flex;align-items:center;gap:12px;min-height:76px;padding-top:12px;padding-bottom:12px}
+.pager .msg{margin:0;flex:1;font-size:.84rem;color:var(--muted)}
+.pager .msg.ok{color:var(--good);font-weight:750}
+.app-footnote{border-top:1px solid var(--line);padding:15px 0 20px;font-size:.81rem}
+.note-ampel{padding:13px 16px;background:var(--accent-soft);border-radius:12px;color:#304779;font-size:.9rem;margin:16px 0}
+:focus-visible{outline:3px solid #a8b9ff;outline-offset:2px}
+@media(max-width:760px){.wrap{padding:0 16px}.step-title{display:none}.stepper{justify-content:flex-start;gap:7px;padding-bottom:4px;scrollbar-width:thin}.stepper button{padding:7px 11px;font-size:.79rem}.top-inner{min-height:69px}.save-hint{font-size:.75rem}.hero{padding:17px 19px}.hero h1{font-size:clamp(1.6rem,5vw,2.1rem)}.page{padding-bottom:140px}.pager .wrap{gap:8px}.pager .btn{padding:10px 12px;font-size:.82rem}.pager .msg{font-size:.75rem}.choice-step .opts.col{grid-template-columns:1fr}}
+@media(max-width:540px){.top-inner{align-items:flex-start;flex-wrap:wrap;gap:4px;padding-top:11px;padding-bottom:11px}.logo-box{width:100%}.save-hint{margin-left:55px;margin-bottom:4px}.logo-mark{width:41px;height:41px}.pager .msg{max-width:47vw}}
+@media(prefers-reduced-motion:reduce){.top-progress>span{transition:none}}
+</style></head><body data-app="choice">
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="logo-box"><span class="logo-mark"><svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="20" height="20" rx="6"/><path d="M9 10h10M9 14h10M9 18h6"/><path d="m16.5 18 2 2 3.5-4"/></svg></span><span><small>Wirtschaft und Recht</small><strong>Rechtsform wählen</strong></span></div>
+    <div id="saveHint" class="save-hint">Fortschritt wird automatisch gespeichert</div>
+  </div>
+  <div class="wrap step-wrap"><div class="step-title" id="progressText">0 von 3 Etappen abgeschlossen</div><ol class="stepper" id="stepper" aria-label="Etappen und Fortschritt"></ol></div>
+  <div class="top-progress" id="progressLine" role="progressbar" aria-label="Lernfortschritt" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="globalProgress"></span></div>
+</header>
+<main class="wrap">
+  <section class="hero" aria-label="Einführung"><h1>Die passende <span>Rechtsform wählen</span></h1><p>Beschreiben Sie Ihr Unternehmen, vergleichen Sie die Rechtsformen mit der Ampel und begründen Sie Ihre Entscheidung.</p></section>
+  <section class="page on choice-step" data-page="0" id="stepProfile">
+    <div class="kicker">ETAPPE 01 / 03 · ANFORDERUNGEN</div>
+    <h1 tabindex="-1">Unser Unternehmen</h1>
+    <p class="lead fmt"><span class="op">Geben Sie an</span>, was Ihr Unternehmen mitbringt und erwartet. Die Ampel zeigt sofort, welche Rechtsformen zu den Anforderungen passen. <span class="op">Begründen Sie</span> anschließend Ihre Wahl der Rechtsform.</p>
+    <div class="card">
+      <h2>Anforderungen an die Rechtsform</h2>
+      <fieldset><legend class="fmt">Name oder Idee Ihres Unternehmens (Ihr [[geschaeftsmodell|Geschäftsmodell]])</legend><input type="text" id="ideaName" placeholder="z. B. Snackautomat am Bahnhof" autocomplete="off"></fieldset>
+      <div id="ideaQs"></div>
+    </div>
+  </section>
+  <section class="page choice-step" data-page="1" id="stepAmpel">
+    <div class="kicker">ETAPPE 02 / 03 · VERGLEICHEN</div>
+    <h1 tabindex="-1">Rechtsformen im Vergleich</h1>
+    <p class="lead">Die Ampel zeigt, welche Rechtsformen zu den Anforderungen Ihres Unternehmens passen. Schauen Sie sich die Bewertungen und Begründungen an.</p>
+    <div id="ideaOut" aria-live="polite"></div>
+    <div class="note-ampel">Prüfen Sie die Ampel sorgfältig. Im nächsten Schritt wählen Sie eine Rechtsform und begründen Ihre Entscheidung.</div>
+  </section>
+  <section class="page choice-step" data-page="2" id="stepDecision">
+    <div class="kicker">ETAPPE 03 / 03 · ENTSCHEIDEN</div>
+    <h1 tabindex="-1">Unsere Rechtsform</h1>
+    <p class="lead"><span class="op">Begründen Sie</span> Ihre Wahl mit den Vorteilen und Nachteilen dieser Rechtsform für Ihr Unternehmen.</p>
+    <div class="card">
+      <h2>Unsere Entscheidung</h2>
+      <fieldset><legend>Wir wählen diese Rechtsform:</legend><div class="opts" id="finForms"></div></fieldset>
+      <fieldset><legend>Vorteile dieser Rechtsform für uns</legend><div class="chips" id="finProChips"></div><textarea id="finPro" placeholder="Was spricht für diese Rechtsform? Gehen Sie zum Beispiel auf Haftung, Startkapital, Gründerzahl, Entscheidung und Aufwand ein."></textarea></fieldset>
+      <fieldset><legend>Nachteile dieser Rechtsform für uns</legend><div class="chips" id="finConChips"></div><textarea id="finCon" placeholder="Was spricht dagegen? Welche Nachteile nehmen wir in Kauf?"></textarea></fieldset>
+      <button type="button" class="btn" id="finBtn">Entscheidung prüfen</button>
+      <div id="finFb" aria-live="polite"></div>
+    </div>
+    <div class="completion-card" id="finishPanel" aria-live="polite"><h2>Ihre Entscheidung ist abgeschlossen!</h2><p>Sie haben eine passende Rechtsform ausgewählt und Ihre Vor- und Nachteile mit den fünf Kriterien begründet.</p></div>
+  </section>
+</main>
+<footer class="wrap app-footnote">Interaktive Lernhilfe zur Rechtsformwahl · Die Ampel ist eine vereinfachte didaktische Einschätzung.</footer>
+<nav class="pager" aria-label="Seitennavigation"><div class="wrap"><button type="button" class="btn ghost" id="prevBtn">← Zurück</button><p class="msg" id="pgMsg" aria-live="polite"></p><button type="button" class="btn" id="nextBtn">Weiter →</button></div></nav>
+<dialog id="dlg" aria-labelledby="dlgT"><div class="dlg-in"><div class="dlg-bar"><button type="button" id="dlgBack" hidden>← Zurück</button><span></span><button type="button" id="dlgX">Schließen ✕</button></div><h3 id="dlgT"></h3><div id="dlgB"></div></div></dialog>
+<script>const APP_MODE='choice';
+
+const G={
+rechtsform:{t:'Rechtsform',d:'Die Rechtsform ist der rechtliche „Rahmen“ eines Unternehmens. Sie legt fest: Wem gehört das Unternehmen? Wer darf entscheiden? Wer muss zahlen, wenn das Unternehmen in die [[insolvenz|Insolvenz]] gerät? Wie viel Startkapital braucht man? Jedes Unternehmen in Deutschland hat eine Rechtsform.',e:'Eine Fahrradwerkstatt kann eine [[gbr|GbR]] sein oder eine [[gmbh|GmbH]]. Repariert wird gleich, aber rechtlich gelten ganz andere Regeln.'},
+unternehmen:{t:'Unternehmen',d:'Ein Unternehmen ist ein Betrieb, der Waren oder Dienstleistungen verkauft, um damit [[gewinn|Gewinn]] zu machen.'},
+gruender:{t:'Gründer und Gründerzahl',d:'Gründer sind die Personen, die ein neues Unternehmen aufbauen. Die Gründerzahl sagt, wie viele es sind. Sie ist wichtig, denn manche Rechtsformen brauchen mindestens zwei Gründer.',e:'Ben und Emre sind zwei Gründer, Mia ist eine Gründerin.'},
+gewinn:{t:'Gewinn',d:'Der Gewinn ist das, was übrig bleibt, wenn man von den Einnahmen alle Kosten abzieht.',e:'Einnahmen 5.000 €, Kosten 3.500 €: Der Gewinn beträgt 1.500 €.'},
+gewerbeanmeldung:{t:'Gewerbeanmeldung',d:'Wer ein Gewerbe beginnt, meldet das beim Gewerbeamt seiner Gemeinde an. Das ist einfach und kostet nur wenige Dutzend Euro. Bei jeder Rechtsform ist sie der erste Schritt.'},
+haftung:{t:'Haftung',d:'Haftung bedeutet: Man muss für Verbindlichkeiten und Schäden geradestehen und sie bezahlen, vor allem wenn ein Unternehmen in die [[insolvenz|Insolvenz]] gerät. Bei der Wahl der Rechtsform ist das die wichtigste Frage: Haftet man nur mit dem Geld der Firma oder auch mit dem eigenen Geld?',e:'Ben und Emres Werkstatt kann eine Rechnung über 5.000 € nicht bezahlen. Die Haftung regelt, aus wessen Tasche das Geld kommt.'},
+unbeschraenkt:{t:'Unbeschränkte Haftung',d:'Man haftet mit allem: mit dem [[firmenvermoegen|Firmenvermögen]] und mit dem [[privatvermoegen|Privatvermögen]]. Im schlimmsten Fall ist alles weg, auch das Ersparte.',e:'Ben und Emres Werkstatt gerät in die Insolvenz. Das Firmenvermögen von 20.000 € reicht nicht für die offenen Rechnungen von 35.000 €. Die fehlenden 15.000 € müssen die beiden aus ihrem Privatvermögen bezahlen.'},
+beschraenkt:{t:'Beschränkte Haftung',d:'Man verliert höchstens das Geld, das man in das Unternehmen gesteckt hat. Das [[privatvermoegen|Privatvermögen]] bleibt geschützt. Die Haftungsbeschränkung gilt aber erst, wenn das Unternehmen im [[handelsregister|Handelsregister]] eingetragen ist. Außerdem kann ein [[geschaeftsfuehrer|Geschäftsführer]] oder [[vorstand|Vorstand]] bei Fehlern in der Leitung persönlich haften, und Banken verlangen bei Krediten oft eine [[buergschaft|Bürgschaft]].',e:'Mias GmbH gerät in die Insolvenz. Das Firmenvermögen von 25.000 € reicht nicht für die offenen Rechnungen von 40.000 €. Mia muss nichts aus ihrem Privatvermögen zahlen.'},
+gesamtschuldnerisch:{t:'Gesamtschuldnerische Haftung',d:'Jeder Gesellschafter kann für die komplette Forderung in Anspruch genommen werden, nicht nur für seinen Teil.',e:'Bei Ben und Emre darf ein Gläubiger die ganze Forderung von nur einem der beiden verlangen. Der muss sich das Geld dann vom anderen zurückholen.'},
+privatvermoegen:{t:'Privatvermögen',d:'Alles, was einer Person persönlich gehört: Sparkonto, Auto, Schmuck, ein Haus. Es ist vom Vermögen des Unternehmens getrennt, außer bei [[unbeschraenkt|unbeschränkter Haftung]].'},
+firmenvermoegen:{t:'Firmenvermögen',d:'Alles, was dem Unternehmen gehört: Geld auf dem Firmenkonto, Maschinen, Werkzeug, Waren.'},
+insolvenz:{t:'Insolvenz',d:'Ein Unternehmen ist insolvent, wenn es seine Rechnungen und Kredite nicht mehr bezahlen kann. Kredite aufzunehmen ist normal und oft sinnvoll. Zum Problem wird es erst, wenn das Geld nicht mehr reicht. Dann holen sich die [[glaeubiger|Gläubiger]] ihr Geld aus dem [[firmenvermoegen|Firmenvermögen]]. Bei [[unbeschraenkt|unbeschränkter Haftung]] auch aus dem [[privatvermoegen|Privatvermögen]].'},
+glaeubiger:{t:'Gläubiger',d:'Ein Gläubiger bekommt noch Geld von einem Unternehmen, zum Beispiel eine Bank, ein Lieferant oder ein Vermieter.'},
+buergschaft:{t:'Bürgschaft',d:'Mit einer Bürgschaft verspricht jemand, mit seinem eigenen Geld für die Kredite der Firma zu zahlen, falls diese nicht zahlen kann. Banken verlangen sie oft von Gründern, um sicherer zu sein.',e:'Mia unterschreibt bei der Bank eine Bürgschaft. Damit haftet sie für diesen Kredit doch mit ihrem Privatvermögen.'},
+gesellschafter:{t:'Gesellschafter',d:'Gesellschafter sind die Mitbesitzer eines Unternehmens, wenn es mehreren Personen gehört.',e:'Ben und Emre besitzen die Werkstatt gemeinsam. Beide sind Gesellschafter.'},
+gesellschaftsvertrag:{t:'Gesellschaftsvertrag',d:'Im Gesellschaftsvertrag legen die Gesellschafter Regeln fest: Wer bringt wie viel Geld ein? Wer entscheidet? Wie wird der [[gewinn|Gewinn]] verteilt? Bei GbR, OHG und KG ist ein schriftlicher Vertrag nicht erforderlich, aber zu empfehlen. Bei GmbH, UG und AG ist er Pflicht und muss von einem [[notar|Notar]] beurkundet werden.'},
+einlage:{t:'Einlage',d:'Eine Einlage ist das Geld oder der Wert, den ein Gesellschafter in das Unternehmen einbringt.',e:'Die fünf Windpark-Investoren zahlen jeweils ihre Einlage ein.'},
+handelsregister:{t:'Handelsregister (HR)',d:'Das Handelsregister ist ein öffentliches Verzeichnis beim Amtsgericht. Dort stehen bestimmte Unternehmen mit Name, Sitz, Rechtsform und den Personen, die sie vertreten. Jeder kann nachsehen, mit wem er Geschäfte macht. Die Anmeldung läuft über einen [[notar|Notar]] und kostet Geld. In der Tabelle steht dafür die Abkürzung HR.',e:'Ein Lieferant prüft im Handelsregister, ob die Firma wirklich existiert.'},
+notar:{t:'Notar und notarielle Beurkundung',d:'Ein Notar ist ein Jurist, der wichtige Verträge offiziell beurkundet. Das nennt man notarielle Beurkundung. Sie kostet Gebühren. Für GmbH, UG und AG ist sie nötig.'},
+kleingewerbe:{t:'Kleingewerbe (Nichtkaufleute)',d:'Ein kleiner Betrieb, der keinen kaufmännischen Geschäftsbetrieb braucht. Er meldet nur ein Gewerbe an und wird nicht ins [[handelsregister|Handelsregister]] eingetragen.',e:'Ein Kiosk oder ein Friseursalon mit einer Inhaberin.'},
+mindestkapital:{t:'Startkapital (Mindestkapital)',d:'Startkapital ist das Geld, das man zum Gründen mitbringt. Bei manchen Rechtsformen schreibt das Gesetz einen Mindestbetrag vor. Er soll die [[glaeubiger|Gläubiger]] schützen, wenn die Haftung beschränkt ist.',e:'GmbH: mindestens 25.000 €. GbR: kein Mindestkapital.'},
+stammkapital:{t:'Stammkapital',d:'Das Stammkapital ist das Startkapital einer [[gmbh|GmbH]] oder [[ug|UG]]. Bei der GmbH sind es mindestens 25.000 €, bei der UG ab 1 €.'},
+mindesteinzahlung:{t:'Mindesteinzahlung',d:'Bei der GmbH müssen bei der Gründung mindestens 12.500 € tatsächlich eingezahlt werden, also die Hälfte des Mindeststammkapitals von 25.000 €.'},
+bargruendung:{t:'Bargründung',d:'Die Gründung nur mit Geld, nicht mit Sachwerten wie Maschinen oder einem Auto. Bei der [[ug|UG]] ist nur das erlaubt.'},
+grundkapital:{t:'Grundkapital',d:'So heißt das Startkapital einer [[ag|AG]]. Es beträgt mindestens 50.000 € und ist in [[aktie|Aktien]] aufgeteilt.'},
+personengesellschaft:{t:'Personengesellschaft',d:'Bei einer Personengesellschaft stehen die Menschen im Mittelpunkt: Die Gesellschafter leiten die Firma selbst und haften meist persönlich. Dazu gehören [[gbr|GbR]], [[ohg|OHG]] und [[kg|KG]].'},
+kapitalgesellschaft:{t:'Kapitalgesellschaft',d:'Bei einer Kapitalgesellschaft steht das Geld (Kapital) im Mittelpunkt. Die Firma ist eine eigene [[juristische_person|juristische Person]], die Haftung ist auf das Gesellschaftsvermögen beschränkt. Dazu gehören [[gmbh|GmbH]], [[ug|UG]] und [[ag|AG]].'},
+juristische_person:{t:'Juristische Person',d:'Eine juristische Person ist eine Firma, die vor dem Gesetz wie ein eigener Mensch behandelt wird. Sie darf Verträge abschließen, Eigentum haben und verklagt werden.',e:'Das Firmenauto gehört Mias GmbH, nicht Mia selbst.'},
+komplementaer:{t:'Komplementär',d:'Der Komplementär ist in einer [[kg|KG]] der „Vollhafter“ (persönlich haftender Gesellschafter): Er leitet das Unternehmen und haftet mit dem gesamten Vermögen.'},
+kommanditist:{t:'Kommanditist',d:'Der Kommanditist ist in einer [[kg|KG]] der „Teilhafter“: Er gibt Geld (seine [[einlage|Einlage]]) und haftet nur in Höhe dieser Einlage. Im Alltag leitet er die Firma nicht.'},
+geschaeftsfuehrer:{t:'Geschäftsführer',d:'Der Geschäftsführer leitet eine [[gmbh|GmbH]] oder [[ug|UG]] im Alltag und handelt für die Firma. Er kann auch selbst Gesellschafter sein oder ein Fremder.'},
+gesellschafterversammlung:{t:'Gesellschafterversammlung',d:'Die Versammlung aller Gesellschafter einer [[gmbh|GmbH]]. Sie bestimmt die Geschäftspolitik und überwacht den [[geschaeftsfuehrer|Geschäftsführer]].'},
+aktie:{t:'Aktie',d:'Eine Aktie ist ein Anteilsschein an einer [[ag|AG]]. Wer eine Aktie kauft, besitzt einen kleinen Teil der Firma und bekommt einen Teil des Gewinns.'},
+vorstand:{t:'Vorstand',d:'Der Vorstand leitet die [[ag|AG]] im Alltag. Er wird vom [[aufsichtsrat|Aufsichtsrat]] ernannt.'},
+aufsichtsrat:{t:'Aufsichtsrat',d:'Der Aufsichtsrat kontrolliert den [[vorstand|Vorstand]] einer [[ag|AG]] und bestimmt mit über die Geschäftspolitik.'},
+hauptversammlung:{t:'Hauptversammlung',d:'Einmal im Jahr treffen sich die Besitzer der [[aktie|Aktien]] zur Hauptversammlung. Sie stimmen über wichtige Entscheidungen ab.'},
+investor:{t:'Investor',d:'Ein Investor ist eine Person oder Firma, die Geld in ein Unternehmen steckt und dafür Anteile und einen Teil des Gewinns bekommt.',e:'Sofia, Tim, Aylin, Marc und Paula stecken als Investoren viel Geld in den Bau von Windparks.'},
+prokurist:{t:'Prokurist',d:'Ein Prokurist ist ein Mitarbeiter mit einer besonderen Vollmacht: Er darf für das Unternehmen fast alle Geschäfte abschließen, ohne dass der Inhaber unterschreiben muss. Prokura können Kaufleute und Handelsgesellschaften erteilen.',e:'Die Inhaberin eines großen Fahrradhandels macht ihren Filialleiter zum Prokuristen.'},
+musterprotokoll:{t:'Notarielles Musterprotokoll',d:'Ein fertiges Formular für den Gesellschaftsvertrag, das ein [[notar|Notar]] beurkundet. Es ist für einfache Gründungen gedacht und deshalb günstiger und schneller.'},
+buchfuehrung:{t:'Buchführung',d:'Buchführung heißt: alle Einnahmen und Ausgaben genau aufschreiben. Je größer die Rechtsform, desto strenger sind die Regeln.'},
+geschaeftsmodell:{t:'Geschäftsmodell',d:'Das Geschäftsmodell beschreibt, wie ein Unternehmen Geld verdient: Wer sind die Kunden? Was wird angeboten? Was kostet es, und woher kommen die Einnahmen?'},
+gruendungsaufwand:{t:'Aufwand und Kosten der Gründung',d:'Wie viel Zeit, Papierkram und Geld kostet die Gründung (Formalitäten, [[notar|Notar]], [[handelsregister|Handelsregister]], Gebühren)? Bei einer GbR ist der Aufwand gering, bei einer AG sehr hoch.'},
+entscheidung:{t:'Entscheidungsbefugnis und Vertretung',d:'Wer im Unternehmen entscheiden darf und es nach außen vertritt, also zum Beispiel Verträge abschließt. Bei manchen Rechtsformen entscheidet eine Person allein, bei anderen alle gemeinsam, bei anderen ein Management.'},
+einzel:{t:'Einzelunternehmen',d:'Ein Einzelunternehmen gehört einer einzigen Person und ist ein [[kleingewerbe|Kleingewerbe]]. Sie entscheidet allein und haftet [[unbeschraenkt|unbeschränkt]]. Nötig ist nur die [[gewerbeanmeldung|Gewerbeanmeldung]]. Es gibt kein festes Kapital und keinen Eintrag ins [[handelsregister|Handelsregister]].',e:'Ein Friseursalon, den eine Friseurin allein führt.'},
+gbr:{t:'GbR (Gesellschaft bürgerlichen Rechts)',d:'In einer GbR schließen sich mindestens zwei Personen zusammen. Es gibt kein festes Kapital und keine Mindesteinlage, die [[gewerbeanmeldung|Gewerbeanmeldung]] genügt und ein Eintrag ins [[handelsregister|Handelsregister]] ist nicht nötig. Alle [[gesellschafter|Gesellschafter]] führen und vertreten das Unternehmen gemeinsam, sofern im [[gesellschaftsvertrag|Vertrag]] nichts anderes steht. Sie haften [[unbeschraenkt|unbeschränkt]] und [[gesamtschuldnerisch|gesamtschuldnerisch]].',e:'Ben und Emre (Fahrradwerkstatt) könnten eine GbR gründen.'},
+ohg:{t:'OHG (Offene Handelsgesellschaft)',d:'Eine OHG hat mindestens zwei [[gesellschafter|Gesellschafter]] und betreibt ein kaufmännisches Geschäft. Sie muss ins [[handelsregister|Handelsregister]]. Jeder Gesellschafter darf das Unternehmen allein führen und vertreten (Einzelgeschäftsführung), sofern der Vertrag nichts anderes regelt. Ein [[prokurist|Prokurist]] ist möglich. Alle haften [[unbeschraenkt|unbeschränkt]] und [[gesamtschuldnerisch|gesamtschuldnerisch]].',e:'Zwei Geschwister führen gemeinsam einen Großhandel für Obst und Gemüse.'},
+kg:{t:'KG (Kommanditgesellschaft)',d:'Eine KG hat mindestens zwei Gesellschafter: mindestens einen [[komplementaer|Komplementär]], der leitet und unbeschränkt haftet, und mindestens einen [[kommanditist|Kommanditisten]], der nur Geld gibt und nur in Höhe seiner [[einlage|Einlage]] haftet. Der Eintrag ins [[handelsregister|Handelsregister]] ist nötig.',e:'Karla führt die Bäckerei als Komplementärin, ihr Onkel Max gibt als Kommanditist 80.000 €.'},
+gmbh:{t:'GmbH (Gesellschaft mit beschränkter Haftung)',d:'Die GmbH ist eine [[kapitalgesellschaft|Kapitalgesellschaft]]. Schon ein Gründer reicht. Das [[stammkapital|Mindeststammkapital]] beträgt 25.000 €, davon müssen bei der Gründung 12.500 € eingezahlt werden ([[mindesteinzahlung|Mindesteinzahlung]]). Die Haftung ist [[beschraenkt|beschränkt]] und gilt erst nach der Eintragung ins [[handelsregister|Handelsregister]]. Ein [[geschaeftsfuehrer|Geschäftsführer]] leitet die Firma, die [[gesellschafterversammlung|Gesellschafterversammlung]] bestimmt die Politik. Der Vertrag ist schriftlich und [[notar|notariell beurkundet]]. Die Formalitäten sind umfangreich, die Kosten hoch.',e:'Mia könnte für ihre Carsharing-App allein eine GmbH gründen.'},
+ug:{t:'UG (haftungsbeschränkt)',d:'Die Unternehmergesellschaft ist eine „Mini-GmbH“. Das [[stammkapital|Mindeststammkapital]] beträgt nur 1 €, es muss aber bei der Gründung vollständig eingezahlt werden, und zwar nur als [[bargruendung|Bargründung]]. Sonst gilt alles wie bei der [[gmbh|GmbH]]. Mit dem [[musterprotokoll|notariellen Musterprotokoll]] wird die Gründung einfacher.',e:'Zwei Studierende gründen mit 1.000 € eine UG für ihre Web-Agentur.'},
+ag:{t:'AG (Aktiengesellschaft)',d:'Eine AG braucht mindestens 50.000 € [[grundkapital|Grundkapital]], das in [[aktie|Aktien]] aufgeteilt ist. Die Haftung ist [[beschraenkt|beschränkt]]. Der [[vorstand|Vorstand]] leitet die Firma, der [[aufsichtsrat|Aufsichtsrat]] bestimmt die Geschäftspolitik mit und die Besitzer der Aktien stimmen in der [[hauptversammlung|Hauptversammlung]] ab. Die Formalitäten sind sehr umfangreich, die Gründungskosten hoch, und der Vertrag muss [[notar|notariell beurkundet]] werden.',e:'BMW, Siemens und adidas sind Aktiengesellschaften.'}
+};
+const FORMS=[['einzel','Einzelunternehmen'],['gbr','GbR'],['ohg','OHG'],['kg','KG'],['gmbh','GmbH'],['ug','UG'],['ag','AG']];
+const FN=Object.fromEntries(FORMS);
+
+/* ============ Hilfen ============ */
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const eur=n=>n.toLocaleString('de-DE')+' €';
+function term(k,label){const g=G[k];label=label||g.t;return `<span class="t">${label}<button type="button" class="i" data-i="${k}" aria-label="Erklärung zu ${label}">i</button></span>`;}
+function fmt(s){return s.replace(/\[\[([a-z0-9_]+)(?:\|([^\]]+))?\]\]/g,(m,k,l)=>G[k]?term(k,l):(l||k));}
+const LV=['bad','warn','good'];
+const LVT=['Passt nicht','Möglich, aber …','Passt gut'];
+const pill=l=>`<span class="pill ${LV[l]}">${LVT[l]}</span>`;
+const why0=t=>t.replace(/^(Passt (sehr )?gut|Möglich): /,'');
+const warnBox=t=>`<div class="fb warn"><p>${t}</p></div>`;
+function iBtn(k,label){return `<button type="button" class="i" data-i="${k}" aria-label="Erklärung zu ${label}">i</button>`;}
+
+/* ============ Info-Dialog ============ */
+const dlg=$('#dlg');let cur=null,stack=[];
+function showInfo(k){
+  const g=G[k];if(!g)return;cur=k;
+  $('#dlgT').textContent=g.t;
+  $('#dlgB').innerHTML=`<p>${fmt(g.d)}</p>`+(g.e?`<p class="ex"><b>Beispiel:</b> ${fmt(g.e)}</p>`:'');
+  $('#dlgBack').hidden=!stack.length;
+  if(!dlg.open){try{dlg.showModal();}catch(e){dlg.setAttribute('open','');}}
+  dlg.scrollTop=0;
+}
+function closeDlg(){try{dlg.close();}catch(e){dlg.removeAttribute('open');}stack=[];cur=null;}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.i');
+  if(b){
+    if(dlg.contains(b)){if(cur)stack.push(cur);}else{stack=[];cur=null;}
+    showInfo(b.dataset.i);return;
+  }
+  if(e.target===dlg)closeDlg();
+});
+$('#dlgX').addEventListener('click',closeDlg);
+$('#dlgBack').addEventListener('click',()=>{const k=stack.pop();if(k)showInfo(k);});
+
+/* ============ Zustand ============ */
+const S={att:{},hmoved:false,match:false,elim:{},dec:{},fin:{ok:false}};
+
+/* ============ Quiz ============ */
+const MC={};
+function mcHTML(id,q,opts,correct,explain){
+  MC[id]={correct,explain,done:false,first:null};
+  return `<div class="mc" data-mc="${id}" role="group" aria-labelledby="${id}-q"><p class="mc-q" id="${id}-q">${fmt(q)}</p><div class="mc-opts">${opts.map((o,i)=>`<button type="button" class="mc-opt" data-mi="${i}">${o}</button>`).join('')}</div><p class="mc-fb" aria-live="polite"></p></div>`;
+}
+document.addEventListener('click',e=>{
+  const b=e.target.closest('.mc-opt');if(!b)return;
+  const box=b.closest('.mc'),m=MC[box.dataset.mc];if(!m||m.done)return;
+  const i=+b.dataset.mi,ok=i===m.correct,fb=$('.mc-fb',box);
+  if(m.first===null)m.first=ok;
+  if(ok){
+    m.done=true;
+    $$('.mc-opt',box).forEach((x,xi)=>{x.disabled=true;if(xi===m.correct)x.classList.add('right');});
+    fb.className='mc-fb ok';fb.innerHTML=`<b>Richtig!</b> <span>${fmt(m.explain)}</span>`;
+  }else{
+    m.wrong=(m.wrong||0)+1;b.classList.add('wrong');b.disabled=true;
+    fb.className='mc-fb no';fb.innerHTML='<b>Nicht ganz.</b> <span>Schauen Sie noch einmal genau hin und versuchen Sie es erneut.</span>';
+  }
+});
+const ids=(p,n)=>Array.from({length:n},(_,i)=>p+(i+1));
+const allDone=a=>a.every(i=>MC[i]&&MC[i].done);
+
+/* ============ Piktogramme und Bilder ============ */
+const SV=b=>`<svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${b}</svg>`;
+const ICON={
+ scale:SV('<path d="M24 8v30M14 40h20M9 15h30"/><path d="M9 15 3 29h12zM39 15l-6 14h12z"/>'),
+ coins:SV('<ellipse cx="24" cy="12" rx="14" ry="6"/><path d="M10 12v9c0 3.3 6.3 6 14 6s14-2.7 14-6v-9M10 21v9c0 3.3 6.3 6 14 6s14-2.7 14-6v-9"/>'),
+ people:SV('<circle cx="15" cy="15" r="6"/><circle cx="33" cy="15" r="6"/><path d="M4 40c0-8 5-12 11-12s11 4 11 12M22 40c0-8 5-12 11-12s11 4 11 12"/>'),
+ doc:SV('<path d="M11 5h18l8 8v30H11z"/><path d="M29 5v8h8M17 24h14M17 32h14"/>'),
+ target:SV('<circle cx="24" cy="24" r="17"/><circle cx="24" cy="24" r="9"/><circle cx="24" cy="24" r="2" fill="currentColor"/>'),
+ drag:SV('<rect x="5" y="7" width="18" height="15" rx="3"/><rect x="25" y="26" width="18" height="15" rx="3" stroke-dasharray="4 3"/><path d="M23 14h8a4 4 0 0 1 4 4v5M31 20l4 4 4-4"/>'),
+ quiz:SV('<circle cx="24" cy="24" r="18"/><path d="M18 19a6 6 0 1 1 8 5.5c-2 1-2 2.5-2 4.5M24 34v.5"/>'),
+ cross:SV('<circle cx="24" cy="24" r="18"/><path d="M16 16l16 16M32 16 16 32"/>'),
+ check:SV('<circle cx="24" cy="24" r="18"/><path d="M15 25l7 7 12-14"/>'),
+ info:SV('<circle cx="24" cy="24" r="18"/><path d="M24 22v11M24 15v.5"/>'),
+ lock:SV('<rect x="10" y="21" width="28" height="20" rx="4"/><path d="M16 21v-5a8 8 0 0 1 16 0v5"/>'),
+ warn:SV('<path d="M24 6 44 41H4z"/><path d="M24 19v11M24 35v.5"/>')
+};
+const ill=(bg,label,body)=>`<svg class="ill" viewBox="0 0 160 100" role="img" aria-label="${label}"><rect width="160" height="100" rx="14" fill="${bg}"/>${body}</svg>`;
+const turbine=(x,y,h)=>`<rect x="${x-1.5}" y="${y}" width="3" height="${h}" fill="#44546a"/><g transform="translate(${x} ${y})"><path d="M0 0V-22M0 0 19 11M0 0-19 11" stroke="#44546a" stroke-width="3.5" stroke-linecap="round"/><circle r="3.5" fill="#44546a"/></g>`;
+const ILL={
+ lena:ill('#fde7f0','Friseursalon mit Spiegel und Stuhl',
+  '<ellipse cx="50" cy="44" rx="22" ry="28" fill="#fff" stroke="#8a4b6d" stroke-width="4"/><rect x="46" y="72" width="8" height="12" fill="#8a4b6d"/><rect x="92" y="50" width="38" height="10" rx="4" fill="#c2410c"/><rect x="98" y="26" width="26" height="28" rx="7" fill="#c2410c"/><rect x="107" y="60" width="8" height="18" fill="#444"/><rect x="96" y="78" width="30" height="6" rx="3" fill="#444"/><circle cx="143" cy="18" r="5" fill="none" stroke="#8a4b6d" stroke-width="3"/><circle cx="143" cy="32" r="5" fill="none" stroke="#8a4b6d" stroke-width="3"/><path d="M141 22l-12 18M145 22l12 18" stroke="#8a4b6d" stroke-width="3" stroke-linecap="round"/>'),
+ ben:ill('#e3f0ff','Fahrradwerkstatt mit Fahrrad',
+  '<rect y="84" width="160" height="16" fill="#c9d6ea"/><circle cx="42" cy="64" r="20" fill="none" stroke="#1f3a6b" stroke-width="5"/><circle cx="118" cy="64" r="20" fill="none" stroke="#1f3a6b" stroke-width="5"/><path d="M42 64 62 36h38l18 28M62 36l16 28H42M100 36l-4-10h-10M56 30h14" fill="none" stroke="#d9480f" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="78" cy="64" r="4" fill="#1f3a6b"/>'),
+ hof:ill('#e8f5e0','Hofladen in einer Scheune',
+  '<rect y="86" width="160" height="14" fill="#7bb661"/><rect x="28" y="46" width="92" height="42" fill="#b3261e"/><path d="M20 48 74 18l54 30z" fill="#7a1b14"/><rect x="62" y="60" width="24" height="28" fill="#fff"/><path d="M62 60l24 28M86 60 62 88" stroke="#b3261e" stroke-width="3"/><rect x="36" y="54" width="20" height="10" rx="2" fill="#f6d365"/><rect x="92" y="54" width="20" height="10" rx="2" fill="#f6d365"/><rect x="132" y="74" width="20" height="14" rx="2" fill="#a0672b"/><circle cx="138" cy="72" r="5" fill="#c62828"/><circle cx="147" cy="72" r="5" fill="#e8590c"/>'),
+ mia:ill('#e6e9ff','Carsharing-App auf dem Handy und ein Auto',
+  '<rect x="16" y="10" width="40" height="80" rx="8" fill="#1f2a5c"/><rect x="21" y="20" width="30" height="54" rx="3" fill="#8fb4ff"/><circle cx="36" cy="82" r="3" fill="#fff"/><path d="M36 30a7 7 0 0 1 7 7c0 6-7 14-7 14s-7-8-7-14a7 7 0 0 1 7-7z" fill="#d9480f"/><circle cx="36" cy="37" r="2.5" fill="#fff"/><rect x="70" y="58" width="76" height="20" rx="7" fill="#1f56d2"/><path d="M82 58l9-16h32l11 16z" fill="#1f56d2"/><path d="M93 46h13v12H88zM110 46h12l7 12h-19z" fill="#cfe0ff"/><circle cx="90" cy="80" r="8" fill="#222"/><circle cx="127" cy="80" r="8" fill="#222"/><circle cx="90" cy="80" r="3" fill="#ddd"/><circle cx="127" cy="80" r="3" fill="#ddd"/>'),
+ selin:ill('#fff1d6','Foodtruck',
+  '<rect y="86" width="160" height="14" fill="#d9c7a0"/><rect x="18" y="34" width="86" height="44" rx="6" fill="#e8590c"/><path d="M104 46h22l12 14v18h-34z" fill="#c2410c"/><path d="M110 50h12l7 10h-19z" fill="#cfe0ff"/><rect x="30" y="44" width="54" height="18" rx="3" fill="#fff4d6"/><path d="M26 44h66l-4-10H30z" fill="#fff"/><path d="M38 34v10M52 34v10M66 34v10M80 34v10" stroke="#c62828" stroke-width="5"/><circle cx="44" cy="80" r="9" fill="#222"/><circle cx="118" cy="80" r="9" fill="#222"/><circle cx="44" cy="80" r="3" fill="#ddd"/><circle cx="118" cy="80" r="3" fill="#ddd"/>'),
+ karla:ill('#fdeccf','Bäckerei mit Brot und Ähren',
+  '<ellipse cx="70" cy="62" rx="44" ry="24" fill="#c98b3c"/><path d="M46 50l12 22M66 46l12 26M86 50l12 22" stroke="#f3d28b" stroke-width="5" stroke-linecap="round"/><path d="M132 90V32" stroke="#8a6a1f" stroke-width="3"/><g fill="#e0b341"><ellipse cx="125" cy="44" rx="5" ry="9" transform="rotate(-25 125 44)"/><ellipse cx="139" cy="44" rx="5" ry="9" transform="rotate(25 139 44)"/><ellipse cx="125" cy="62" rx="5" ry="9" transform="rotate(-25 125 62)"/><ellipse cx="139" cy="62" rx="5" ry="9" transform="rotate(25 139 62)"/><ellipse cx="132" cy="28" rx="5" ry="9"/></g>'),
+ nils:ill('#efe6ff','Lern-App auf einem Tablet',
+  '<rect x="26" y="12" width="108" height="76" rx="9" fill="#3b2a7a"/><rect x="32" y="18" width="96" height="64" rx="4" fill="#fff"/><path d="M80 28 56 41l24 13 24-13z" fill="#7c3aed"/><path d="M66 48v11c9 6 19 6 28 0V48" fill="none" stroke="#7c3aed" stroke-width="4"/><path d="M104 43v14" stroke="#f59f00" stroke-width="3"/><rect x="46" y="66" width="68" height="6" rx="3" fill="#cbb8ff"/>'),
+ wind:ill('#dff3ff','Windpark mit drei Windrädern',
+  '<path d="M0 100V80c30-14 60-6 90-10 30-4 50 4 70 8v22z" fill="#7bb661"/>'+turbine(36,40,40)+turbine(82,30,42)+turbine(126,42,36))
+};
+function injectArt(root=document){
+  $$('[data-ic]',root).forEach(el=>{el.outerHTML=ICON[el.dataset.ic];});
+  $$('[data-ill]',root).forEach(el=>{el.outerHTML=ILL[el.dataset.ill];});
+}
+
+/* ============ Die acht Unternehmen ============ */
+const CASES=[
+{k:'lena',who:'Lena',biz:'Friseursalon',ill:'lena',
+ story:'Lena ist 24 und gelernte Friseurin. Sie möchte einen kleinen Friseursalon eröffnen und dort allein arbeiten. Sie hat 5.000 € gespart und bezahlt die Einrichtung selbst. Sie will möglichst einfach starten.',
+ rate:{
+  einzel:[2,'Passt gut: Lena gründet allein, braucht kein Mindestkapital und meldet nur ein Gewerbe an. Sie entscheidet allein. Da sie wenig Geld investiert und leiht, ist die unbeschränkte Haftung hier ein kleines Risiko.'],
+  gbr:[0,'Eine GbR braucht mindestens zwei Gründer. Lena ist allein.'],
+  ohg:[0,'Eine OHG braucht mindestens zwei Gesellschafter und einen kaufmännischen Betrieb. Beides trifft nicht zu.'],
+  kg:[0,'Eine KG braucht mindestens zwei Gesellschafter, einen Komplementär und einen Kommanditisten. Lena ist allein.'],
+  gmbh:[0,'Die GmbH braucht 25.000 € Stammkapital, davon müssen bei der Gründung 12.500 € eingezahlt werden. Lena hat nur 5.000 €.'],
+  ug:[1,'Möglich: Eine UG kann man allein und schon ab 1 € gründen. Aber Notar, Handelsregister und Formalitäten wie bei der GmbH sind für einen kleinen Salon viel Aufwand.'],
+  ag:[0,'50.000 € Grundkapital und sehr umfangreiche Formalitäten. Für einen kleinen Salon viel zu groß.']},
+ muster:'Ich entscheide mich für das Einzelunternehmen, weil ich allein gründe und nur 5.000 € Startkapital habe. Ich kann allein entscheiden und brauche nur eine Gewerbeanmeldung. Ein Nachteil ist die unbeschränkte Haftung, aber bei einem kleinen Salon sind die Investitionen und damit das Risiko gering.'},
+{k:'ben',who:'Ben und Emre',biz:'Fahrradwerkstatt',ill:'ben',
+ story:'Ben und Emre sind Freunde und möchten eine kleine Fahrradwerkstatt eröffnen. Beide bringen jeweils 10.000 € Startkapital ein und möchten das Unternehmen gemeinsam führen. Entscheidungen sollen grundsätzlich gemeinsam getroffen werden. Sie kennen sich seit vielen Jahren und sind bereit, bei einer Insolvenz auch persönlich einzustehen.',
+ rate:{
+  einzel:[0,'Ein Einzelunternehmen gehört nur einer Person. Hier gründen zwei Freunde gemeinsam.'],
+  gbr:[2,'Passt gut: Es gibt mindestens zwei Gründer, kein Mindestkapital, gemeinsame Geschäftsführung und geringe Formalitäten. Die persönliche, gesamtschuldnerische Haftung nehmen beide in Kauf.'],
+  ohg:[1,'Möglich: Auch hier gibt es kein Mindestkapital und alle haften persönlich. Aber die OHG braucht den Handelsregistereintrag und passt zu einem kaufmännischen Betrieb. Außerdem darf bei der OHG jeder Gesellschafter allein entscheiden, sofern der Vertrag nichts anderes regelt. Ben und Emre wollen gemeinsam entscheiden.'],
+  kg:[0,'Eine KG braucht einen Komplementär und einen Kommanditisten, also einen reinen Geldgeber mit beschränkter Haftung. Hier arbeiten beide mit und beide wollen persönlich haften.'],
+  gmbh:[0,'Das Mindeststammkapital beträgt 25.000 €. Die beiden bringen zusammen nur 20.000 € ein. Dazu kommen umfangreiche Formalitäten und hohe Gründungskosten, obwohl sie persönlich haften wollen.'],
+  ug:[1,'Möglich: Das Mindeststammkapital beträgt nur 1 € und die Haftung wäre beschränkt. Aber Ben und Emre sind bereit, persönlich zu haften. Sie hätten also Formalitäten und Kosten (Notar, Handelsregister), ohne den Schutz zu brauchen.'],
+  ag:[0,'Das Mindestgrundkapital beträgt 50.000 €, die Formalitäten sind sehr umfangreich und die Gründungskosten hoch. Das ist für eine kleine Werkstatt viel zu groß.']},
+ muster:'Wir entscheiden uns für die GbR, weil wir zu zweit sind und zusammen 20.000 € Startkapital haben. Wir wollen gemeinsam entscheiden und sind bereit, persönlich zu haften. Die GbR braucht kein Mindestkapital und nur geringe Formalitäten. Ein Nachteil ist, dass wir beide gesamtschuldnerisch mit unserem Privatvermögen haften.'},
+{k:'hof',who:'Anna, Paul und Oma Rosi',biz:'Hofladen',ill:'hof',
+ story:'Anna, Paul und Oma Rosi möchten einen landwirtschaftlichen Betrieb mit Hofladen weiterführen. Sie haben nur wenig Startkapital und möchten möglichst unkompliziert gründen. Alle arbeiten im Betrieb mit und möchten Entscheidungen gemeinsam treffen. Da sie sich gut kennen und einander vertrauen, nehmen sie auch eine persönliche Haftung in Kauf.',
+ rate:{
+  einzel:[0,'Es gründen drei Personen, ein Einzelunternehmen hat nur einen Inhaber.'],
+  gbr:[2,'Passt gut: Es gibt mindestens zwei Gründer, kein Mindestkapital, gemeinsame Geschäftsführung und geringe Formalitäten (Gewerbeanmeldung, kein Handelsregister). Die persönliche Haftung nehmen sie in Kauf.'],
+  ohg:[1,'Möglich: Gleiche Haftung und auch kein Mindestkapital. Aber die OHG braucht den Handelsregistereintrag und jeder Gesellschafter darf allein entscheiden, sofern der Vertrag nichts anderes regelt. Das ist mehr Aufwand, als die Familie will.'],
+  kg:[0,'Alle drei arbeiten mit, wollen gemeinsam entscheiden und nehmen die persönliche Haftung in Kauf. Eine KG mit Komplementär und Kommanditist (beschränkte Haftung, reiner Geldgeber) passt nicht.'],
+  gmbh:[0,'Sie haben nur wenig Startkapital, die GmbH braucht aber 25.000 € Stammkapital. Dazu kommen umfangreiche Formalitäten und hohe Kosten. Sie wollen es unkompliziert.'],
+  ug:[1,'Möglich: Das Mindeststammkapital beträgt nur 1 €. Aber die Formalitäten und Kosten sind wie bei der GmbH. Die Familie will es unkompliziert und nimmt die persönliche Haftung in Kauf.'],
+  ag:[0,'Das Mindestgrundkapital beträgt 50.000 €, die Formalitäten sind sehr umfangreich. Mit wenig Startkapital ist das unmöglich.']},
+ muster:'Wir entscheiden uns für die GbR, weil wir zu dritt sind, wenig Startkapital haben und es unkompliziert halten wollen. Alle arbeiten mit und wir wollen gemeinsam entscheiden. Die persönliche Haftung nehmen wir in Kauf. Die GbR braucht kein Mindestkapital und nur eine Gewerbeanmeldung. Ein Nachteil ist, dass wir alle gesamtschuldnerisch haften.'},
+{k:'mia',who:'Mia',biz:'Carsharing-App',ill:'mia',
+ story:'Mia hat eine innovative Carsharing-App entwickelt und möchte dafür ein Unternehmen gründen. Da sie ihr privates Vermögen schützen möchte, ist sie bereit, das notwendige Stammkapital aufzubringen. Sie möchte zunächst allein entscheiden und später eventuell weitere Mitarbeitende einstellen.',
+ rate:{
+  einzel:[0,'Beim Einzelunternehmen haftet Mia unbeschränkt mit ihrem Privatvermögen. Das will sie vermeiden.'],
+  gbr:[0,'Eine GbR braucht mindestens zwei Gründer und die Gesellschafter haften mit dem Privatvermögen.'],
+  ohg:[0,'Eine OHG braucht mindestens zwei Gründer und alle haften mit dem Privatvermögen.'],
+  kg:[0,'Eine KG braucht mindestens zwei Gesellschafter und der Komplementär haftet unbeschränkt. Mia will ihr Privatvermögen schützen.'],
+  gmbh:[2,'Passt gut: Eine GmbH kann schon mit einem Gründer gegründet werden. Die Haftung ist auf das Gesellschaftsvermögen beschränkt und ein Geschäftsführer entscheidet. Mia ist bereit, das Mindeststammkapital von 25.000 € aufzubringen. Nachteile: umfangreiche Formalitäten, hohe Gründungskosten, notarielle Beurkundung. Die Haftungsbeschränkung gilt erst nach der Eintragung ins Handelsregister.'],
+  ug:[1,'Möglich: Auch eine UG kann eine Person gründen und die Haftung ist beschränkt. Da Mia das Stammkapital von 25.000 € aufbringen will, ist die GmbH aber die bessere Wahl. Eine GmbH wirkt auf Geschäftspartner gewichtiger als eine UG mit wenig Kapital.'],
+  ag:[0,'Das Mindestgrundkapital beträgt 50.000 €, die Formalitäten sind sehr umfangreich. Entscheiden würden Vorstand, Aufsichtsrat und Hauptversammlung, nicht Mia allein.']},
+ muster:'Ich entscheide mich für die GmbH, weil ich allein gründe, mein Privatvermögen schützen will und das Stammkapital von 25.000 € aufbringen kann. Die Haftung ist auf das Gesellschaftsvermögen beschränkt und ich kann als Geschäftsführerin allein entscheiden. Ein Nachteil sind die umfangreichen Formalitäten und die hohen Gründungskosten.'},
+{k:'selin',who:'Selin und Jan',biz:'Foodtruck',ill:'selin',
+ story:'Selin und Jan sind Freunde und wollen gemeinsam einen Foodtruck betreiben. Der Truck kostet 60.000 €. Zusammen haben sie 10.000 €, den Rest von 50.000 € leihen sie sich bei der Bank. Beide arbeiten im Truck mit. Ihre Eltern wollen nicht, dass das Ersparte der Familie in Gefahr gerät.',
+ rate:{
+  einzel:[0,'Der Foodtruck soll beiden gehören. Ein Einzelunternehmen hat nur einen Inhaber.'],
+  gbr:[1,'Möglich und sehr schnell gegründet, ohne Notar und ohne Startkapital. Aber beide haften gesamtschuldnerisch mit allem für den Kredit von 50.000 €. Bei Misserfolg wäre das Privatvermögen in Gefahr.'],
+  ohg:[0,'Eine OHG ist für größere kaufmännische Betriebe gedacht und braucht das Handelsregister. Die Gesellschafter haften auch hier voll. Gegenüber der GbR gibt es keinen Vorteil.'],
+  kg:[0,'Beide wollen mitarbeiten. Eine KG braucht aber jemanden, der nur Geld gibt (Kommanditist). Der Komplementär haftet außerdem voll.'],
+  gmbh:[0,'Die 10.000 € reichen nicht für 25.000 € Stammkapital, bei der Gründung müssten 12.500 € eingezahlt werden.'],
+  ug:[2,'Passt gut: Zu zweit gründbar, schon ab 1 € Stammkapital (sie haben 10.000 €) und die Haftung ist beschränkt. Nachteil: Notar und Handelsregister kosten Zeit und Geld und die Bank verlangt womöglich trotzdem eine Bürgschaft.'],
+  ag:[0,'Mindestens 50.000 € Grundkapital, Vorstand, Aufsichtsrat und Hauptversammlung. Viel zu aufwendig für einen Foodtruck.']},
+ muster:'Wir entscheiden uns für die UG (haftungsbeschränkt), weil wir zu zweit sind, nur 10.000 € haben und trotzdem einen Kredit von 50.000 € brauchen. Bei der UG ist unsere Haftung beschränkt, dadurch ist unser Privatvermögen besser geschützt. Ein Nachteil ist der Aufwand mit Notar und Handelsregister.'},
+{k:'karla',who:'Karla und Onkel Max',biz:'Bäckerei',ill:'karla',
+ story:'Karla führt seit Jahren eine Bäckerei. Für eine neue Backstube braucht sie 80.000 €. Ihr Onkel Max will das Geld geben und am Gewinn beteiligt sein. Er will aber nicht in der Bäckerei arbeiten und im Notfall nicht sein Haus riskieren.',
+ rate:{
+  einzel:[0,'Max könnte kein Mitbesitzer werden. Ein Einzelunternehmen gehört nur einer Person.'],
+  gbr:[0,'Max müsste als Gesellschafter mit allem haften, auch mit seinem Haus. Genau das will er nicht.'],
+  ohg:[0,'Auch in der OHG haften alle Gesellschafter voll. Das passt nicht zu Max’ Wunsch.'],
+  kg:[2,'Passt gut: Karla ist Komplementärin, sie leitet und haftet voll. Max ist Kommanditist, er gibt 80.000 € und haftet nur bis zu dieser Einlage. Er muss nicht mitarbeiten.'],
+  gmbh:[1,'Möglich: Beide haften nur mit ihrer Einlage und 80.000 € reichen für das Stammkapital. Nachteile: Notar, strengere Formalitäten und ein Geschäftsführer. Das ist mehr Aufwand als bei einer KG.'],
+  ug:[1,'Möglich: Beide hätten beschränkte Haftung. Bei so viel Kapital ist aber die GmbH die sinnvollere Kapitalgesellschaft.'],
+  ag:[0,'Viel zu aufwendig für eine Bäckerei mit einem einzigen Geldgeber.']},
+ muster:'Ich entscheide mich für die KG. Karla wird Komplementärin und haftet voll, Max wird Kommanditist und haftet nur mit seiner Einlage von 80.000 €. So bleibt sein Haus geschützt und er muss nicht mitarbeiten. Ein Nachteil ist, dass Karla weiter mit allem haftet.'},
+{k:'nils',who:'Nils, Ida und Tarek',biz:'Lern-App',ill:'nils',
+ story:'Nils, Ida und Tarek entwickeln eine Lern-App. Sie haben zusammen 30.000 € gespart. In zwei Jahren brauchen sie etwa 500.000 € von Investoren, um Programmierer einzustellen. Die Investoren sollen dafür Anteile an der Firma bekommen. Das Risiko ist hoch, denn die App kann auch scheitern.',
+ rate:{
+  einzel:[0,'Die App gehört drei Personen und soll Anteile an Investoren abgeben. Das geht in einem Einzelunternehmen nicht.'],
+  gbr:[0,'Investoren würden mit ihrem ganzen Vermögen haften, das macht kaum jemand. Auch für die Gründer wäre das Risiko riesig.'],
+  ohg:[0,'Alle Gesellschafter, auch die Investoren, würden voll haften. Bei diesem Risiko ist das keine gute Idee.'],
+  kg:[1,'Möglich: Investoren könnten Kommanditisten werden. Aber mindestens ein Gründer müsste als Komplementär voll haften. Das wollen die drei vermeiden.'],
+  gmbh:[2,'Passt gut: Die Haftung ist beschränkt, 30.000 € reichen für das Mindeststammkapital von 25.000 € und Investoren können Geschäftsanteile bekommen. Nachteil: Notar, Handelsregister und strengere Formalitäten.'],
+  ug:[1,'Möglich als Start, die Haftung ist beschränkt. Mit 30.000 € haben sie aber genug für eine GmbH und Investoren vertrauen einer GmbH eher.'],
+  ag:[0,'50.000 € Grundkapital haben sie nicht und der Aufwand wäre riesig. Wenn die Firma später groß ist, kann man eine GmbH noch in eine AG umwandeln.']},
+ muster:'Wir entscheiden uns für die GmbH, weil wir zu dritt sind, 30.000 € Startkapital haben und Investoren Anteile bekommen sollen. Die Haftung ist beschränkt, deshalb ist unser Privatvermögen geschützt. Ein Nachteil: Wir brauchen einen Notar und das Handelsregister.'},
+{k:'wind',who:'Sofia, Tim, Aylin, Marc und Paula',biz:'Windparks',ill:'wind',
+ story:'Sofia, Tim, Aylin, Marc und Paula sind Investoren und möchten ein Unternehmen gründen, das Windparks baut. Für das Vorhaben wird sehr viel Kapital benötigt. Die Eigentümer sollen nur mit ihrer Einlage haften. Die Geschäftsführung soll von einem professionellen Management übernommen werden, die Entscheidungsbefugnis muss nicht zwingend bei den Gründern liegen.',
+ rate:{
+  einzel:[0,'Es gibt fünf Investoren, ein Einzelunternehmen hat nur einen Inhaber und der haftet unbeschränkt.'],
+  gbr:[0,'Alle Gesellschafter haften persönlich mit ihrem Privatvermögen. Die Investoren wollen nur mit ihrer Einlage haften. Außerdem führen bei der GbR die Gesellschafter selbst.'],
+  ohg:[0,'Alle Gesellschafter haften persönlich mit ihrem Privatvermögen. Die Investoren wollen nur mit ihrer Einlage haften. Außerdem führen die Gesellschafter selbst.'],
+  kg:[0,'Mindestens ein Komplementär haftet unbeschränkt. Die Eigentümer wollen aber alle nur mit ihrer Einlage haften. Außerdem führt in der KG grundsätzlich der persönlich haftende Gesellschafter.'],
+  gmbh:[1,'Möglich: Die Haftung ist beschränkt, ein Geschäftsführer (auch ein Fremder) kann leiten und mehrere Gesellschafter können beteiligt sein. Für sehr viel Kapital von mehreren Investoren ist aber die AG besser geeignet: Sie hat Vorstand und Aufsichtsrat für ein professionelles Management.'],
+  ug:[0,'Die UG ist für Gründungen mit sehr wenig Kapital gedacht (ab 1 €). Für ein Vorhaben mit sehr viel Kapital passt sie nicht.'],
+  ag:[2,'Passt gut: Die Haftung ist auf das Gesellschaftsvermögen beschränkt, sehr viel Kapital lässt sich über Aktien sammeln und der Vorstand leitet professionell, kontrolliert vom Aufsichtsrat. Nachteile: Mindestgrundkapital 50.000 €, sehr umfangreiche Formalitäten, hohe Gründungskosten.']},
+ muster:'Wir entscheiden uns für die AG, weil wir fünf Investoren sind und sehr viel Kapital brauchen. Die Eigentümer haften nur mit ihrer Einlage. Der Vorstand führt die Geschäfte als professionelles Management und die Entscheidungen müssen nicht bei den Gründern liegen. Ein Nachteil sind die sehr umfangreichen Formalitäten und die hohen Gründungskosten.'}
+];
+const CK=Object.fromEntries(CASES.map(c=>[c.k,c]));
+const caseHead=(c,tag)=>`<div class="chead">${ILL[c.ill]}<div><span class="tag">${tag}</span><h2>${c.who}</h2><div class="biz">${c.biz}</div></div></div>`;
+
+
+function formOpts(name){
+  return FORMS.map(f=>`<div class="opt"><input type="radio" name="${name}" id="${name}-${f[0]}" value="${f[0]}"><label for="${name}-${f[0]}">${f[1]}</label>${iBtn(f[0],f[1])}</div>`).join('');
+}
+const STARTERS=['Ich entscheide mich für …, weil …','Die Haftung ist …, das bedeutet …','Das Startkapital …','Ein Nachteil ist …'];
+const chips=id=>STARTERS.map(s=>`<button type="button" class="chip" data-ta="${id}">${s}</button>`).join('');
+document.addEventListener('click',e=>{
+  const c=e.target.closest('.chip');if(!c)return;
+  const ta=$('#'+c.dataset.ta);ta.value=(ta.value.trim()?ta.value.replace(/\s*$/,'')+'\n':'')+c.textContent+' ';ta.focus();ta.dispatchEvent(new Event('input',{bubbles:true}));
+});
+
+const escapeText=s=>String(s).replace(/[&<>\"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[c]||c));
+
+const IQ=[
+ ['cap','Welches [[mindestkapital|Startkapital]] können wir zusammen aufbringen?',['Unter 1.000 €','1.000 € bis 12.499 €','12.500 € bis 24.999 €','25.000 € bis 49.999 €','50.000 € oder mehr']],
+ ['n','Wie viele [[gruender|Gründer]] sind wir?',['Ich gründe allein','Wir sind zu zweit','Wir sind zu dritt oder mehr']],
+ ['haft','Wie viel Risiko sind wir bereit einzugehen in Bezug auf die [[haftung|Haftung]]?',['Wir sind bereit, persönlich zu haften','Wir möchten unser Privatvermögen schützen']],
+ ['ent','Wer soll Entscheidungen treffen dürfen?',['Alle gemeinsam','Eine Person allein','Eine Geschäftsführung oder ein Management, auch Fremde']],
+ ['eff','Sind wir bereit, viel Bürokratie und Formalitäten zu organisieren und die entsprechenden [[gruendungsaufwand|Kosten]] zu tragen?',['Nein, möglichst wenig Aufwand und Kosten','Ja, wenn wir dafür besser abgesichert sind']]
+];
+$('#ideaQs').innerHTML=IQ.map(q=>`<fieldset><legend>${fmt(q[1])}</legend><div class="opts col">${q[2].map((o,i)=>`<div class="opt"><input type="radio" name="q-${q[0]}" id="q-${q[0]}-${i}" value="${i}"><label class="plain" for="q-${q[0]}-${i}">${o}</label></div>`).join('')}</div></fieldset>`).join('');
+
+function ideaAnswers(){
+  const a={};
+  for(const q of IQ){const s=$(`input[name="q-${q[0]}"]:checked`);if(!s)return null;a[q[0]]=+s.value;}
+  a.n=a.n+1;return a;
+}
+/* Auswertung für das eigene Unternehmen: Jeder Hinweis hat ein Problem (t) und eine Bedingung, unter der es verschwindet (f) */
+function evalIdea(a){
+  const alone=a.n===1,noHaft=a.haft===1,R={};
+  const mk=(k,pro)=>R[k]={red:[],yellow:[],pro};
+  const red=(r,t,f)=>r.red.push({t,f}),yel=(r,t,f)=>r.yellow.push({t,f});
+  const F_ALONE='Sie gründen allein',F_TWO='Sie gründen zu mindestens zweit',F_HAFT='Sie sind bereit, persönlich zu haften',
+        F_SELF='Sie führen das Unternehmen selbst, ohne fremdes Management',F_EFF='Sie sind bereit, Formalitäten und Kosten (Notar, Handelsregister) auf sich zu nehmen';
+  let r;
+  r=mk('einzel','Einfach und günstig: nur Gewerbeanmeldung, kein festes Kapital, Alleinentscheidung.');
+  if(!alone)red(r,'Ein Einzelunternehmen hat nur einen Inhaber, Sie sind aber mehrere.',F_ALONE);
+  if(noHaft)red(r,'Der Inhaber haftet unbeschränkt. Sie wollen Ihr Privatvermögen schützen.',F_HAFT);
+  if(a.ent===2)red(r,'Es entscheidet allein der Inhaber. Eine Geschäftsführung durch Fremde ist nicht vorgesehen.','Sie entscheiden selbst und übergeben die Leitung nicht an Fremde');
+  r=mk('gbr','Mindestens zwei Gründer, kein Mindestkapital, geringe Formalitäten.');
+  if(alone)red(r,'Eine GbR braucht mindestens zwei Gründer.',F_TWO);
+  if(noHaft)red(r,'Alle Gesellschafter haften mit ihrem Privatvermögen.',F_HAFT);
+  if(a.ent===2)yel(r,'Die Gesellschafter führen selbst. Fremde Geschäftsführer sind nicht vorgesehen.',F_SELF);
+  if(a.ent===1&&!alone)yel(r,'Gemeinsame Geschäftsführung ist der Normalfall. Alleinentscheidung müsste im Gesellschaftsvertrag stehen.','Alle Gründer entscheiden gemeinsam');
+  r=mk('ohg','Mindestens zwei Gründer, kein Mindestkapital, relativ geringer Aufwand, für kaufmännische Betriebe.');
+  if(alone)red(r,'Eine OHG braucht mindestens zwei Gründer.',F_TWO);
+  if(noHaft)red(r,'Alle Gesellschafter haften mit ihrem Privatvermögen.',F_HAFT);
+  if(a.ent===2)yel(r,'Die Gesellschafter führen selbst. Fremde Geschäftsführer sind nicht vorgesehen.',F_SELF);
+  if(a.ent===0&&!alone)yel(r,'Jeder Gesellschafter darf allein entscheiden, sofern der Vertrag nichts anderes regelt.','Sie legen im Gesellschaftsvertrag fest, dass alle gemeinsam entscheiden');
+  r=mk('kg','Ein Geldgeber (Kommanditist) haftet nur mit seiner Einlage, die Komplementäre leiten.');
+  if(alone)red(r,'Eine KG braucht mindestens zwei Gesellschafter.',F_TWO);
+  if(noHaft)yel(r,'Mindestens ein Komplementär haftet unbeschränkt. Nur die Kommanditisten sind geschützt.','Mindestens eine Person ist bereit, als Komplementär persönlich zu haften (die anderen geben nur Geld)');
+  if(a.ent===2)yel(r,'In der KG führen grundsätzlich die Komplementäre.',F_SELF);
+  r=mk('gmbh','Haftung auf das Gesellschaftsvermögen beschränkt, ein Geschäftsführer leitet, auch ein Gründer allein reicht.');
+  if(a.cap<2)red(r,'Bei der Gründung müssen mindestens 12.500 € eingezahlt werden. Sie haben weniger.','Sie können mindestens 12.500 € Startkapital aufbringen');
+  if(a.cap===2)yel(r,'Das Mindeststammkapital beträgt 25.000 €. Bei der Gründung reichen 12.500 € Einzahlung, Sie haben aber noch nicht das ganze Stammkapital.','Sie können das gesamte Stammkapital von 25.000 € aufbringen');
+  if(a.eff===0)yel(r,'Umfangreiche Formalitäten und hohe Gründungskosten (notarielle Beurkundung).',F_EFF);
+  r=mk('ug','Haftung beschränkt, schon ab 1 € Stammkapital, auch allein möglich, mit Musterprotokoll einfacher.');
+  if(a.eff===0)yel(r,'Formalitäten und Kosten wie bei der GmbH, nur mit Musterprotokoll etwas einfacher.',F_EFF);
+  r=mk('ag','Sehr viel Kapital über Aktien möglich, Vorstand leitet professionell, Haftung beschränkt.');
+  if(a.cap<4)red(r,'Eine AG braucht mindestens 50.000 € Grundkapital.','Sie können mindestens 50.000 € Kapital aufbringen');
+  if(a.eff===0)yel(r,'Sehr umfangreiche Formalitäten und hohe Gründungskosten.',F_EFF);
+  if(a.ent!==2)yel(r,'Entscheiden würden Vorstand, Aufsichtsrat und Hauptversammlung, nicht die Gründer allein oder gemeinsam im Alltag.','Sie überlassen die Leitung einem Vorstand (professionelles Management)');
+  FORMS.forEach(f=>{const x=R[f[0]];x.lv=x.red.length?0:x.yellow.length?1:2;});
+  return R;
+}
+let ideaEval=null;
+/* Konkrete Hinweise, was sich ändern müsste, damit eine Rechtsform vollständig passt */
+function changeTips(E){
+  const cand=FORMS.map(f=>f[0]).map(k=>({k,x:E[k],n:E[k].red.length*3+E[k].yellow.length})).sort((p,q)=>p.n-q.n).slice(0,2);
+  return cand.map(c=>{
+    const fixes=[...new Set(c.x.red.concat(c.x.yellow).map(i=>i.f))];
+    return `<li>Damit die <b>${term(c.k,FN[c.k])}</b> vollständig passt, müsste gelten: ${fixes.join('; ')}.</li>`;
+  }).join('');
+}
+function renderIdea(){
+  const a=ideaAnswers();
+  if(!a){$('#ideaOut').innerHTML='<div class="card"><h2>Die Ampel</h2><p class="small">Beantworten Sie oben alle Fragen. Dann zeigt die Ampel, welche Rechtsformen zu Ihnen passen.</p></div>';ideaEval=null;return;}
+  ideaEval=evalIdea(a);
+  const order=FORMS.map(f=>f[0]).sort((x,y)=>ideaEval[y].lv-ideaEval[x].lv);
+  const best=FORMS.filter(f=>ideaEval[f[0]].lv===2).map(f=>f[1]);
+  const msg=best.length?`<div class="fb good"><p><b>Das passt gut:</b> ${best.join(', ')}.</p></div>`
+    :`<div class="fb warn"><p><b>Keine Rechtsform passt vollständig zu Ihren Angaben.</b> Überlegen Sie, ob Sie oben etwas ändern möchten, zum Beispiel wer die Entscheidungen trifft oder ob Sie bereit sind, persönlich zu haften. Das müsste jeweils gelten:</p><ul>${changeTips(ideaEval)}</ul><p>Sie können auch bei Ihren Angaben bleiben und eine Rechtsform mit Nachteilen wählen. Dann müssen Sie diese Nachteile unten begründet in Kauf nehmen.</p></div>`;
+  const txt=i=>typeof i==='string'?i:i.t;
+  $('#ideaOut').innerHTML=`<div class="card"><h2>Die Ampel für ${escapeText($('#ideaName').value.trim()||'Ihr Unternehmen')}</h2>${msg}<div class="ampel">`+order.map(k=>{
+    const x=ideaEval[k],items=x.lv===0?x.red.concat(x.yellow).map(txt):x.lv===1?x.yellow.map(txt):[x.pro];
+    return `<div><p style="margin:0">${pill(x.lv)} <b>${term(k,FN[k])}</b></p><ul>${items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`;
+  }).join('')+'</div></div>';
+}
+function onIdeaChange(){S.fin={ok:false};$('#finFb').innerHTML='';renderIdea();}
+$('#ideaQs').addEventListener('change',onIdeaChange);
+$('#ideaName').addEventListener('input',()=>{S.fin={ok:false};$('#finFb').innerHTML='';renderIdea();});
+$('#finForms').innerHTML=formOpts('fin');
+const PRO_ST=['Ein Vorteil ist …, weil …','Die Haftung ist …, das schützt/bedeutet …','Das Startkapital …','Wir sind …, deshalb passt …'];
+const CON_ST=['Ein Nachteil ist …','Das Risiko dabei ist …','Wir müssen …, das kostet …'];
+const chipsFor=(id,arr)=>arr.map(s=>`<button type="button" class="chip" data-ta="${id}">${s}</button>`).join('');
+$('#finProChips').innerHTML=chipsFor('finPro',PRO_ST);
+$('#finConChips').innerHTML=chipsFor('finCon',CON_ST);
+const ARGS=[
+ ['Haftung',/haft/i,k=>`Haftung: Wie haften Sie bei der ${FN[k]}? Ist das für Sie ein Vorteil oder ein Nachteil?`],
+ ['Startkapital',/kapital|€|euro|geld|einlage|kredit|investor|einzahl/i,k=>`Startkapital: Wie viel Geld brauchen Sie für die ${FN[k]} und wie viel haben Sie?`],
+ ['Gründerzahl',/allein|zu zweit|zu dritt|zwei|drei|vier|fünf|mehrere|einzeln|gründer|gesellschafter|person|investor/i,k=>`Gründerzahl: Wie viele Gründer braucht die ${FN[k]} und wie viele sind Sie?`],
+ ['Entscheidung',/entscheid|leit|führ|vorstand|mitbestimm|das sagen/i,k=>`Entscheidung: Wer entscheidet bei der ${FN[k]} und passt das zu Ihnen?`],
+ ['Aufwand',/aufwand|formalit|kosten|bürokrat|notar|handelsregister|gewerbeanmeld|einfach|unkompliziert/i,k=>`Aufwand: Wie viel Papierkram und Kosten bringt die ${FN[k]} mit sich?`]
+];
+$('#finBtn').addEventListener('click',()=>{
+  const fb=$('#finFb'),sel=$('input[name="fin"]:checked'),pro=$('#finPro').value.trim(),con=$('#finCon').value.trim();
+  if($('#ideaName').value.trim().length<2){fb.innerHTML=warnBox('Tragen Sie oben Namen oder Idee Ihres Unternehmens ein.');return;}
+  if(!ideaEval){fb.innerHTML=warnBox('Beantworten Sie zuerst alle Fragen oben.');return;}
+  if(!sel){fb.innerHTML=warnBox('Wählen Sie zuerst eine Rechtsform aus.');return;}
+  const k=sel.value,x=ideaEval[k];
+  S.att.fin=(S.att.fin||0)+1;S.fin={ok:false,form:k,lv:x.lv,pro,con,name:$('#ideaName').value.trim()};
+  const txt=i=>typeof i==='string'?i:i.t;
+  if(x.lv===0){
+    fb.innerHTML=`<div class="fb bad"><p>${pill(0)} <b>Ihre Wahl: ${term(k,FN[k])}.</b> Nach Ihren Angaben passt das nicht:</p><ul>${x.red.concat(x.yellow).map(i=>`<li>${txt(i)}</li>`).join('')}</ul><p>Wählen Sie eine andere Rechtsform oder ändern Sie oben Ihre Angaben, wenn Sie Ihre Meinung geändert haben.</p></div>`;return;
+  }
+  if(pro.length<40||con.length<40){fb.innerHTML=warnBox('Schreiben Sie in beide Felder, bei den Vorteilen und bei den Nachteilen, jeweils mindestens ein bis zwei ganze Sätze.');return;}
+  const all=pro+' '+con,miss=ARGS.filter(g=>!g[1].test(all));
+  const head=`<div class="fb ${LV[x.lv]}"><p>${pill(x.lv)} <b>Ihre Wahl: ${term(k,FN[k])}.</b> ${x.lv===2?'Das passt zu Ihren Angaben.':'Das ist möglich, hat aber diese Nachteile. Nennen Sie sie in Ihrem Nachteile-Text:'}</p>${x.lv===1?`<ul>${x.yellow.map(i=>`<li>${txt(i)}</li>`).join('')}</ul>`:''}</div>`;
+  if(miss.length){
+    fb.innerHTML=head+`<div class="fb warn argcheck"><p><b>Noch nicht vollständig.</b> Es fehlen noch Argumente zu:</p><ul>${miss.map(g=>`<li>${g[2](k)}</li>`).join('')}</ul><p class="small">Ergänzen Sie die Argumente bei den Vorteilen oder Nachteilen und prüfen Sie erneut. Benutzen Sie dabei die Fachbegriffe (z. B. Haftung, Startkapital, Gründer, Entscheidung, Aufwand).</p></div>`;
+    return;
+  }
+  S.fin.ok=true;
+  fb.innerHTML=head+'<div class="fb good"><p><b>Geschafft!</b> Sie haben Haftung, Startkapital, Gründerzahl, Entscheidung und Aufwand mit Vorteilen und Nachteilen begründet.</p></div>';
+});
+$('#finForms').addEventListener('change',()=>{S.fin.ok=false;});
+$('#finPro').addEventListener('input',()=>{S.fin.ok=false;});
+$('#finCon').addEventListener('input',()=>{S.fin.ok=false;});
+
+
+
+/* ===== SCORM 2004 · jedes Modul meldet seinen eigenen Lernstand ===== */
+const SC=(()=>{
+  let api=null,active=false,ended=false,started=Date.now(),counter=0;const last={},ids={};
+  try{
+    let w=window;
+    for(let i=0;i<12&&w;i++){
+      try{if(w.API_1484_11){api=w.API_1484_11;break;}}catch(e){}
+      if(w===w.parent)break;w=w.parent;
+    }
+    if(!api&&window.opener){try{api=window.opener.API_1484_11||null;}catch(e){}}
+  }catch(e){}
+  const set=(k,v)=>{try{api.SetValue(k,String(v));}catch(e){}};
+  const get=k=>{try{return api.GetValue(k);}catch(e){return '';}};
+  if(api){try{active=String(api.Initialize(''))==='true';}catch(e){}
+    if(active){counter=parseInt(get('cmi.interactions._count'),10)||0;set('cmi.completion_status','incomplete');}}
+  function interaction(id,answer){
+    if(last[id]===answer)return;last[id]=answer;
+    let n=ids[id];if(n===undefined){n=ids[id]=counter++;set(`cmi.interactions.${n}.id`,id);set(`cmi.interactions.${n}.type`,'other');}
+    set(`cmi.interactions.${n}.timestamp`,new Date().toISOString().slice(0,19));
+    set(`cmi.interactions.${n}.learner_response`,String(answer).slice(0,3500));
+    set(`cmi.interactions.${n}.result`,'correct');
+  }
+  function sync(){
+    if(!active||ended)return;
+    let progress=0,score=0,done=false;
+    if(APP_MODE==='learn'){
+      const q=PAGES[0].done(),z=PAGES[1].done(),a=PAGES[2].done();
+      const passed=[q,z,a].filter(Boolean).length;progress=passed/3;done=passed===3;
+      if(q){const t=Object.keys(MC).filter(x=>x.startsWith('t'));
+        const first=t.filter(x=>MC[x].first).length;score+=first/8/3;
+        interaction('Teil1-Tabellenquiz',`${first}/8 direkt richtig`);}
+      if(z){const first=ELIM.filter(k=>S.att['el-'+k]===1).length;score+=first/3/3;
+        interaction('Teil1-Ausschluss',`${first}/3 direkt richtig`);}
+      if(a){const quality=CASES.reduce((s,c)=>s+(S.dec[c.k]?.lv||0)/2,0)/CASES.length;
+        score+=quality/3;
+        CASES.forEach(c=>{const d=S.dec[c.k];interaction('Teil1-'+c.k,`${FN[d.form]}; ${d.text}`);});}
+    }else{
+      done=!!S.fin.ok;progress=done?1:0;score=done?(S.fin.lv/2):0;
+      if(done){interaction('Teil2-eigene-Rechtsform',`Unternehmen: ${S.fin.name}; Wahl: ${FN[S.fin.form]}; Vorteile: ${S.fin.pro}; Nachteile: ${S.fin.con}`);}
+    }
+    set('cmi.progress_measure',progress.toFixed(3));
+    set('cmi.score.min',0);set('cmi.score.max',100);
+    set('cmi.score.raw',Math.round(score*100));set('cmi.score.scaled',score.toFixed(3));
+    if(done){set('cmi.completion_status','completed');set('cmi.success_status',score>=0.5?'passed':'failed');}
+    try{api.Commit('');}catch(e){}
+  }
+  function end(){if(!active||ended)return;sync();ended=true;
+    set('cmi.session_time',`PT${Math.round((Date.now()-started)/1000)}S`);set('cmi.exit','normal');
+    try{api.Commit('');api.Terminate('');}catch(e){}
+  }
+  window.addEventListener('pagehide',end);window.addEventListener('beforeunload',end);
+  return{sync,end,active:()=>active};
+})();
+
+
+/* ===== WWG Menü, Pflichtetappen und lokale Speicherung ===== */
+const STORE_KEY='wwg-rechtsform-waehlen-design-v1';
+let currentStep=0,ampelGesehen=false,saveOk=true;
+// Nur für die Lehrkraft: per Alt + Umschalt + N vorwärts navigieren.
+// Das Umgehen der Seitenfreigabe zählt keine Aufgabe als erledigt.
+let lehrkraftFreigabeBis=0;
+const STEP_NAMES=['1. Unternehmen','2. Ampel','3. Entscheidung'];
+const pages=[$('#stepProfile'),$('#stepAmpel'),$('#stepDecision')];
+const profileReady=()=>$('#ideaName').value.trim().length>=2 && !!ideaAnswers();
+const stepDone=()=>[profileReady(),profileReady()&&ampelGesehen,!!S.fin.ok];
+function canOpen(i){const done=stepDone();return i<=lehrkraftFreigabeBis || i===0 || (i===1 && done[0]) || (i===2 && done[0] && done[1]);}
+function collectState(){
+  const answers={};IQ.forEach(q=>{const el=$(`input[name="q-${q[0]}"]:checked`);answers[q[0]]=el?el.value:null;});
+  return {name:$('#ideaName').value,answers,form:$('input[name="fin"]:checked')?.value||'',pro:$('#finPro').value,con:$('#finCon').value,fin:S.fin,step:currentStep,ampelGesehen};
+}
+function store(){
+  try{localStorage.setItem(STORE_KEY,JSON.stringify(collectState()));saveOk=true;}catch(e){saveOk=false;}
+  const badge=$('#saveHint');badge.textContent=saveOk?'Fortschritt wird automatisch gespeichert':'Speichern in diesem Browser nicht möglich';badge.classList.toggle('warning',!saveOk);
+}
+function restore(){
+  try{
+    const v=JSON.parse(localStorage.getItem(STORE_KEY)||'null');if(!v||typeof v!=='object')return;
+    $('#ideaName').value=typeof v.name==='string'?v.name:'';
+    for(const q of IQ){const x=v.answers?.[q[0]];if(x!==null&&x!==undefined){const b=$(`input[name="q-${q[0]}"][value="${x}"]`);if(b)b.checked=true;}}
+    if(FN[v.form]){const f=$(`input[name="fin"][value="${v.form}"]`);if(f)f.checked=true;}
+    $('#finPro').value=typeof v.pro==='string'?v.pro:'';
+    $('#finCon').value=typeof v.con==='string'?v.con:'';
+    const fin=v.fin;
+    S.fin=fin&&typeof fin==='object'?fin:{ok:false};
+    const matches=S.fin.form===v.form&&S.fin.pro===String(v.pro||'').trim()&&S.fin.con===String(v.con||'').trim()&&S.fin.name===String(v.name||'').trim();
+    if(!matches)S.fin.ok=false;
+    ampelGesehen=!!v.ampelGesehen;
+    currentStep=Number.isInteger(v.step)?Math.max(0,Math.min(2,v.step)):0;
+  }catch(e){saveOk=false;}
+}
+function updateWWG(){
+  if(!profileReady())ampelGesehen=false;
+  const done=stepDone();
+  if(!canOpen(currentStep))currentStep=done[0]?1:0;
+  pages.forEach((page,i)=>page.classList.toggle('on',i===currentStep));
+  $('#stepper').innerHTML=STEP_NAMES.map((name,i)=>`<li><button type="button" data-go="${i}" class="${i===currentStep?'cur':done[i]?'done':''}" ${canOpen(i)?'':'disabled'} ${i===currentStep?'aria-current="step"':''}>${name}${done[i]?' ✓':''}</button></li>`).join('');
+  const amount=done.filter(Boolean).length;
+  $('#progressText').textContent=`${amount} von 3 Etappen abgeschlossen`;
+  const percent=Math.round(amount/3*100);
+  $('#globalProgress').style.width=percent+'%';
+  $('#progressLine').setAttribute('aria-valuenow',String(percent));
+  $('#prevBtn').disabled=currentStep===0;
+  $('#nextBtn').hidden=currentStep===2;
+  $('#nextBtn').disabled=!done[currentStep];
+  const msg=$('#pgMsg');msg.classList.toggle('ok',done[currentStep]);
+  msg.textContent=done[currentStep]?(currentStep===2?'✓ Entscheidung abgeschlossen!':'✓ Etappe abgeschlossen – weiter geht’s!')
+    :currentStep===0?'Tragen Sie den Unternehmensnamen ein und beantworten Sie alle fünf Fragen.'
+    :currentStep===1?'Schauen Sie sich die Ampel an.':'Wählen und begründen Sie Ihre Rechtsform.';
+  $('#finishPanel').classList.toggle('on',currentStep===2&&done[2]);
+  SC.sync();
+}
+function goWWG(index,scroll=true){
+  if(index<0||index>2||!canOpen(index))return;
+  currentStep=index;if(index===1)ampelGesehen=true;
+  updateWWG();store();
+  if(scroll){window.scrollTo({top:0,behavior:'instant'});pages[index].querySelector('h1')?.focus({preventScroll:true});}
+}
+$('#stepper').addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b&&!b.disabled)goWWG(+b.dataset.go);});
+$('#prevBtn').addEventListener('click',()=>goWWG(currentStep-1));
+$('#nextBtn').addEventListener('click',()=>{if(stepDone()[currentStep])goWWG(currentStep+1);});
+// Unsichtbarer Lehrkraft-Kurzbefehl: Shift + Alt + N wechselt zur nächsten Seite,
+// unabhängig davon, ob die bisherige Etappe vollständig bearbeitet wurde.
+document.addEventListener('keydown',e=>{
+  if(e.altKey && e.shiftKey && !e.ctrlKey && !e.metaKey && (e.code==='KeyN' || e.key.toLowerCase()==='n')){
+    e.preventDefault();
+    if(currentStep<pages.length-1){
+      lehrkraftFreigabeBis=Math.max(lehrkraftFreigabeBis,currentStep+1);
+      goWWG(currentStep+1);
+    }
+  }
+});
+// Originale Prüflogik und dynamische Ampel bleiben unverändert; Speichern erfolgt nach ihrer Ausführung.
+document.addEventListener('input',e=>{
+  if(e.target.matches('#ideaName,#finPro,#finCon')){if(e.target.id==='ideaName')ampelGesehen=false;setTimeout(()=>{updateWWG();store();},0);}
+});
+document.addEventListener('change',e=>{
+  if(e.target.matches('#ideaQs input,#finForms input')){
+    if(e.target.closest('#ideaQs'))ampelGesehen=false;
+    setTimeout(()=>{updateWWG();store();},0);
+  }
+});
+$('#finBtn').addEventListener('click',()=>setTimeout(()=>{updateWWG();store();},0));
+injectArt();
+$$('.fmt').forEach(el=>{el.innerHTML=fmt(el.innerHTML);});
+restore();
+renderIdea();
+if(currentStep===1&&profileReady())ampelGesehen=true;
+updateWWG();store();
+</script>
+</body></html>

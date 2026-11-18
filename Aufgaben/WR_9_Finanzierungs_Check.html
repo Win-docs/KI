@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finanzierungs-Check · Lernapp Wirtschaft und Recht</title>
+<meta name="theme-color" content="#f5f7fc">
+<style>
+:root{--navy:#1d3557;--amber:#f6a800;--tint:#e9eff6;--ink:#1b2733;--line:#cdd8e5;--mut:#5b6b7e}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;color:var(--ink);background:#f5f7fa;line-height:1.5}
+header.top{background:var(--navy);color:#fff}
+.hw{max-width:980px;margin:auto;padding:12px 18px 6px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.logo{font-size:1.2rem;font-weight:800;letter-spacing:.2px}.logo span{color:var(--amber)}
+.zeit{font-size:.82rem;color:#c3d0e2}
+#prog{height:4px;background:rgba(255,255,255,.2)}#prog i{display:block;height:100%;background:var(--amber);transition:width .3s}
+#stepper{max-width:980px;margin:auto;display:flex;padding:0 12px;overflow-x:auto}
+.st{flex:1 0 auto;background:none;border:none;border-bottom:3px solid transparent;color:#aebdd2;padding:9px 12px;font:600 .82rem inherit;cursor:pointer;white-space:nowrap}
+.st.done{color:#fff}.st.cur{color:#fff;border-bottom-color:var(--amber)}.st.lock{opacity:.4;cursor:not-allowed}
+main{max-width:980px;margin:22px auto 60px;padding:0 14px}
+.stage{background:#fff;border:1px solid var(--line);border-radius:8px}
+#sh{padding:24px 28px 14px;border-bottom:1px solid var(--line)}
+.kicker{font-size:.8rem;font-weight:700;color:var(--mut);text-transform:uppercase;letter-spacing:.8px}
+#sh h1{margin:4px 0 0;font-size:1.7rem;color:var(--navy);line-height:1.2}
+#page{padding:20px 28px 8px}
+#msg .alert{margin:0 28px 12px}
+.pager{display:flex;justify-content:space-between;gap:10px;padding:14px 28px 24px;border-top:1px solid var(--line);margin-top:10px}
+@media(max-width:700px){#page,#sh,.pager{padding-left:16px;padding-right:16px}#msg .alert{margin:0 16px 12px}}
+.lead{font-size:1.04rem;margin-top:0}
+h3{margin:0 0 6px;font-size:1.08rem;color:var(--navy)}
+.q{border:1px solid var(--line);border-radius:8px;padding:16px 18px;margin:16px 0}
+.q>h3{display:flex;gap:10px;align-items:center}
+.qn{display:inline-grid;place-items:center;min-width:28px;height:28px;border-radius:5px;background:var(--navy);color:#fff;font-weight:800;font-size:.9rem}
+.sub{color:var(--mut);margin:2px 0 10px}
+label{display:block;font-weight:600;font-size:.92rem;margin:8px 0}
+input[type=text],input[type=number],select,textarea{font:inherit;color:inherit;border:1.5px solid var(--line);border-radius:6px;padding:7px 10px;background:#fff;width:100%;margin-top:4px}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--tint)}
+.money{display:flex;align-items:center;gap:6px}.money i{font-style:normal;color:var(--mut)}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:4px 18px}
+@media(max-width:760px){.grid3,.two,.grid2{grid-template-columns:1fr}}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin:12px 0}
+.kpi{background:var(--tint);border-radius:6px;padding:9px 14px}.kpi small{display:block;color:var(--mut);font-weight:600;font-size:.8rem}.kpi b{font-size:1.3rem;color:var(--navy)}
+.kpi.ok{background:var(--navy)}.kpi.ok small,.kpi.ok b{color:#fff}
+.kpi.warn{background:var(--amber)}.kpi.warn small,.kpi.warn b{color:var(--navy)}
+.kpi.bad{background:var(--amber);outline:3px solid var(--navy)}.kpi.bad small,.kpi.bad b{color:var(--navy)}
+.formula{display:inline-block;background:var(--tint);border-left:4px solid var(--amber);padding:7px 14px;font-weight:700;color:var(--navy)}
+.note{background:var(--tint);border-left:4px solid var(--navy);padding:9px 14px;font-size:.93rem;margin:10px 0}
+.hint{color:var(--mut);font-size:.85rem}
+.fb{display:inline-block;font-weight:700;font-size:.85rem;border-radius:4px}
+.fb.ok{background:var(--navy);color:#fff;padding:1px 9px}.fb.no{background:var(--amber);color:var(--navy);padding:1px 9px}
+.tag{display:inline-block;font-weight:700;font-size:.78rem;border-radius:4px;padding:1px 8px;background:var(--tint);color:var(--navy)}
+.tag.a{background:var(--amber)}.tag.n{background:var(--navy);color:#fff}
+.sbar{display:flex;height:34px;border-radius:6px;overflow:hidden;border:1px solid var(--line);margin:8px 0}
+.sbar div{display:grid;place-items:center;font-size:.75rem;font-weight:700;overflow:hidden;white-space:nowrap}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:.82rem}.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px;border:1px solid rgba(0,0,0,.15)}
+/* Infobutton */
+.term{border-bottom:2px dotted var(--navy);white-space:nowrap}
+.ib{display:inline-grid;place-items:center;width:1.3em;height:1.3em;margin-left:.3em;border-radius:50%;border:none;padding:0;background:var(--tint);color:var(--navy);font:italic 800 .78em Georgia,serif;cursor:help;vertical-align:baseline;border:1px solid var(--navy)}
+.term:hover .ib,.ib:focus{background:var(--navy);color:#fff;outline:none}
+#tip{position:fixed;z-index:60;display:none;max-width:320px;background:var(--navy);color:#fff;border-radius:8px;padding:10px 14px;box-shadow:0 6px 20px rgba(0,0,0,.25);font-size:.9rem;line-height:1.45;pointer-events:none}
+#tip b{color:var(--amber)}
+/* Karten */
+details.fc{border:1px solid var(--line);border-radius:8px;margin:7px 0;background:#fff}
+details.fc[open]{border-color:var(--navy)}
+details.fc summary{cursor:pointer;list-style:none;padding:10px 14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;font-weight:700}
+details.fc summary::-webkit-details-marker{display:none}
+details.fc summary:before{content:"+";font-weight:800;color:var(--navy);width:18px}
+details.fc[open] summary:before{content:"–"}
+details.fc .body{padding:0 16px 14px 42px}
+.pm{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:700px){.pm{grid-template-columns:1fr}}
+.pm>div{background:var(--tint);border-radius:6px;padding:8px 12px}.pm ul{margin:4px 0 0;padding-left:18px}
+.grp{margin:20px 0 4px;font-size:.8rem;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);font-weight:800;border-bottom:2px solid var(--amber);display:inline-block}
+.case{margin:10px 0;padding:10px 14px;background:var(--tint);border-radius:6px}
+/* Tabellen */
+table{width:100%;border-collapse:collapse;font-size:.92rem}
+th{text-align:left;font-size:.78rem;color:var(--mut);padding:6px 8px;border-bottom:2px solid var(--navy)}
+td{padding:8px;border-bottom:1px solid var(--line);vertical-align:middle}
+tr.ko td{color:#8895a6}tr.ko td:nth-child(2){text-decoration:line-through}
+td select{margin:0;padding:4px 6px}
+.scroll{overflow-x:auto}
+.dots{letter-spacing:2px;color:var(--navy);white-space:nowrap}.dots small{letter-spacing:0;color:var(--mut);display:block;font-size:.75rem}
+/* Sortieren */
+#ord{list-style:none;margin:8px 0;padding:0;counter-reset:o}
+#ord li{display:flex;align-items:center;gap:10px;background:#fff;border:1.5px solid var(--navy);border-radius:6px;padding:9px 12px;margin:6px 0;cursor:grab;font-weight:700;counter-increment:o;color:var(--navy)}
+#ord li:before{content:counter(o);display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--amber);color:var(--navy);font-weight:800}
+#ord li span{flex:1}#ord li button{border:1px solid var(--line);background:var(--tint);border-radius:4px;width:30px;height:28px;cursor:pointer;color:var(--navy);font-weight:800}
+#ord li:active{cursor:grabbing}
+.rank{display:grid;grid-template-columns:32px 220px 1fr 60px;align-items:center;gap:10px;margin:6px 0}
+.rank .pl{font-weight:800;background:var(--navy);color:#fff;border-radius:50%;width:28px;height:28px;display:grid;place-items:center}.rank:first-child .pl{background:var(--amber);color:var(--navy)}
+.rank .bar{height:18px;border-radius:4px;background:var(--tint);overflow:hidden}.rank .bar i{display:block;height:100%;background:var(--navy);transition:width .3s}
+@media(max-width:700px){.rank{grid-template-columns:30px 1fr 50px}.rank .bar{grid-column:1/-1}}
+/* Mix-Balken */
+.mixwrap{padding:34px 0 8px}
+#mixbar{position:relative;display:flex;height:64px;border-radius:8px;border:1px solid var(--navy);user-select:none}
+#mixbar .seg{display:grid;place-items:center;text-align:center;font-size:.78rem;font-weight:700;line-height:1.15;overflow:hidden;transition:none}
+#mixbar .seg:first-child{border-radius:7px 0 0 7px}#mixbar .seg:last-of-type{border-radius:0 7px 7px 0}
+.hd{position:absolute;top:-10px;bottom:-10px;width:22px;margin-left:-11px;background:#fff;border:2.5px solid var(--navy);border-radius:6px;cursor:ew-resize;display:grid;place-items:center;color:var(--navy);font-weight:800;touch-action:none;z-index:2}
+.hd:focus{outline:3px solid var(--amber)}
+.hd:after{content:"‹›";letter-spacing:-2px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;border:1px solid rgba(0,0,0,.2);vertical-align:-2px;margin-right:6px}
+/* Risiko */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.cp{font:600 .9rem inherit;text-align:left;border:1.5px solid var(--navy);background:#fff;color:var(--navy);border-radius:6px;padding:7px 12px;cursor:pointer}
+.cp.on{background:var(--navy);color:#fff}
+.cp.right{background:var(--navy);color:#fff}.cp.wrong{background:var(--amber);border-color:var(--amber);color:var(--navy);text-decoration:line-through}
+.cp.miss{border:2px dashed var(--amber)}
+.done-box{background:var(--navy);color:#fff;border-radius:8px;padding:16px 20px;margin:16px 0;font-size:1.05rem}.done-box b{color:var(--amber)}.done-box.bad{background:var(--amber);color:var(--navy)}.done-box.bad b{color:var(--navy)}
+.alert{background:#fff;border:2px solid var(--amber);border-radius:8px;padding:10px 16px}.alert ul{margin:4px 0 0;padding-left:20px}
+.btn{font:700 .98rem inherit;border:2px solid var(--navy);border-radius:6px;padding:9px 22px;cursor:pointer;background:var(--navy);color:#fff}
+.btn:hover{background:#27456f}.btn.sec{background:#fff;color:var(--navy)}.btn.am{background:var(--amber);border-color:var(--amber);color:var(--navy)}.btn[disabled]{opacity:.35;cursor:not-allowed}
+.ghost{font:600 .82rem inherit;border:1px solid var(--line);background:#fff;border-radius:5px;padding:4px 12px;cursor:pointer;color:var(--mut)}.ghost:hover{border-color:var(--navy);color:var(--navy)}
+.steps{list-style:none;padding:0;margin:0}
+.steps li{display:flex;gap:14px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}
+.steps .n{background:var(--navy);color:#fff;width:30px;height:30px;border-radius:5px;display:grid;place-items:center;font-weight:800;flex:none}
+.steps .m{margin-left:auto;font-weight:700;color:var(--navy);white-space:nowrap}
+.steps small{color:var(--mut);display:block}
+.res{background:var(--tint);border-radius:6px;padding:8px 12px;font-size:.9rem;margin-top:6px}
+
+/* =============================================================
+   Gemeinsames Erscheinungsbild der Lernapps: Blau / Karten / Luft
+   ============================================================= */
+:root {--navy:#1b2844;--amber:#4458dc;--tint:#eef2ff;--ink:#1a2640;--line:#dce3f3;--mut:#60708f;--paper:#f4f6fc;--card:#fff;--accent:#4458dc;--good:#17804a;--good-soft:#e6f5eb;--warn:#975900;--warn-soft:#fff2d8;--bad:#a42f2b;--bad-soft:#fbe9e7;--font-display:'Trebuchet MS','Segoe UI',system-ui,sans-serif;--font-body:'Segoe UI',system-ui,-apple-system,'Helvetica Neue',Arial,sans-serif}
+* {box-sizing:border-box}
+html {scroll-behavior:smooth}
+body {background:var(--paper);color:var(--ink);font:16.5px/1.56 var(--font-body)}
+header.top {position:sticky;top:0;z-index:30;background:rgba(255,255,255,.97);color:var(--ink);border-bottom:1px solid var(--line);box-shadow:0 4px 18px rgba(32,48,96,.045);backdrop-filter:blur(12px)}
+.hw {max-width:1060px;margin:auto;padding:13px 20px;align-items:center}
+.app-brand {display:flex;align-items:center;gap:12px}
+.app-icon {width:42px;height:42px;flex:none;border-radius:13px;background:var(--accent);color:white;display:grid;place-items:center;box-shadow:0 6px 15px rgba(68,88,220,.19)}
+.app-icon svg {width:22px;height:22px}
+.app-eyebrow {display:block;font-size:.67rem;line-height:1.3;font-weight:850;letter-spacing:.15em;text-transform:uppercase;color:#647494}
+.logo {font:800 1.08rem/1.3 var(--font-display);letter-spacing:-.02em;color:var(--ink)}
+.zeit {display:flex;align-items:center;gap:8px;color:var(--mut);font-size:.78rem;font-weight:600}
+.save-dot {width:7px;height:7px;flex:none;border-radius:50%;background:#229d6a}
+#prog {height:4px;background:#edf0fa}
+#prog i {background:var(--accent)}
+#stepper {max-width:1060px;padding:9px 18px 12px;gap:7px;align-items:center}
+.st {flex:0 0 auto;background:white;border:1.5px solid var(--line);border-radius:11px;padding:8px 12px;color:var(--mut);font:750 .8rem var(--font-body);transition:background .15s,border .15s,color .15s}
+.st.done {color:var(--good);border-color:#c4e6d3;background:#f1faf4}
+.st.cur {background:var(--accent);color:white;border-color:var(--accent);box-shadow:0 4px 11px rgba(68,88,220,.16)}
+.st.lock {opacity:.5}
+.st:not(.lock):hover {border-color:var(--accent)}
+main {max-width:1060px;padding:0 18px;margin:25px auto 60px}
+.stage {background:transparent;border:0;border-radius:0}
+#sh {padding:26px clamp(18px,4vw,38px) 22px;background:linear-gradient(120deg,#edf1ff 0%,#f9faff 66%,#fff 100%);border:1px solid #dfe5f7;border-radius:23px 23px 0 0;position:relative;overflow:hidden}
+#sh:after {content:'';position:absolute;width:150px;height:150px;border:27px solid rgba(83,99,204,.055);border-radius:50%;right:4%;bottom:-115px;pointer-events:none}
+.kicker {font-size:.75rem;font-weight:850;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}
+#sh h1 {font:850 clamp(1.65rem,3.7vw,2.4rem)/1.16 var(--font-display);letter-spacing:-.042em;color:var(--ink);margin:6px 0 0}
+#page {background:transparent;padding:4px 1px 10px}
+#page>.lead {padding:15px 18px 0;color:var(--mut);max-width:79ch}
+#msg .alert {margin:0 0 14px}
+.pager {background:white;position:relative;bottom:auto;z-index:1;display:flex;align-items:center;border:1px solid var(--line);border-radius:15px;padding:12px 17px;box-shadow:0 -3px 22px rgba(27,42,78,.06);margin:12px 0 15px}
+.pager>.btn:last-child {margin-left:auto}
+h3 {font:800 1.11rem/1.32 var(--font-display);color:var(--ink);letter-spacing:-.02em}
+.lead {line-height:1.65}
+.q {background:var(--card);border:1px solid var(--line);border-radius:18px;padding:22px 24px;margin:17px 0;box-shadow:0 5px 21px rgba(31,49,92,.025)}
+.q>h3 {padding-bottom:12px;border-bottom:1px solid var(--line);margin-bottom:12px;gap:11px}
+.qn {min-width:32px;height:32px;background:#ecf0ff;color:var(--accent);border-radius:10px;font-size:.88rem}
+.sub,.hint {color:var(--mut)}
+label {color:var(--ink);line-height:1.45}
+input[type=text],input[type=number],select,textarea {border:1.5px solid var(--line);border-radius:10px;padding:11px 12px;min-height:42px;background:#fff;color:var(--ink)}
+input:focus,select:focus,textarea:focus {border-color:var(--accent);box-shadow:0 0 0 3px #e6eaff}
+input[type=checkbox] {width:19px;height:19px;accent-color:var(--accent)}
+.money i {font-weight:700}
+.kpis {grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+.kpi {background:#f0f3fe;border:1px solid #e3e8fa;border-radius:12px;padding:14px 17px;min-width:0}
+.kpi small {color:#5f708e;font-weight:750;margin-bottom:3px}
+.kpi b {display:block;color:var(--ink);font:850 clamp(1.22rem,2vw,1.48rem)/1.35 var(--font-display);overflow-wrap:anywhere}
+.kpi.ok {background:var(--good-soft);border-color:#ccead8}
+.kpi.ok small,.kpi.ok b {color:#116538}
+.kpi.warn {background:var(--warn-soft);border-color:#f0dfb9}
+.kpi.warn small,.kpi.warn b {color:#855000}
+.kpi.bad {background:var(--bad-soft);border:1px solid #e9c4c2;outline:none}
+.kpi.bad small,.kpi.bad b {color:#9f322b}
+.formula {border-left:4px solid var(--accent);background:var(--tint);color:#3146a2;border-radius:0 9px 9px 0;padding:10px 13px}
+.note {background:#eef2ff;border-left:4px solid var(--accent);border-radius:0 10px 10px 0;color:#425276;padding:12px 15px}
+.alert {background:var(--warn-soft);border:1px solid #ebcb8f;border-left:4px solid #de9a19;border-radius:12px;padding:12px 17px;color:var(--ink)}
+.tag {background:var(--tint);color:#354c9e;border-radius:999px;padding:3px 10px;font-size:.72rem}
+.tag.a {background:var(--warn-soft);color:#88530a}
+.tag.n {background:var(--accent);color:#fff}
+.fb.ok {background:var(--good-soft);color:#116538;border-radius:6px;padding:4px 9px}
+.fb.no {background:var(--bad-soft);color:#932d28;border-radius:6px;padding:4px 9px}
+.term {border-bottom:1.5px dotted var(--accent)}
+.ib {background:#e5eaff;color:var(--accent);border-color:var(--accent);cursor:help}
+.term:hover .ib,.ib:focus {background:var(--accent)}
+#tip {background:var(--ink);border-radius:12px}
+#tip b {color:#adbaff}
+.fc {border-radius:13px!important;border-color:var(--line)!important;overflow:hidden}
+.fc[open] {border-color:#bdcafa!important}
+.fc summary {padding:13px 16px!important}
+.fc summary:before {color:var(--accent)!important}
+.pm>div {background:var(--tint);border-radius:10px;padding:11px 13px}
+.grp {color:#5369bb;border-bottom-color:#c9d4fa;font-size:.79rem;margin:22px 0 10px}
+.case {border:1px solid #e0e6f6;border-radius:12px;background:#f8faff;padding:14px 16px;margin:10px 0}
+table {background:#fff;font-size:.9rem}
+th {border-bottom:2px solid #dce4fb;background:#f3f6ff;color:#455579;font-size:.8rem;white-space:nowrap}
+td,th {padding:11px 12px}
+.scroll {border:1px solid var(--line);border-radius:12px;overflow:auto;margin:10px 0}
+#ord li {background:#fff;border-color:#cdd7f7;color:var(--ink);border-radius:11px}
+#ord li:before {background:var(--accent);color:#fff}
+#ord li button {border-radius:7px;background:#eef2ff;color:var(--accent)}
+.rank .pl {background:#e8ecfe;color:var(--accent)}
+.rank:first-child .pl {background:var(--accent);color:white}
+.rank .bar {background:#e8ebf8;border-radius:999px}
+.rank .bar i {background:var(--accent);border-radius:999px}
+#mixbar {border-color:#a6b4ee;border-radius:11px}
+.hd {border-color:var(--accent);color:var(--accent);border-radius:9px}
+.hd:focus {outline-color:#acb9f7}
+.cp {border:1.5px solid #cfd8f4;border-radius:10px;background:#fff;color:#354887;padding:10px 13px;font:650 .9rem var(--font-body);line-height:1.45}
+.cp.on,.cp.right {background:var(--accent);border-color:var(--accent);color:white}
+.cp.wrong {background:var(--bad-soft);border-color:#e8b4ae;color:#97332b}
+.cp.miss {border:2px dashed #d99c3b}
+.done-box {background:#e7f6ed;border:1px solid #bde0cb;color:#175e39;border-radius:14px;padding:16px 19px}
+.done-box b {color:#116138}
+.done-box.bad {background:var(--warn-soft);border:1px solid #eed4a5;color:#65420f}
+.done-box.bad b {color:#65420f}
+.btn {font:750 .97rem var(--font-body);border:2px solid var(--accent);border-radius:11px;background:var(--accent);color:white;padding:10px 20px;min-height:43px;transition:transform .15s,background .15s}
+.btn:hover:not(:disabled) {background:#3247bf;transform:translateY(-1px)}
+.btn.sec {background:white;color:var(--accent);border-color:#c8d2fb}
+.btn.sec:hover:not(:disabled) {background:#eff2ff}
+.btn.am {background:var(--accent);border-color:var(--accent);color:white}
+.btn.am:hover:not(:disabled) {background:#3549bc}
+.ghost {background:#fff;border:1px solid #cdd6f1;border-radius:10px;color:#4153b6;padding:7px 12px}
+.ghost:hover {border-color:var(--accent);color:var(--accent)}
+.steps {margin:13px 0 20px;display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:10px}
+.steps li {padding:13px 15px;border:1px solid var(--line);border-radius:13px;align-items:flex-start;background:white;gap:11px}
+.steps .n {width:32px;height:32px;border-radius:10px;background:#e8edff;color:var(--accent)}
+.steps li b {font-size:.94rem}
+.steps small {margin-top:2px}
+.steps li.optional-step {border-style:dashed;background:#fafbff}
+.res {background:var(--tint);padding:11px 14px;border-radius:10px}
+.welcome-hero {overflow:hidden;position:relative;isolation:isolate;background:linear-gradient(116deg,#eef2ff 0%,#fafbff 66%,#fff 100%);border:1px solid #e0e6fa;border-radius:23px;padding:clamp(24px,4.5vw,38px);margin:18px 0 19px;box-shadow:0 12px 35px rgba(31,49,92,.05)}
+.welcome-hero:before {content:'';position:absolute;width:255px;height:255px;right:-115px;top:-140px;border-radius:50%;background:#e7ebfd;z-index:-1}
+.hero-eyebrow {font-weight:850;letter-spacing:.14em;font-size:.72rem;color:var(--accent)}
+.welcome-hero h2 {font:850 clamp(1.6rem,4vw,2.8rem)/1.1 var(--font-display);letter-spacing:-.045em;margin:12px 0;color:var(--ink)}
+.welcome-hero h2 span {color:var(--accent)}
+.welcome-hero p {color:#5d6d8d;max-width:62ch;margin-bottom:15px}
+.hero-tags {display:flex;gap:8px;flex-wrap:wrap}
+.hero-tags span {border:1px solid #dbe3fb;background:rgba(255,255,255,.85);color:#395199;border-radius:999px;padding:5px 11px;font-size:.79rem;font-weight:750}
+.capture-callout {display:flex;gap:16px;align-items:flex-start;background:#eaf0ff;border:2px solid #899df7;border-left:7px solid var(--accent);border-radius:15px;padding:19px 20px;margin:24px 0;box-shadow:0 6px 18px rgba(55,76,182,.07)}
+.capture-symbol {display:grid;place-items:center;flex:none;width:46px;height:46px;background:var(--accent);color:#fff;border-radius:13px;font:900 1.6rem var(--font-display)}
+.capture-callout strong {display:block;color:#253eac;font:850 1.16rem/1.35 var(--font-display)}
+.capture-callout p {margin:7px 0 0;color:#40517d;font-size:.96rem}
+.optional-notice {background:#f1f5ff;border:1px dashed #a8b8f3;border-radius:13px;margin:18px 0;padding:16px 18px}
+.optional-notice p {margin:9px 0 0;color:#475b88}
+.optional-pill {display:inline-flex;align-items:center;gap:7px;border-radius:999px;border:1px solid #b8c6f5;background:#e5ebff;padding:4px 11px;font-size:.78rem;letter-spacing:.03em;font-weight:850;color:#3c51a9;text-transform:uppercase}
+.optional-pill.tiny {font-size:.66rem;margin-left:8px;padding:2px 7px;vertical-align:middle}
+.result-panel {border-color:#c7d1f4}
+.result-panel>h3 {font-size:1.2rem}
+.result-name {font-size:1.03rem;margin:7px 0 13px}
+.company-name {font-size:.98rem;color:#536487;line-height:1.45;margin:8px 0 13px;overflow-wrap:anywhere}
+.company-name b {color:#25398a;font-size:1.06em}
+.result-table td:first-child {min-width:190px}
+.result-table tr.gaprow {background:#fff3de}
+.status-text {font-size:1.03rem!important;line-height:1.3}
+@media(max-width:700px){.hw{padding:10px 14px}.zeit{font-size:.7rem}.app-eyebrow{font-size:.59rem}.logo{font-size:1rem}#stepper{padding:8px 12px;gap:6px}.st{padding:8px 10px}main{padding:0 12px;margin-top:15px}#sh{padding:21px 19px;border-radius:19px 19px 0 0}#page{padding:4px 0 8px}#page>.lead{padding:14px 7px 0}.q{padding:17px 16px;border-radius:15px}.pager{padding:10px 12px}.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.capture-callout{padding:15px 13px;gap:10px}.capture-symbol{width:38px;height:38px;font-size:1.25rem}.steps{grid-template-columns:1fr}.welcome-hero{padding:24px 20px}}
+@media(max-width:420px){.zeit{display:none}.kpis{grid-template-columns:1fr}.pager .btn{padding:9px 12px;font-size:.87rem}.capture-callout strong{font-size:1rem}}
+
+/* Gemeinsame Kennzahlen für den Screenshot auf Stufe 1 */
+.snapshot-panel {border-color:#afbeef;background:#fff}
+.snapshot-panel>h3 {margin-bottom:6px}
+.snapshot-panel .sub {margin-bottom:12px}
+.snapshot-kpis {grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.snapshot-kpis .kpi {padding:13px 11px}
+.snapshot-kpis .kpi b {font-size:clamp(1.05rem,1.6vw,1.36rem)}
+.snapshot-panel .capture-callout {margin:16px 0 2px}
+/* Kompakte, nur lesbare Ergebnisübersicht bei den Risikoaufgaben */
+.result-mini {border-color:#cad4f1;background:#fcfdff;padding:15px 18px;margin-top:15px}
+.result-mini-head {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:8px}
+.result-mini-head h3 {font-size:1.01rem;margin:0}
+.result-mini .result-name {margin:0 0 7px;font-size:.85rem}
+.result-mini .kpis {grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin:9px 0}
+.result-mini .kpi {padding:8px 10px;border-radius:9px}
+.result-mini .kpi small {font-size:.69rem;line-height:1.3}
+.result-mini .kpi b {font-size:.96rem;line-height:1.4}
+.result-mini .kpi .status-text {font-size:.82rem!important}
+.result-mini .sbar {height:18px;margin:8px 0 6px;border-radius:5px}
+.result-mini .sbar div {font-size:0}
+.result-mini .legend {font-size:.72rem;gap:5px 11px}
+.result-mini .legend i {width:9px;height:9px}
+.result-mini .scroll {margin:8px 0}
+.result-mini table {font-size:.78rem}
+.result-mini th,.result-mini td {padding:6px 8px}
+.result-mini .result-table td:first-child {min-width:140px}
+@media(max-width:700px) {
+ .snapshot-kpis {grid-template-columns:repeat(2,minmax(0,1fr))}
+ .result-mini {padding:13px 11px}
+ .result-mini .kpis {grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;transition:none!important}}
+</style>
+</head>
+<body>
+<header class="top">
+ <div class="hw">
+  <div class="app-brand"><div class="app-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="4"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><div><span class="app-eyebrow">Wirtschaft und Recht · Lernapp</span><div class="logo">Finanzierungs-Check</div></div></div>
+  <div class="zeit"><span class="save-dot" aria-hidden="true"></span> Fortschritt wird automatisch gespeichert</div>
+ </div>
+ <div id="prog"><i></i></div>
+ <nav id="stepper" aria-label="Lernschritte"></nav>
+</header>
+<main>
+ <section class="stage">
+  <div id="sh"></div>
+  <div id="page"></div>
+  <div id="msg"></div>
+  <div class="pager" id="pager"></div>
+ </section>
+</main>
+<div id="tip" role="tooltip"></div>
+
+<script>
+'use strict';
+const KEY='wwg-finanzierung-v2';
+const $=s=>document.querySelector(s);
+const n=v=>{const x=parseFloat(String(v==null?'':v).replace(',','.'));return isFinite(x)?x:0;};
+const fmt=x=>Math.round(x).toLocaleString('de-DE');
+const eur=x=>fmt(x)+' €';
+const pct=(x,d=0)=>(isFinite(x)?x:0).toLocaleString('de-DE',{maximumFractionDigits:d,minimumFractionDigits:d})+' %';
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const companyLine=()=>`<p class="result-name company-name">Unternehmen: <b>${esc(String(S.firma||'').trim()||'Dein Unternehmen')}</b></p>`;
+/* ===== SCORM 1.2 Laufzeit ===== */
+const SC12=(function(){let api=null;
+ function find(win){let t=0;try{while(win&&!win.API&&win.parent&&win.parent!==win&&t<10){win=win.parent;t++;}return win&&win.API?win.API:null;}catch(e){return null;}}
+ api=find(window);if(!api&&window.opener){try{api=find(window.opener);}catch(e){}}
+ let ok=false;if(api){try{ok=String(api.LMSInitialize(''))==='true';}catch(e){ok=false;}}
+ return {on:ok,start:Date.now(),get:k=>{try{return String(api.LMSGetValue(k));}catch(e){return '';}},set:(k,v)=>{try{return api.LMSSetValue(k,String(v));}catch(e){}},commit:()=>{try{api.LMSCommit('');}catch(e){}},finish:()=>{try{api.LMSFinish('');}catch(e){}}};})();
+let S={};
+if(SC12.on){try{const sd=SC12.get('cmi.suspend_data');if(sd)S=JSON.parse(sd);}catch(e){S={};}}
+else{try{S=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){S={};}}
+const BROWSE=SC12.on&&SC12.get('cmi.core.lesson_mode')==='browse';
+const TEACH=!SC12.on||BROWSE||location.hash==='#lehrkraft';
+delete S.idee; // Dieses Eingabefeld ist aus der App entfernt.
+S.cur=S.cur||0;S.max=S.max||0;S.short=S.short||[];
+/* Bestehende Lernstände werden auf die zusätzliche Ergebnisseite umgestellt. */
+if(S._pageOrder!==3){if(S.cur>=6)S.cur++;if(S.max>=6)S.max++;S._pageOrder=3;}
+S.cur=Math.min(8,S.cur);S.max=Math.min(8,S.max);
+let svT=null,finished=false;
+function save(){if(SC12.on){clearTimeout(svT);svT=setTimeout(()=>scormSync(),700);}else{try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}}
+const clip=(s,m)=>String(s).replace(/[\r\n]+/g,' ').slice(0,m);
+const hhmmss=s=>{const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return String(h).padStart(4,'0')+':'+String(m).padStart(2,'0')+':'+String(x).padStart(2,'0');};
+function bumpErr(k){S.err=S.err||{};S.err[k]=(S.err[k]||0)+1;}
+function stageStats(){const d=D(),m=mixSummary(),e=S.err||{},used=m.rows.filter(r=>r.amt>0),rk=ranking(),names=(S.short||[]).map(id=>FB[id].name);
+ const riskDone=!!(S.rcheck&&used.length&&riskErrors(used)===0);
+ const tr=Math.max(0,(m.trag.cls==='ok'?100:m.trag.cls==='warn'?75:50)-(m.gap>0?15:0));
+ return [
+ {id:'stufe1_bedarf',t:'Bedarf berechnen',done:S.max>=2,score:100,resp:`Kapitalbedarf ${eur(d.kb)}; Eigenmittel ${eur(d.em)}; Finanzierungsbedarf ${eur(d.fb)}; EK-Quote ${pct(d.quote,1)}`},
+ {id:'stufe2_formen',t:'Formen kennenlernen',done:S.max>=3,score:Math.max(0,100-10*(e[2]||0)),resp:`6 Fallbeispiele zugeordnet; Fehlversuche: ${e[2]||0}`},
+ {id:'stufe3_filter',t:'Formen herausfiltern',done:S.max>=4,score:100,resp:`Gewaehlt: ${names.join(', ')}; ausgeschieden (K.o.): ${F.filter(f=>evalForm(f).st==='ko').length} von ${F.length}`},
+ {id:'stufe4_vergleich',t:'Beste Form finden',done:S.max>=5,score:100,resp:`Wichtigkeit: ${ord().map(c=>CRIT.find(x=>x[0]===c)[1]).join(' > ')}; Platz 1: ${rk[0]?rk[0].f.name+' ('+(rk[0].t==null?'-':pct(rk[0].t/MAXT*100))+')':'-'}`},
+ {id:'stufe5_mix',t:'Finanzierungsmix',done:S.max>=6,score:tr,resp:`Mix: Eigenmittel ${pct(d.kb?d.em/d.kb*100:0)}, ${m.rows.map(r=>r.f.name+' '+pct(d.kb?r.amt/d.kb*100:0)).join(', ')}; Kosten ${eur(m.cost)}; monatlich ${eur(m.monthly)}; ${m.trag.txt}${m.gap>0?'; Fehlbetrag '+eur(m.gap):''}${(()=>{const c=m.rows.find(r=>r.f.id==='crowd'&&r.amt>0);return c?'; Crowdfunding '+({ok:'realistisch',knapp:'knapp',nein:'unrealistisch'}[c.r.real.st]):'';})()}`},
+ {id:'stufe6_ergebnis',t:'Ergebnisse des Finanzierungsmix',done:S.max>=7,score:100,resp:`Finanzierungsmix: ${m.rows.map(r=>r.f.name+' '+eur(r.amt)).join('; ')}; monatliche Belastung ${eur(m.monthly)}; ${m.trag.txt}`},
+  {id:'stufe7_risiko',t:'Risiken prüfen',done:riskDone,score:Math.max(0,100-25*(e[7]||0)),resp:'Risiken: '+used.map(r=>r.f.name.split(' (')[0]+': '+(((S.risk||{})[r.f.id]||[]).length)+' Argumente').join('; ')+`; Fehlpruefungen: ${e[7]||0}`},
+ {id:'stufe8_zusatz_optional',t:'Zusatzumsatz (optional)',done:!!S.zuOk,score:100,resp:(()=>{const z=zusatz();return `Vorverkauf ${z.vOk?'sinnvoll':'nicht sinnvoll'}: ${eur(z.vUm)}; Werbung ${z.wOk?'sinnvoll':'nicht sinnvoll'}: ${eur(z.wUm)}; Zusatzumsatz gesamt ${eur(z.total)}; externer Bedarf danach ${eur(Math.max(0,d.fb-z.total))}`;})()}
+ ];}
+function finalText(st){const d=D(),m=mixSummary(),rk=ranking(),used=m.rows.filter(r=>r.amt>0);
+ let t=`ERGEBNIS FINANZIERUNGS-CHECK\nTeam: ${S.name||'-'}; Unternehmen: ${S.firma||'-'}\nKapitalbedarf ${eur(d.kb)}, Eigenmittel ${eur(d.em)}, Finanzierungsbedarf ${eur(d.fb)}, EK-Quote ${pct(d.quote,1)}\n`;
+ t+=`Gewaehlter Mix: Eigenmittel ${eur(d.em)}${m.rows.map(r=>'; '+r.f.name+' '+eur(r.amt)+' ('+pct(r.pc)+')').join('')}\nKosten der Finanzierung ${eur(m.cost)}; monatliche Belastung ${eur(m.monthly)}; Ueberschuss ${eur(m.ueb)}; ${m.trag.txt}${m.gap>0?'; Fehlbetrag '+eur(m.gap)+' (Crowdfunding durch Community begrenzt)':''}\n`;
+ t+=`Nutzwert-Rangliste: ${rk.map((r,i)=>(i+1)+'. '+r.f.name).join('; ')}\nRISIKO-BEGRUENDUNG (angeklickte Contra-Argumente):\n`;
+ used.forEach(r=>{const s=(S.risk||{})[r.f.id]||[];t+=`- ${r.f.name}: ${s.length?s.map(i=>r.f.contra[i][0]+(r.f.contra[i][1]?' [ok]':' [trifft nicht zu]')).join(' | '):'(nichts angeklickt)'}\n`;});
+ {const z=zusatz();t+=`ZUSATZEINNAHMEN: Vorverkauf (${(S.vv||{}).txt||'-'}) ${z.vOk?'sinnvoll':'nicht sinnvoll'} ${eur(z.vUm)}; Werbung (${(S.wb||{}).txt||'-'}) ${z.wOk?'sinnvoll':'nicht sinnvoll'} ${eur(z.wUm)}; gesamt ${eur(z.total)}; eingerechnet: ${S.zuOk?'ja':'nein'}\n`;}
+ t+='STUFEN: '+st.map((x,i)=>`${i+1} ${x.done?x.score+'%':'offen'}`).join(', ');
+ return t;}
+function scormSync(final){if(!SC12.on||BROWSE)return;
+ try{const S2=Object.assign({},S,{firma:String(S.firma||'').slice(0,60),name:String(S.name||'').slice(0,60)});let sd=JSON.stringify(S2);if(sd.length>3990){S2.idee='';sd=JSON.stringify(S2);}SC12.set('cmi.suspend_data',sd);}catch(e){}
+ SC12.set('cmi.core.lesson_location',S.cur);
+ const st=stageStats(),required=st.slice(0,7),sum=required.reduce((a,x)=>a+(x.done?x.score:0),0),raw=Math.round(sum/required.length);
+ SC12.set('cmi.core.score.min',0);SC12.set('cmi.core.score.max',100);SC12.set('cmi.core.score.raw',raw);
+ st.forEach((x,i)=>{SC12.set(`cmi.objectives.${i}.id`,x.id);SC12.set(`cmi.objectives.${i}.score.min`,0);SC12.set(`cmi.objectives.${i}.score.max`,100);SC12.set(`cmi.objectives.${i}.score.raw`,x.done?x.score:0);SC12.set(`cmi.objectives.${i}.status`,x.done?'passed':'incomplete');});
+ let k=0;st.forEach(x=>{if(!x.done)return;SC12.set(`cmi.interactions.${k}.id`,x.id);SC12.set(`cmi.interactions.${k}.type`,'performance');SC12.set(`cmi.interactions.${k}.weighting`,1);SC12.set(`cmi.interactions.${k}.student_response`,clip(x.resp,250));SC12.set(`cmi.interactions.${k}.result`,x.score>=100?'correct':'wrong');k++;});
+ SC12.set('cmi.comments',clip(finalText(st),4000).length?finalText(st).slice(0,4000):'');
+ const complete=st[6].done;SC12.set('cmi.core.lesson_status',complete?'completed':'incomplete');
+ SC12.set('cmi.core.session_time',hhmmss(Math.round((Date.now()-SC12.start)/1000)));
+ if(final)SC12.set('cmi.core.exit',complete?'':'suspend');
+ SC12.commit();}
+function finishSco(){if(!SC12.on||finished)return;finished=true;clearTimeout(svT);scormSync(true);SC12.finish();}
+window.addEventListener('pagehide',finishSco);window.addEventListener('beforeunload',finishSco);
+if(SC12.on&&SC12.get('cmi.core.lesson_status')==='not attempted')SC12.set('cmi.core.lesson_status','incomplete');
+function get(p){return p.split('.').reduce((o,k)=>o==null?undefined:o[k],S);}
+function set(p,v){const ks=p.split('.');let o=S;for(let i=0;i<ks.length-1;i++){if(o[ks[i]]==null||typeof o[ks[i]]!=='object')o[ks[i]]={};o=o[ks[i]];}o[ks[ks.length-1]]=v;}
+const V=(p,d='')=>{const v=get(p);return v===undefined?d:v;};
+const L=p=>String(get(p)||'').trim().length;
+const num=p=>`<input type="number" inputmode="decimal" min="0" step="any" data-b="${p}" value="${esc(V(p))}">`;
+const txt=(p,ph='')=>`<input type="text" data-b="${p}" value="${esc(V(p))}" placeholder="${esc(ph)}">`;
+const area=(p,ph,rows=3)=>`<textarea data-b="${p}" rows="${rows}" placeholder="${esc(ph)}">${esc(V(p))}</textarea>`;
+const sel=(p,opts,x='',cur)=>`<select data-b="${p}" ${x}>`+opts.map(([v,l])=>`<option value="${esc(v)}"${String(cur!==undefined?cur:V(p))===String(v)?' selected':''}>${esc(l)}</option>`).join('')+'</select>';
+const money=p=>`<span class="money">${num(p)}<i>€</i></span>`;
+const SC=['#4458dc','#8fa3ef','#b5c2eb'];           /* Balkenfarben: Navy, Amber, helles Navy */
+const SCT=['#fff','#1b2844','#1b2844'];
+function sbar(segs){const tot=segs.reduce((a,s)=>a+s.v,0);if(tot<=0)return '<div class="note">Noch keine Werte eingetragen.</div>';
+ return `<div class="sbar">${segs.filter(s=>s.v>0).map(s=>`<div style="width:${s.v/tot*100}%;background:${s.col};color:${s.tc||'#1d3557'}" title="${esc(s.l)}: ${eur(s.v)}">${s.v/tot>.1?pct(s.v/tot*100):''}</div>`).join('')}</div><div class="legend">${segs.filter(s=>s.v>0).map(s=>`<span><i style="background:${s.col}"></i>${esc(s.l)} ${eur(s.v)}</span>`).join('')}</div>`;}
+
+/* ============ Glossar ============ */
+const G={
+kapitalbedarf:['Kapitalbedarf','Gesamtes Geld, das nötig ist, um das Unternehmen zu gründen und die ersten Monate zu betreiben: Gründungskosten + Investitionen + laufende Kosten.'],
+finanzierungsbedarf:['Finanzierungsbedarf','Der Teil des Kapitalbedarfs, den du nicht aus eigenem Geld decken kannst und von außen beschaffen musst. Kapitalbedarf − Eigenmittel.'],
+gruendungskosten:['Gründungskosten','Einmalige Kosten für den Start, z. B. Anmeldung, Beratung, Genehmigungen, Webseite.'],
+investition:['Investitionen','Größere einmalige Anschaffungen, die lange genutzt werden, z. B. Maschine, Automat, Fahrzeug.'],
+laufendekosten:['Laufende Kosten','Regelmäßige Ausgaben, z. B. Miete, Waren, Strom, Löhne.'],
+eigenmittel:['Eigenmittel','Eigenes Geld, das du selbst in die Gründung steckst, z. B. Ersparnisse oder Geldgeschenke.'],
+eigenkapital:['Eigenkapital (EK)','Geld, das Inhaber oder Miteigentümer einbringen. Es muss nicht zurückgezahlt werden – die Geldgeber wollen aber Gewinnanteile und oft Mitsprache.'],
+fremdkapital:['Fremdkapital (FK)','Geld von Dritten (z. B. Bank), das zurückgezahlt werden muss – meist mit Zinsen.'],
+ekquote:['Eigenkapitalquote','Anteil des Eigenkapitals am gesamten Kapital in Prozent. Banken erwarten oft 20–30 %.'],
+fristenkongruenz:['Goldene Finanzierungsregel','Was langfristig gebraucht wird (z. B. Maschinen), soll auch langfristig finanziert werden.'],
+sicherheiten:['Sicherheiten','Werte, auf die die Bank zugreifen darf, wenn du nicht zahlen kannst, z. B. Bürgschaft, Sparguthaben, Maschinen.'],
+hausbank:['Hausbank','Die Bank, bei der du dein Konto hast. Förderkredite werden über sie beantragt.'],
+privatdarlehen:['Privatdarlehen','Familie oder Freunde leihen dir Geld. Wichtig: schriftlicher Vertrag mit Rückzahlung und Zinsen.'],
+bankkredit:['Bankkredit','Darlehen einer Bank mit festem Zinssatz, festem Tilgungsplan und meist Sicherheiten.'],
+foerderkredit:['Förderkredit','Zinsgünstiger Kredit einer staatlichen Förderbank (z. B. KfW, LfA Bayern). Beantragt wird er über die Hausbank.'],
+crowdfunding:['Crowdfunding','Viele Menschen („die Crowd“) unterstützen dein Projekt mit kleinen Beträgen über eine Internetplattform. Beim Reward-Modell gibt es ein Dankeschön, z. B. das Produkt.'],
+businessangel:['Business Angel','Vermögende Privatperson, die in junge Unternehmen investiert und oft Erfahrung und Kontakte einbringt. Dafür bekommt sie Firmenanteile.'],
+vc:['Venture Capital','Wagniskapital: Investoren geben viel Geld an Start-ups mit sehr hohem Wachstumspotenzial und erhalten Firmenanteile.'],
+leasing:['Leasing','Du mietest Geräte gegen eine monatliche Rate, statt sie zu kaufen. Spart Geld am Anfang, ist insgesamt aber meist teurer.'],
+vorverkauf:['Vorverkauf / Anzahlung','Kunden bezahlen, bevor du liefern kannst. Du bekommst Geld ohne Kredit, musst aber später liefern.'],
+werbefin:['Finanzierung durch Werbung & Daten','Werbepartner oder Sponsoren zahlen für Reichweite oder Daten. Achtung: Datenschutz (DSGVO) und Abhängigkeit vom Partner.'],
+zuschuss:['Zuschuss','Geld, das du nicht zurückzahlen musst, z. B. Preisgeld aus einem Gründerwettbewerb oder staatliche Förderung.'],
+unternehmenswert:['Unternehmenswert','Geschätzter Wert der Firma. Je höher er ist, desto weniger Anteile musst du für denselben Geldbetrag abgeben.'],
+verwaesserung:['Verwässerung','Dein prozentualer Anteil an der Firma sinkt, wenn neue Geldgeber Anteile bekommen.'],
+skalierbar:['Skalierbarkeit','Eine Idee ist skalierbar, wenn sie mit wenig Zusatzaufwand stark wachsen kann (z. B. App, Online-Dienst, Franchise).'],
+community:['Community','Menschen, die sich für dich und dein Projekt interessieren (Follower, Verein, Schule, Stammkunden).'],
+reichweite:['Reichweite','Wie viele Menschen dein Angebot oder deinen Standort täglich wahrnehmen.'],
+ko:['K.-o.-Kriterium','Eine Bedingung, die unbedingt erfüllt sein muss. Wird sie nicht erfüllt, scheidet die Möglichkeit sofort aus.'],
+kriterium:['Kriterium','Ein Merkmal, nach dem man Möglichkeiten vergleicht, z. B. Kosten oder Tempo.'],
+passung:['Passung','Wie gut eine Finanzierungsform zu den Eigenschaften deiner Geschäftsidee passt.'],
+tragfaehigkeit:['Tragfähigkeit','Kann das Unternehmen die monatlichen Zahlungen für die Finanzierung dauerhaft aus seinen Überschüssen bezahlen?'],
+kapitaldienst:['Monatliche Belastung (Kapitaldienst)','Alles, was du regelmäßig für geliehenes Kapital zahlst: Zinsen + Tilgung bzw. Leasingraten.'],
+tkp:['Tausenderkontaktpreis (TKP)','Preis, den ein Werbepartner für 1.000 Sichtkontakte (Menschen, die die Werbung sehen) zahlt.'],
+ueberschuss:['Überschuss','Geld, das im Monat nach Abzug aller laufenden Kosten übrig bleibt – bevor Zinsen und Raten bezahlt werden.']
+};
+const T=(k,l)=>{const g=G[k];if(!g)return l||k;const lab=l||g[0];return `<span class="term">${lab}<button type="button" class="ib" data-k="${k}" aria-label="Info zu ${esc(lab.replace(/<[^>]+>/g,''))}">i</button></span>`;};
+
+/* ============ Katalog ============ */
+const PAR={annuity:[['zins','Zins','% p. a.'],['mon','Laufzeit','Monate']],equity:[['bew','Firmenwert vor Einstieg','€']],crowd:[['geb','Plattformgebühr','%'],['bel','Dankeschöns und Versand','%'],['beitrag','Ø Unterstützung','€']],lease:[['faktor','Leasingrate','% der Anschaffung pro Monat'],['mon','Laufzeit','Monate']],ads:[['einn','Einnahmen','€ pro Monat']],presale:[['preis','Preis pro Vorbestellung','€']],grant:[]};
+const F=[
+{id:'angel',t:'businessangel',name:'Business Angel',g:'eigen',art:'Eigenkapital (Beteiligung)',known:false,min:25000,minKO:true,
+ kurz:'Eine erfahrene Privatperson investiert eigenes Geld und Know-how und erhält dafür Firmenanteile.',
+ plus:['Geld plus Erfahrung und Kontakte','keine monatlichen Raten'],minus:['Anteile und Mitsprache abgeben','Investor erwartet starkes Wachstum'],passt:'wachstumsstarke Idee, Bedarf ca. 25.000–250.000 €.',
+ sc:{kosten:2,unabh:2,risiko:4,tempo:2},max:250000,calc:'equity',def:{bew:null},eq:true,
+ contra:[['Du gibst Firmenanteile ab.',1],['Du zahlst jeden Monat feste Raten.',0],['Der Investor redet im Unternehmen mit.',1],['Du brauchst Sicherheiten wie bei einer Bank.',0],['Der Investor erwartet schnelles, starkes Wachstum.',1]]},
+{id:'vc',t:'vc',name:'Venture Capital',g:'eigen',art:'Eigenkapital (Beteiligung)',known:true,min:250000,minKO:true,
+ kurz:'Investmentfirmen geben große Summen an Start-ups mit sehr hohem Wachstumspotenzial und erhalten Anteile.',
+ plus:['sehr große Summen','Netzwerk und Know-how'],minus:['große Teile der Firma gehen verloren','Druck zu schnellem Wachstum'],passt:'skalierbare Idee mit riesigem Markt, Bedarf ab ca. 250.000 €.',
+ sc:{kosten:1,unabh:1,risiko:4,tempo:1},max:10000000,calc:'equity',def:{bew:null},eq:true,
+ contra:[['Du gibst große Teile der Firma ab.',1],['Du musst die Summe in festen Monatsraten zurückzahlen.',0],['Es entsteht starker Druck, schnell zu wachsen.',1],['Die Investoren bestimmen wichtige Entscheidungen mit.',1],['Du zahlst eine Plattformgebühr an Unterstützer.',0]]},
+{id:'familie',t:'privatdarlehen',name:'Privatdarlehen (Familie & Freunde)',g:'fremd',art:'Fremdkapital',known:false,
+ kurz:'Menschen aus deinem Umfeld leihen dir Geld, das du später – oft mit niedrigen Zinsen – zurückzahlst.',
+ plus:['schnell und unkompliziert','Zinsen frei verhandelbar'],minus:['Beziehungen können leiden','begrenzte Summe'],passt:'kleinere Beträge und ein Umfeld, das dir vertraut.',
+ sc:{kosten:5,unabh:4,risiko:3,tempo:5},max:30000,calc:'annuity',def:{zins:2,mon:36},
+ contra:[['Bei Problemen kann die Beziehung zu Familie oder Freunden leiden.',1],['Die Bank verlangt eine Schufa-Auskunft und Sicherheiten.',0],['Die mögliche Summe ist meist begrenzt.',1],['Das Geld kommt erst nach Monaten.',0],['Ohne schriftlichen Vertrag droht Streit.',1]]},
+{id:'bank',t:'bankkredit',name:'Bankkredit (Gründerdarlehen)',g:'fremd',art:'Fremdkapital',known:true,
+ kurz:'Die Hausbank gibt ein Darlehen mit festem Zinssatz und Tilgungsplan.',
+ plus:['planbare Raten','du behältst alle Entscheidungen'],minus:['Sicherheiten und gute Bonität nötig','Raten auch in schlechten Monaten'],passt:'planbare Einnahmen und Sicherheiten.',
+ sc:{kosten:3,unabh:4,risiko:3,tempo:3},max:500000,calc:'annuity',def:{zins:7,mon:60},
+ contra:[['Zinsen und Raten belasten dich jeden Monat.',1],['Du musst Firmenanteile abgeben.',0],['Ohne Sicherheiten oder genug Eigenkapital gibt es kein Geld.',1],['Die Geldgeber reden im Unternehmen mit.',0],['Bei Zahlungsproblemen drohen der Verlust der Sicherheiten.',1]]},
+{id:'foerder',t:'foerderkredit',name:'Förderkredit (z. B. KfW, LfA)',g:'fremd',art:'Fremdkapital',known:true,capPct:20,
+ kurz:'Staatliche Förderbanken vergeben zinsgünstige Gründerkredite – der Antrag läuft über die Hausbank. Realistisch deckt er nur einen Teil ab: hier höchstens 20 % deines Finanzierungsbedarfs.',
+ plus:['niedrige Zinsen','oft tilgungsfreie Anlaufzeit'],minus:['aufwendiger Antrag','Verfahren dauert länger','deckt nur einen Teil des Bedarfs'],passt:'als günstiger Baustein neben einer weiteren Finanzierung.',
+ sc:{kosten:4,unabh:4,risiko:3,tempo:2},max:125000,calc:'annuity',def:{zins:4.5,mon:60},
+ contra:[['Der Antrag ist aufwendig und dauert lange.',1],['Das Geld muss nicht zurückgezahlt werden.',0],['Zinsen und Raten musst du trotzdem zahlen.',1],['Du gibst Firmenanteile ab.',0],['Das Geld darf nur für den vereinbarten Zweck genutzt werden.',1]]},
+{id:'crowd',t:'crowdfunding',name:'Crowdfunding (Reward)',g:'sonder',art:'Sonderform (keine Rückzahlung in Geld)',known:true,
+ kurz:'Viele Unterstützer geben kleine Beträge über eine Plattform und bekommen später ein Dankeschön, z. B. das Produkt.',
+ plus:['kein Kredit, keine Anteile','Marktest und Marketing in einem'],minus:['ohne Community kaum Erfolg','Gebühren und Dankeschöns kosten Geld'],passt:'greifbares Produkt, große Community.',
+ sc:{kosten:3,unabh:5,risiko:3,tempo:2},max:50000,calc:'crowd',def:{geb:8,bel:20,beitrag:30},eq:true,
+ contra:[['Ohne große Community kommt zu wenig Geld zusammen.',1],['Du gibst Firmenanteile ab.',0],['Plattformgebühr und Dankeschöns kosten Geld.',1],['Du zahlst feste Zinsen an die Unterstützer.',0],['Die Kampagne dauert mehrere Wochen.',1]]},
+{id:'zuschuss',t:'zuschuss',name:'Zuschüsse',g:'sonder',art:'Zuschuss (keine Rückzahlung)',known:false,capPct:15,
+ kurz:'Förderprogramme, Stipendien oder Preisgelder, die du nicht zurückzahlen musst. Für Gründer gibt es sie wirklich – aber nur in begrenztem Umfang: Hier sind höchstens 15 % deines Finanzierungsbedarfs möglich.',
+ plus:['kein Rückzahlungsdruck','keine Anteile'],minus:['Antrag kostet viel Zeit','Erfolg unsicher','nur ein kleiner Teil des Bedarfs'],passt:'als Ergänzung zu einer anderen Finanzierungsform.',
+ sc:{kosten:5,unabh:4,risiko:5,tempo:1},max:0,calc:'grant',def:{},eq:true,
+ contra:[['Der Antrag kostet viel Zeit.',1],['Du musst alles mit Zinsen zurückzahlen.',0],['Ob du das Geld bekommst, ist unsicher.',1],['Zuschüsse decken nur einen kleinen Teil des Bedarfs.',1],['Du gibst Firmenanteile ab.',0]]}
+];
+const FB={};F.forEach(f=>FB[f.id]=f);
+const GROUPS=[['eigen','Eigenkapital: Beteiligung'],['fremd','Fremdkapital: Kredit und Leasing'],['sonder','Weitere Wege']];
+const PROF=[
+['wachstum','Wie stark kann deine Idee wachsen (weitere Standorte, ganz Deutschland, online)?',[['stark','sehr stark, schnell skalierbar'],['mittel','mittel, Schritt für Schritt'],['gering','gering, eher lokal']],'skalierbar'],
+['sicherheit','Kannst du Sicherheiten stellen (z. B. Bürgschaft der Eltern, Sparguthaben)?',[['ja','ja'],['nein','nein']],'sicherheiten'],
+['netz','Würden Familie oder Freunde dir Geld leihen?',[['ja','ja'],['nein','nein']]],
+['follower','Wie viele Follower oder Kontakte hast du, die dein Projekt unterstützen könnten (Social Media, Verein, Schule, Freunde)?',[['50','unter 100'],['300','100 bis 500'],['1000','500 bis 2.000'],['5000','2.000 bis 10.000'],['15000','über 10.000']],'community']
+];
+const CRIT=[['kosten','Geringe Kosten'],['unabh','Volle Entscheidungsfreiheit'],['risiko','Geringes Risiko für mich'],['tempo','Schnell verfügbar']];
+const WORD={5:'sehr gut',4:'gut',3:'ok',2:'eher schlecht',1:'sehr schlecht'};
+const dots=v=>'●'.repeat(v)+'○'.repeat(5-v);
+
+/* ============ Berechnung ============ */
+function D(){const gk=n(S.gk),inv=n(S.inv),lk=n(S.lk),kb=gk+inv+lk,em=n(S.em),fb=Math.max(0,kb-em);
+ return {gk,inv,lk,kb,em,fb,quote:kb>0?em/kb*100:0,invShare:kb>0?inv/kb*100:0,laufShare:kb>0?100-inv/kb*100:0};}
+const RULES={
+ familie:p=>p.netz==='nein'?'Niemand im Umfeld würde dir Geld leihen.':null,
+ foerder:(p,d)=>(p.sicherheit==='nein'&&d.quote<10)?'Auch Förderkredite laufen über die Hausbank, die deine Bonität prüft: Ohne Sicherheiten und mit unter 10 % Eigenkapital gibt es kaum Chancen.':null,
+ bank:(p,d)=>(p.sicherheit==='nein'&&d.quote<20)?'Ohne Sicherheiten und mit unter 20 % Eigenkapital vergeben Banken meist keinen Kredit.':null,
+ crowd:p=>n(p.follower)<100?'Mit unter 100 Followern oder Kontakten findet die Kampagne kaum Unterstützer.':null,
+ angel:p=>p.wachstum==='gering'?'Business Angels erwarten starkes Wachstum – bei lokaler Idee kaum Chance.':null,
+ vc:p=>p.wachstum!=='stark'?'VC-Geber investieren nur bei sehr hohem Wachstumspotenzial.':null,
+ leasing:(p,d)=>d.invShare<30?'Leasing finanziert nur Geräte – dein Bedarf besteht kaum daraus.':null,
+ werbung:p=>p.reichweite==='niedrig'?'Werbepartner zahlen nur für Reichweite.':null
+};
+function crowdCap(){const f=FB.crowd;if(!f)return 100;const fb=D().fb;if(fb<=0)return 100;const fo=n((S.prof||{}).follower),hi=Math.round(fo*0.5),q=(gp(f,'geb')+gp(f,'bel'))/100;return Math.max(0,Math.min(100,Math.floor(hi*gp(f,'beitrag')*(1-q)/fb*100/5)*5));}
+const capOf=f=>f.capPct||(f.id==='crowd'?crowdCap():100);
+const partial=f=>!!f.capPct||(f.id==='crowd'&&crowdCap()<100);
+const commLevel=()=>{const f=n((S.prof||{}).follower);return f<100?'klein':f<=1000?'mittel':'groß';};
+const realTag=r=>{const x=r.st==='ok'?['n','✓ realistisch']:r.st==='knapp'?['a','knapp möglich']:['a','unrealistisch'];return `<br><span class="tag ${x[0]}">${x[1]}</span> Bei ca. ${fmt(r.fo)} Followern sind etwa ${fmt(r.lo)}–${fmt(r.hi)} Unterstützer zu erwarten (Annahme: etwa 25–50 % der Follower). Du brauchst ${fmt(r.need)}.${r.st==='nein'?' Realistischer wäre ein Fundingziel von ca. '+eur(r.hi*r.beitrag)+' oder weniger.':''}`;};
+function evalForm(f){const d=D(),p=S.prof||{};
+ if(f.minKO&&d.fb<f.min)return {st:'ko',why:`Betrag zu klein: lohnt sich erst ab ca. ${eur(f.min)}.`};
+ const r=RULES[f.id]?RULES[f.id](p,d):null;if(r)return {st:'ko',why:r};
+ if(f.id==='crowd'){const c=crowdCap(),fo=n((S.prof||{}).follower);if(c<5)return {st:'ko',why:`Mit ca. ${fmt(fo)} Followern sind nur sehr wenige Unterstützer zu erwarten – die Kampagne bringt fast kein Geld.`};if(c<100)return {st:'teil',why:`Mit ca. ${fmt(fo)} Followern realistisch höchstens ${c} % deines Finanzierungsbedarfs – nur als Ergänzung.`};}
+ if(f.capPct)return {st:'teil',why:`Nur als Ergänzung: höchstens ${f.capPct} % deines Finanzierungsbedarfs (ca. ${eur(d.fb*f.capPct/100)}).`};
+ if(d.fb>f.max)return {st:'teil',why:`Reicht allein nicht (üblich bis ca. ${eur(f.max)}) – nur Teil eines Mixes.`};
+ return {st:'ok',why:'passt zu deinen Angaben'};}
+const feasible=()=>F.filter(f=>evalForm(f).st!=='ko');
+const minPick=()=>Math.min(2,feasible().length);
+/* Bewertung */
+const ord=()=>(S.ord&&S.ord.length===4)?S.ord:CRIT.map(c=>c[0]);
+const MAXT=75;
+function total(id){const p=get('sc.'+id+'.passung');if(!p)return null;let t=5*n(p);ord().forEach((c,i)=>t+=(4-i)*FB[id].sc[c]);return t;}
+function ranking(){const r=(S.short||[]).map(id=>({f:FB[id],t:total(id)}));r.sort((a,b)=>(b.t==null?-1:b.t)-(a.t==null?-1:a.t));return r;}
+/* Mix */
+function gp(f,k){let d=f.def[k];if(d==null&&k==='bew')d=Math.max(100000,Math.round(D().fb*4/1000)*1000);return d;}
+function sharesOf(c){const k=S.short.length,out=[];let prev=0;for(let i=0;i<k;i++){const x=i<k-1?c[i]:100;out.push(i<k-1?x-prev:Math.min(x-prev,capOf(FB[S.short[i]])));prev=x;}return out;}
+function defaultCuts(k){const caps=S.short.map(id=>capOf(FB[id]));let sh=new Array(k).fill(0),fixed=new Array(k).fill(false);
+ for(let it=0;it<=k;it++){const fr=sh.map((_,i)=>i).filter(i=>!fixed[i]);if(!fr.length)break;const used=sh.reduce((a,v,i)=>a+(fixed[i]?v:0),0),eq=(100-used)/fr.length;let ch=false;fr.forEach(i=>{if(caps[i]<eq){sh[i]=caps[i];fixed[i]=true;ch=true;}});if(!ch){fr.forEach(i=>sh[i]=eq);break;}}
+ sh=sh.map(v=>Math.floor(v/5)*5);let def=100-sh.reduce((a,b)=>a+b,0);for(let i=0;def>0&&i<500;i++){const j=i%k;if(sh[j]+5<=caps[j]){sh[j]+=5;def-=5;}}
+ const c=[];let acc=0;for(let i=0;i<k-1;i++){acc+=sh[i];c.push(acc);}return c;}
+function cutsArr(){const k=S.short.length;if(k<2)return [];if(S.cuts&&S.cuts.length===k-1){const sh=sharesOf(S.cuts);if(sh.every((s,i)=>s>=0&&s<=capOf(FB[S.short[i]])))return S.cuts.slice();}return defaultCuts(k);}
+function mixAmts(fb){fb=(fb===undefined?D().fb:fb);const ids=S.short||[],k=ids.length,sh=k?(k<2?[Math.min(100,capOf(FB[ids[0]]))]:sharesOf(cutsArr())):[],out={};let sum=0;
+ ids.forEach((id,i)=>{out[id]=Math.round(fb*sh[i]/100);sum+=out[id];});
+ if(k&&sh.reduce((a,b)=>a+b,0)>=100)out[ids[k-1]]+=fb-sum;return out;}
+function mixGap(fb){fb=(fb===undefined?D().fb:fb);const A=mixAmts(fb);return Math.max(0,fb-Object.values(A).reduce((a,b)=>a+b,0));}
+function calcForm(f,amt){const g=k=>gp(f,k),r={cost:0,monthly:0,share:0,line:''};
+ switch(f.calc){
+  case 'annuity':{const i=g('zins')/1200,m=g('mon');const rate=amt>0?(i>0?amt*i/(1-Math.pow(1+i,-m)):amt/m):0;r.monthly=rate;r.cost=Math.max(0,rate*m-amt);break;}
+  case 'equity':{r.share=amt>0?amt/(g('bew')+amt)*100:0;break;}
+  case 'crowd':{const q=(g('geb')+g('bel'))/100,ziel=q<1?amt/(1-q):0,need=g('beitrag')>0?Math.ceil(ziel/g('beitrag')):0,fo=n((S.prof||{}).follower),lo=Math.round(fo*0.25),hi=Math.round(fo*0.5);r.cost=Math.max(0,ziel-amt);r.extra=`Fundingziel ${eur(ziel)} · Ø ${eur(g('beitrag'))} pro Unterstützer`;r.real={need,fo,lo,hi,beitrag:g('beitrag'),st:need<=lo?'ok':need<=hi?'knapp':'nein'};break;}
+  case 'lease':{r.monthly=amt*g('faktor')/100;r.cost=Math.max(0,r.monthly*g('mon')-amt);break;}
+  case 'ads':{r.extra=g('einn')>0?`dauert ca. ${fmt(Math.ceil(amt/g('einn')))} Monate (bei ${eur(g('einn'))} pro Monat)`:'';break;}
+  case 'presale':{r.extra=`ca. ${fmt(Math.ceil(amt/g('preis')))} Vorbestellungen à ${eur(g('preis'))}`;break;}
+ }
+ return r;}
+function assume(f){const a=PAR[f.calc].map(([k,l,u])=>`${l} ${String(gp(f,k)).replace('.',',')} ${u}`);return a.length?'Annahme: '+a.join(' · '):'Keine Rückzahlung, aber Zeit für Antrag einplanen.';}
+function mixSummary(adj){const d=D(),fbX=adj?adj.fb:d.fb,A=mixAmts(d.fb),scl=adj&&adj.scale!==undefined?adj.scale:1,gap=adj&&adj.gap!==undefined?adj.gap:mixGap(d.fb);let cost=0,monthly=0,share=0,eq=d.em+(adj?adj.extra:0);
+ const rows=(S.short||[]).map(id=>{const f=FB[id],amt=Math.round(A[id]*scl),r=calcForm(f,amt);cost+=r.cost;monthly+=r.monthly;share+=r.share;if(f.eq)eq+=amt;return {f,amt,r,pc:fbX?amt/fbX*100:0};});
+ const ueb=n(S.ueb);let trag={cls:'ok',txt:'Keine monatliche Belastung durch Raten.'};
+ if(monthly>0){const q=ueb>0?monthly/ueb:Infinity;trag=q<=.6?{cls:'ok',txt:`tragfähig (${pct(q*100)} des Überschusses)`}:q<=1?{cls:'warn',txt:`knapp (${pct(q*100)} des Überschusses)`}:{cls:'bad',txt:ueb>0?`nicht tragfähig (${pct(q*100)} des Überschusses)`:'nicht tragfähig – kein Überschuss'};}
+ return {d,rows,gap,cost,monthly,share,eqQuote:d.kb?eq/d.kb*100:0,trag,ueb};}
+
+/* ============ Aufgabentexte ============ */
+const CASES=[
+['Ein Team hat eine Spielidee, kennt viele Fans im Netz und sammelt über eine Plattform Geld. Unterstützer bekommen das Spiel später als Dankeschön.','crowd','Viele kleine Beträge, Dankeschön statt Rückzahlung.'],
+['Ein Tech-Start-up will in 3 Jahren in ganz Europa wachsen und braucht 2 Mio. €. Dafür gibt es Firmenanteile.','vc','Sehr hoher Betrag, sehr hohes Wachstum, Anteile.'],
+['Eine erfahrene Unternehmerin investiert privat 50.000 € in eine junge Firma, hilft mit Kontakten und erhält dafür 15 % der Anteile.','angel','Privatperson, Geld plus Know-how, Anteile.'],
+['Ein Gründer gewinnt bei einem Wettbewerb 5.000 € Preisgeld, die er nicht zurückzahlen muss.','zuschuss','Geld ohne Rückzahlungspflicht.'],
+['Ein Gründer leiht sich 8.000 € von seinen Eltern und zahlt sie in Raten mit 2 % Zinsen zurück.','familie','Das Geld kommt aus dem privaten Umfeld.'],
+['Eine Gründerin bekommt über ihre Hausbank einen besonders zinsgünstigen Kredit der LfA Förderbank Bayern.','foerder','Staatliche Förderbank, Antrag über die Hausbank.']
+];
+
+/* ============ Seiten ============ */
+const P=[];
+P[0]={t:'Wie finanzierst du deine Geschäftsidee?',s:'Start',lvl:0,afb:'',
+html:()=>`<div class="welcome-hero"><h2>Deine Idee. <span>Deine Finanzierung.</span></h2><p>Vom Finanzierungsbedarf bis zum passenden Finanzierungsmix – Schritt für Schritt entscheiden.</p><div class="hero-tags"><span>✓ Bedarf berechnen</span><span>✓ Finanzierungsformen vergleichen</span><span>✓ Risiken prüfen</span></div></div><p class="lead">Du hast berechnet, wie viel Kapital deine Geschäftsidee braucht. Jetzt klärst du: <b>Woher kommt das Geld – und welche Finanzierung passt zu deiner Idee?</b></p>
+<div class="two"><label>Dein Name / Teamname${txt('name','z. B. Lena &amp; Jonas'.replace('&amp;','&'))}</label><label>Name deines Unternehmens${txt('firma')}</label></div>
+<h3 style="margin-top:22px">So läuft die Stunde</h3>
+<ol class="steps">${[1,2,3,4,5,6,7,8].map(i=>`<li class="${i===8?'optional-step':''}"><span class="n">${i}</span><div><b>${P[i].t}</b>${i===8?'<span class="optional-pill tiny">OPTIONAL</span>':''}<small>${P[i].task}</small></div></li>`).join('')}</ol>
+<p class="note">Fachbegriffe mit einem kleinen <b>i</b>, z. B. ${T('eigenkapital')}: Fahre mit der Maus darüber, dann erscheint eine kurze Erklärung.</p>
+${TEACH?`<div style="margin:18px 0;display:flex;gap:8px;flex-wrap:wrap"><button class="ghost" data-act="demo">Beispieldaten laden (Lehrkraft)</button><button class="ghost" data-act="unlock">Alle Stufen freischalten (Lehrkraft)</button><button class="ghost" data-act="reset">Zurücksetzen</button></div>`:''}`,
+upd:()=>{},chk:()=>{const m=[];if(L('name')<2)m.push('Trage deinen Namen oder Teamnamen ein.');if(L('firma')<2)m.push('Trage den Namen deines Unternehmens ein.');return m;}};
+
+P[1]={t:'Finanzierungsbedarf berechnen',s:'Bedarf',lvl:1,afb:'AFB I',task:'Kapitalbedarf übertragen, Finanzierungsbedarf berechnen',
+html:()=>`<div class="q"><h3><span class="qn">1</span>Kapitalbedarf übertragen</h3><p class="sub">Trage deine Ergebnisse aus dem Arbeitsblatt ein.</p>
+<div class="grid3"><label>${T('gruendungskosten')}${money('gk')}</label><label>${T('investition')}${money('inv')}</label><label>${T('laufendekosten')} (3 Monate)${money('lk')}</label></div>
+<div class="kpis"><div class="kpi"><small>${T('kapitalbedarf')}</small><b id="o-kb">–</b></div></div></div>
+<div class="q"><h3><span class="qn">2</span>Eigenmittel abziehen</h3><p class="sub">Wie viel eigenes Geld bringst du ein?</p>
+<label style="max-width:340px">${T('eigenmittel')}${money('em')}</label>
+<p><span class="formula">Finanzierungsbedarf = Kapitalbedarf − Eigenmittel</span></p>
+<div class="kpis"><div class="kpi"><small>${T('finanzierungsbedarf')}</small><b id="o-fb">–</b></div><div class="kpi" id="o-qk"><small>${T('ekquote')}</small><b id="o-q">–</b></div></div>
+<div id="bar1"></div><p id="o-str" class="note"></p></div>
+<div class="q snapshot-panel"><h3><span class="qn" aria-hidden="true">✓</span>Dein Finanzierungsbedarf auf einen Blick</h3>
+<p class="sub">Diese vier Ergebnisse gehören zusammen. Verwende sie als Übersicht für deinen Screenshot.</p>
+${companyLine()}
+<div class="kpis snapshot-kpis" aria-label="Übersicht Kapitalbedarf, Eigenmittel, Finanzierungsbedarf und Eigenkapitalquote">
+ <div class="kpi"><small>Kapitalbedarf</small><b id="snap-kb">–</b></div>
+ <div class="kpi"><small>Eigenmittel</small><b id="snap-em">–</b></div>
+ <div class="kpi"><small>Finanzierungsbedarf</small><b id="snap-fb">–</b></div>
+ <div class="kpi" id="snap-qk"><small>Eigenkapitalquote</small><b id="snap-q">–</b></div>
+</div>
+<div class="capture-callout" role="note"><div class="capture-symbol" aria-hidden="true">▣</div><div><strong>Wichtig: Screenshot dieser vier Ergebnisse machen!</strong><p>Halte <b>Kapitalbedarf, Eigenmittel, Finanzierungsbedarf und Eigenkapitalquote</b> gemeinsam in einem Screenshot fest. Sichere ihn für die Besprechung bzw. Abgabe.</p></div></div>
+</div>
+`,
+upd:()=>{const d=D();$('#o-kb').textContent=eur(d.kb);$('#o-fb').textContent=eur(d.fb);$('#o-q').textContent=pct(d.quote,1);
+ $('#snap-kb').textContent=eur(d.kb);$('#snap-em').textContent=eur(d.em);$('#snap-fb').textContent=eur(d.fb);$('#snap-q').textContent=pct(d.quote,1);
+ $('#snap-qk').className='kpi '+(d.kb<=0?'':d.quote>=20?'ok':'warn');
+ $('#o-qk').className='kpi '+(d.kb<=0?'':d.quote>=20?'ok':'warn');
+ $('#bar1').innerHTML=sbar([{v:d.gk,l:'Gründungskosten',col:SC[2],tc:'#fff'},{v:d.inv,l:'Investitionen',col:SC[0],tc:'#fff'},{v:d.lk,l:'Laufende Kosten',col:SC[1]}]);
+ $('#o-str').textContent=d.kb>0?`${pct(d.invShare)} deines Bedarfs sind Investitionen (lange genutzt), ${pct(d.laufShare)} sind Gründungs- und laufende Kosten. Die EK-Quote liegt bei ${pct(d.quote,1)}${d.quote>=20?' – eine solide Ausgangslage.':' – Banken erwarten oft 20–30 %, du brauchst vermutlich Sicherheiten.'}`:'Trage deine Beträge ein.';
+},
+chk:()=>{const d=D(),m=[];if(d.kb<=0)m.push('Trage deinen Kapitalbedarf ein.');else if(d.fb<=0)m.push('Deine Eigenmittel decken den ganzen Bedarf. Nimm für die Übung an, dass du weniger eigenes Geld hast.');return m;}};
+
+P[2]={t:'Finanzierungsarten',s:'Finanzierungsarten',lvl:2,afb:'AFB I–II',task:'7 Finanzierungsformen lesen, 6 Fälle zuordnen',
+html:()=>`<p class="lead">Informiere dich über die folgenden Finanzierungsarten.</p>
+${GROUPS.map(([g,gt])=>`<div class="grp">${gt}</div>${F.filter(f=>f.g===g).map(f=>`<details class="fc"><summary><span>${T(f.t,f.name)}</span></summary><div class="body"><p>${f.kurz}</p><div class="pm"><div><b>+ Vorteile</b><ul>${f.plus.map(x=>`<li>${x}</li>`).join('')}</ul></div><div><b>– Nachteile</b><ul>${f.minus.map(x=>`<li>${x}</li>`).join('')}</ul></div></div><p><b>Passt, wenn:</b> ${f.passt}</p></div></details>`).join('')}`).join('')}
+<div class="q" style="margin-top:24px"><h3><span class="qn">✎</span>Welche Finanzierungsform passt?</h3><p class="sub">Wähle für jede Situation die passende Form.</p>
+${CASES.map((c,i)=>`<div class="case"><div>${i+1}. ${c[0]}</div><div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">${sel('m.'+i,[['','– Finanzierungsform wählen –'],...F.map(f=>[f.id,f.name])],'style="max-width:340px"')}<span class="fb" id="fm-${i}"></span></div></div>`).join('')}</div>`,
+upd:()=>{ CASES.forEach((c,i)=>{const v=get('m.'+i),e=$('#fm-'+i);e.innerHTML=!v?'':v===c[1]?'✓ richtig':'✗ Tipp: '+esc(c[2]);e.className='fb '+(!v?'':v===c[1]?'ok':'no');});},
+chk:()=>{const w=CASES.filter((c,i)=>get('m.'+i)!==c[1]).length;return w?[`Noch ${w} Situation(en) fehlen oder sind nicht richtig zugeordnet.`]:[];}};
+
+P[3]={t:'Passende Formen herausfiltern',s:'Filter',lvl:3,afb:'AFB II',task:'Bedarfsprofil beantworten, geeignete Formen auswählen',
+html:()=>`<div class="q"><h3><span class="qn">1</span>Bedarfsprofil deiner Idee</h3><p class="sub">Beantworte die Fragen zu deiner Geschäftsidee. Daraus ergeben sich ${T('ko','K.-o.-Kriterien')}.</p>
+<div class="grid2">${PROF.map(([k,q,o,g])=>`<label>${q}${g?' '+T(g,'ⓘ'):''}${sel('prof.'+k,[['','– wählen –'],...o])}</label>`).join('')}</div></div>
+<div class="q"><h3><span class="qn">2</span>Wähle deine Favoriten</h3><p class="sub" id="o3a"></p><div id="o3n"></div><div class="scroll"><div id="kotable"></div></div><p><span class="fb" id="o3s"></span></p></div>`,
+upd:()=>{const d=D(),p=S.prof||{};S.short=(S.short||[]).filter(id=>evalForm(FB[id]).st!=='ko');
+ const done=PROF.every(x=>p[x[0]]);
+ if(!done){$('#o3a').textContent='Beantworte zuerst alle Fragen oben.';$('#o3n').innerHTML='';$('#kotable').innerHTML='';$('#o3s').textContent='';$('#o3s').className='fb';return;}
+ const nz=F.filter(f=>!partial(f)&&evalForm(f).st!=='ko'),mp=minPick();
+ $('#o3n').innerHTML=nz.length?'':`<div class="alert" style="margin:10px 0"><b>Mit deinen bisherigen Angaben bleibt keine geeignete Finanzierungsform übrig.</b> Förderkredit, Zuschüsse und (je nach Community) Crowdfunding decken nur einen Teil deines Bedarfs – du brauchst mindestens eine weitere Form. Das sind die Gründe:<ul>${F.filter(f=>!partial(f)||evalForm(f).st==='ko').map(f=>`<li><b>${esc(f.name)}:</b> ${esc(evalForm(f).why)}</li>`).join('')}</ul><p><b>Merke:</b> Gehe noch einmal zurück und passe deine Eingaben an – zum Beispiel mehr <b>Eigenmittel</b> in Stufe 1 (das senkt den Finanzierungsbedarf und erhöht die EK-Quote). Du kannst auch die Fragen oben prüfen: Gibt es <b>Sicherheiten</b> (z. B. Bürgschaft der Eltern), würden <b>Familie &amp; Freunde</b> Geld leihen, wie groß ist deine <b>Community</b>?</p></div>`;
+ $('#o3a').innerHTML=nz.length?`Setze ein Häkchen bei <b>${mp===1?'1 Form':mp+' bis 3 Formen'}</b>, die gut zu deiner Idee passen (mindestens eine davon muss mehr als nur einen Teil abdecken können, also nicht Förderkredit, Zuschüsse oder ein auf deine Community begrenztes Crowdfunding). Ausgeschiedene Formen sind grau.`:'Ändere deine Angaben, bis mindestens eine Form übrig bleibt.';
+ const lab={ok:['n','geeignet'],teil:['a','nur Teil'],ko:['','K.o.']};
+ $('#kotable').innerHTML=`<table><tr><th></th><th>Finanzierungsform</th><th>Ergebnis</th><th>Begründung</th></tr>${F.map(f=>{const e=evalForm(f),on=S.short.includes(f.id);return `<tr class="${e.st==='ko'?'ko':''}"><td style="width:34px"><input type="checkbox" data-act="short" data-id="${f.id}" ${on?'checked':''} ${e.st==='ko'?'disabled':''} aria-label="${esc(f.name)}"></td><td><b>${T(f.t,f.name)}</b></td><td><span class="tag ${lab[e.st][0]}">${lab[e.st][1]}</span></td><td>${esc(e.why)}</td></tr>`;}).join('')}</table>`;
+ const c=S.short.length,hasMain=S.short.some(id=>!partial(FB[id])),okc=nz.length&&c>=mp&&c<=3&&hasMain;$('#o3s').textContent=`Ausgewählt: ${c}`;$('#o3s').className='fb '+(okc?'ok':'no');},
+chk:()=>{const m=[],p=S.prof||{},n0=PROF.filter(x=>!p[x[0]]).length;if(n0){m.push(`Beantworte noch ${n0} Frage(n) zum Bedarfsprofil.`);return m;}
+ const nz=F.filter(f=>!partial(f)&&evalForm(f).st!=='ko');
+ if(!nz.length){m.push('Es bleibt keine geeignete Finanzierungsform übrig. Gehe zurück und passe deine Eingaben an (z. B. Eigenmittel in Stufe 1, Sicherheiten oder Familie &amp; Freunde oben).');return m;}
+ const c=(S.short||[]).length,mp=minPick();if(c<mp||c>3)m.push(`Wähle ${mp===1?'1 Form':mp+' bis 3 Formen'} aus.`);
+ if(c>0&&!(S.short||[]).some(id=>!partial(FB[id])))m.push('Förderkredit (max. 20 %), Zuschüsse (max. 15 %) und Crowdfunding (je nach Community) decken nur einen Teil ab. Wähle mindestens eine weitere Form.');return m;}};
+
+P[4]={t:'Die beste Form finden',s:'Vergleich',lvl:4,afb:'AFB II–III',task:'Kriterien ordnen, Passung bewerten',
+html:()=>{const ids=S.short||[];return `<div class="q"><h3><span class="qn">1</span>Was ist dir am wichtigsten?</h3><p class="sub">Bringe die ${T('kriterium','Kriterien')} in eine Reihenfolge: <b>oben = am wichtigsten für deine Idee.</b> Ziehe die Blöcke oder nutze die Pfeile.</p>
+<ul id="ord"></ul><button class="btn sec" data-act="ordok" id="ordbtn">Reihenfolge passt so</button> <span class="fb" id="ordfb"></span></div>
+<div class="q"><h3><span class="qn">2</span>Wie gut passt jede Form zu deiner Idee?</h3><p class="sub">Die Bewertung der Kriterien ist vorgegeben. Du bewertest nur die ${T('passung','Passung zu deiner Idee')}.</p>
+<div class="scroll"><table><tr><th>Finanzierungsform</th>${CRIT.map(([c,l])=>`<th>${l}</th>`).join('')}<th>Passung zu meiner Idee</th></tr>
+${ids.map(id=>{const f=FB[id];return `<tr><td><b>${T(f.t,f.name)}</b></td>${CRIT.map(([c])=>`<td class="dots">${dots(f.sc[c])}<small>${WORD[f.sc[c]]}</small></td>`).join('')}<td style="min-width:150px">${sel('sc.'+id+'.passung',[['','– wählen –'],...[5,4,3,2,1].map(x=>[x,WORD[x]])])}</td></tr>`;}).join('')}</table></div></div>
+<div class="q"><h3><span class="qn">3</span>Ergebnis</h3><div id="rank"></div><p class="hint">Der Wert zeigt, wie gut die Form zu deinen Prioritäten und zu deiner Idee passt. Die Reihenfolge deiner Kriterien zählt stärker, je weiter oben sie steht.</p></div>`;},
+upd:()=>{const o=ord();$('#ord').innerHTML=o.map((c,i)=>`<li draggable="true" data-o="${i}"><span>${CRIT.find(x=>x[0]===c)[1]}</span><button type="button" data-act="up" data-i="${i}" ${i===0?'disabled':''} aria-label="nach oben">▲</button><button type="button" data-act="down" data-i="${i}" ${i===3?'disabled':''} aria-label="nach unten">▼</button></li>`).join('');
+ $('#ordfb').textContent=S.ordOk?'✓ bestätigt':'';$('#ordfb').className='fb '+(S.ordOk?'ok':'');
+ const rk=ranking();$('#rank').innerHTML=rk.map((r,i)=>`<div class="rank"><span class="pl">${i+1}</span><b>${esc(r.f.name)}</b><div class="bar"><i style="width:${r.t==null?0:r.t/MAXT*100}%"></i></div><span>${r.t==null?'–':pct(r.t/MAXT*100)}</span></div>`).join('')||'<div class="note">Keine Formen in der Vorauswahl.</div>';},
+chk:()=>{const m=[];if(!S.ordOk)m.push('Bringe die Kriterien in deine Reihenfolge und bestätige sie.');if((S.short||[]).some(id=>!get('sc.'+id+'.passung')))m.push('Bewerte bei jeder Form die Passung zu deiner Idee.');return m;}};
+
+P[5]={t:'Finanzierungsmix einstellen',s:'Mix',lvl:4,afb:'AFB II–III',task:'Anteile im Balken verschieben, Kosten ablesen',
+html:()=>{const k=(S.short||[]).length;return `<p class="lead">Der Balken zeigt deinen ganzen ${T('kapitalbedarf')}. Der graue Teil ist dein eigenes Geld. Den Rest verteilst du auf deine Formen: <b>Ziehe die Griffe im Balken nach links oder rechts.</b>${(S.short||[]).filter(id=>FB[id].capPct).map(id=>` <b>${FB[id].name.split(' (')[0]}</b> höchstens ${FB[id].capPct} %`).join(',').replace(/^/,(S.short||[]).some(id=>FB[id].capPct)?' Begrenzt auf einen Teil deines Finanzierungsbedarfs:':'')}${(S.short||[]).some(id=>FB[id].capPct)?'.':''}</p>
+<div class="q"><label style="max-width:440px">Erwarteter ${T('ueberschuss','Überschuss')} pro Monat (Schätzung, vor Zinsen und Raten)${money('ueb')}</label>
+<div class="mixwrap"><div id="mixbar"><div class="seg" id="sg-e" style="background:#dfe6ef;color:#1d3557"></div>${(S.short||[]).map((id,i)=>`<div class="seg" id="sg-${i}" style="background:${SC[i]};color:${SCT[i]}"></div>`).join('')}<div class="seg" id="sg-gap" style="background:repeating-linear-gradient(45deg,#fff,#fff 6px,#fde3a6 6px,#fde3a6 12px);color:#1d3557;display:none"></div>${(S.short||[]).slice(0,-1).map((id,i)=>`<div class="hd" id="hd-${i}" data-i="${i}" tabindex="0" role="slider" aria-label="Anteil verschieben"></div>`).join('')}</div></div>
+${k<2?'<p class="hint">Es ist nur eine Form ausgewählt – sie finanziert den gesamten Rest.</p>':''}<div id="cw"></div></div>
+<div class="q"><h3>Das bedeutet für dich</h3><div id="res5"></div><div class="kpis" id="k5"></div></div>`;},
+upd:()=>{const m=mixSummary(),d=m.d,ep=d.kb?d.em/d.kb*100:0,fp=100-ep,cuts=cutsArr(),k=(S.short||[]).length;
+ const gp0=d.fb?m.gap/d.fb*100:0,gs=$('#sg-gap');gs.style.display=m.gap>0?'grid':'none';gs.style.width=(gp0/100*fp)+'%';gs.innerHTML=gp0/100*fp>9?'fehlt<br>'+pct(gp0):'';
+ const e=$('#sg-e');e.style.width=ep+'%';e.textContent=ep>8?'Eigenmittel '+pct(ep):'';
+ let prev=0;const shv=k>1?sharesOf(cuts):[100];m.rows.forEach((r,i)=>{const c=i<k-1?cuts[i]:100,sh=shv[i];prev=c;const s=$('#sg-'+i);s.style.width=(sh/100*fp)+'%';s.innerHTML=sh/100*fp>11?`${esc(r.f.name.split(' (')[0])}<br>${pct(r.pc)}`:'';const h=$('#hd-'+i);if(h){h.style.left=(ep+c/100*fp)+'%';h.setAttribute('aria-valuenow',c);}});
+ $('#res5').innerHTML=`<table><tr><th>Quelle</th><th>Anteil am Bedarf</th><th>Betrag</th><th>Kosten gesamt</th><th>pro Monat</th></tr><tr><td><span class="sw" style="background:#dfe6ef"></span>Eigenmittel</td><td>–</td><td>${eur(d.em)}</td><td>0 €</td><td>0 €</td></tr>${m.rows.map((r,i)=>`<tr><td><span class="sw" style="background:${SC[i]}"></span><b>${esc(r.f.name)}</b><div class="hint">${esc(assume(r.f))}${r.r.extra?' · '+esc(r.r.extra):''}${r.r.real&&r.amt>0?realTag(r.r.real):''}</div>${r.f.capPct?`<span class="tag a">max. ${r.f.capPct} % des Finanzierungsbedarfs</span>`:(r.amt>r.f.max?'<span class="tag a">über dem üblichen Höchstbetrag</span>':'')}</td><td>${pct(r.pc)}</td><td>${eur(r.amt)}</td><td>${eur(r.r.cost)}</td><td>${eur(r.r.monthly)}</td></tr>`).join('')}${m.gap>0?`<tr><td><span class="sw" style="background:#fde3a6"></span><b>Fehlt noch</b></td><td>${pct(d.fb?m.gap/d.fb*100:0)}</td><td><b>${eur(m.gap)}</b></td><td>–</td><td>–</td></tr>`:''}</table>`;
+ const cri=m.rows.find(r=>r.f.id==='crowd'),fo=n((S.prof||{}).follower),cc=cri?crowdCap():0;
+ $('#cw').innerHTML=cri&&cc<100?`<div class="${S.cwarn?'alert':'note'}" style="margin-top:12px">${S.cwarn?'<b>Mehr Crowdfunding passt nicht zu deiner Community.</b> ':''}Bei ca. ${fmt(fo)} Followern sind höchstens etwa ${fmt(Math.round(fo*0.5))} Unterstützer realistisch. Der Balken lässt sich daher nur bis ${cc} % deines Finanzierungsbedarfs ausziehen.${m.gap>0?` Es <b>fehlen noch ${eur(m.gap)}</b> (schraffiert).`:''} ${S.cwarn?'Du möchtest mehr über Crowdfunding finanzieren? Dann brauchst du eine <b>größere Community mit mehr Followern</b>. ':''}<button class="btn am" data-act="tofollower" style="margin-left:6px">Zurück zur Angabe der Follower →</button></div>`:'';
+ $('#k5').innerHTML=(m.gap>0?`<div class="kpi bad"><small>Fehlender Betrag</small><b>${eur(m.gap)}</b></div>`:'')+`<div class="kpi"><small>Kosten der Finanzierung</small><b>${eur(m.cost)}</b></div><div class="kpi"><small>${T('kapitaldienst')}</small><b>${eur(m.monthly)}</b></div><div class="kpi ${m.trag.cls}"><small>${T('tragfaehigkeit')}</small><b style="font-size:1rem">${esc(m.trag.txt)}</b></div>${m.share>0?`<div class="kpi"><small>Abgegebene Firmenanteile (${T('verwaesserung')})</small><b>${pct(m.share,1)}</b></div>`:''}`;},
+chk:()=>(S.ueb===undefined||S.ueb==='')?['Trage deinen erwarteten Überschuss pro Monat ein (0 ist erlaubt).']:[]};
+
+/* Kompakte Spiegelung des Finanzierungsergebnisses aus Stufe 6 für Stufe 7. */
+function compactFinancingOverview(){
+ const m=mixSummary(),d=m.d;
+ const sourceRows=m.rows.map(r=>`<tr><td><b>${esc(r.f.name)}</b></td><td>${pct(r.pc)}</td><td>${eur(r.amt)}</td></tr>`).join('');
+ const gaps=m.gap>0?`<tr class="gaprow"><td><b>Fehlender Betrag</b></td><td>${pct(d.fb?m.gap/d.fb*100:0)}</td><td>${eur(m.gap)}</td></tr>`:'';
+ return companyLine()+
+ `<div class="kpis"><div class="kpi"><small>Kapitalbedarf</small><b>${eur(d.kb)}</b></div><div class="kpi"><small>Eigenmittel</small><b>${eur(d.em)}</b></div><div class="kpi"><small>Finanzierungsbedarf</small><b>${eur(d.fb)}</b></div></div>`+
+ sbar([{v:d.em,l:'Eigenmittel',col:'#dfe6ef'},...m.rows.map((r,i)=>({v:r.amt,l:r.f.name,col:SC[i%3],tc:SCT[i%3]})),{v:m.gap,l:'fehlt noch',col:'#fde3a6'}])+
+ `<div class="scroll"><table class="result-table"><thead><tr><th>Finanzierungsquelle</th><th>Anteil</th><th>Betrag</th></tr></thead><tbody><tr><td><b>Eigenmittel</b></td><td>–</td><td>${eur(d.em)}</td></tr>${sourceRows}${gaps}</tbody></table></div>`+
+ `<div class="kpis"><div class="kpi"><small>Kosten der Finanzierung</small><b>${eur(m.cost)}</b></div><div class="kpi"><small>Monatliche Belastung</small><b>${eur(m.monthly)}</b></div><div class="kpi ${m.trag.cls}"><small>Tragfähigkeit</small><b class="status-text">${esc(m.trag.txt)}</b></div>${m.share>0?`<div class="kpi"><small>Abgegebene Firmenanteile</small><b>${pct(m.share,1)}</b></div>`:''}</div>`;
+}
+
+P[6]={t:'Dein Finanzierungsmix – Ergebnis',s:'Ergebnis',lvl:0,afb:'',task:'Finanzierungsergebnis prüfen und per Screenshot sichern',
+html:()=>`<p class="lead">Hier siehst du <b>ausschließlich die Ergebnisse</b> deiner Einstellungen aus Stufe 5. Du kannst sie auf dieser Seite nicht verändern. Möchtest du etwas anpassen, gehe zu Stufe 5 zurück.</p>
+<div class="capture-callout" role="note"><div class="capture-symbol" aria-hidden="true">▣</div><div><strong>Wichtig: Screenshot der Ergebnisse machen!</strong><p>Erstelle jetzt einen Screenshot, auf dem dein Finanzierungsmix und die wichtigsten Kennzahlen zu sehen sind. Speichere das Bild für die Besprechung bzw. Abgabe.</p></div></div>
+<div class="q result-panel"><h3>Ergebnis deiner Finanzierung</h3><div id="ov"></div></div>`,
+upd:()=>{const m=mixSummary(),d=m.d;
+ $('#ov').innerHTML=companyLine()+`
+ <div class="kpis"><div class="kpi"><small>Kapitalbedarf</small><b>${eur(d.kb)}</b></div><div class="kpi"><small>Eigenmittel</small><b>${eur(d.em)}</b></div><div class="kpi"><small>Finanzierungsbedarf</small><b>${eur(d.fb)}</b></div></div>`+
+ sbar([{v:d.em,l:'Eigenmittel',col:'#dfe6ef'},...m.rows.map((r,i)=>({v:r.amt,l:r.f.name,col:SC[i],tc:SCT[i]})),{v:m.gap,l:'fehlt noch',col:'#fde3a6'}])+
+ `<div class="scroll"><table class="result-table"><thead><tr><th>Finanzierungsquelle</th><th>Anteil</th><th>Betrag</th><th>Kosten gesamt</th><th>Pro Monat</th></tr></thead><tbody><tr><td><b>Eigenmittel</b></td><td>–</td><td>${eur(d.em)}</td><td>0 €</td><td>0 €</td></tr>${m.rows.map(r=>`<tr><td><b>${esc(r.f.name)}</b></td><td>${pct(r.pc)}</td><td>${eur(r.amt)}</td><td>${eur(r.r.cost)}</td><td>${eur(r.r.monthly)}</td></tr>`).join('')}${m.gap>0?`<tr class="gaprow"><td><b>Fehlender Betrag</b></td><td>${pct(d.fb?m.gap/d.fb*100:0)}</td><td><b>${eur(m.gap)}</b></td><td>–</td><td>–</td></tr>`:''}</tbody></table></div>
+ <div class="kpis"><div class="kpi"><small>Kosten der Finanzierung</small><b>${eur(m.cost)}</b></div><div class="kpi"><small>Monatliche Belastung</small><b>${eur(m.monthly)}</b></div><div class="kpi ${m.trag.cls}"><small>Tragfähigkeit</small><b class="status-text">${esc(m.trag.txt)}</b></div>${m.share>0?`<div class="kpi"><small>Abgegebene Firmenanteile</small><b>${pct(m.share,1)}</b></div>`:''}</div>`;
+},chk:()=>[]};
+
+P[7]={t:'Risiken deiner Finanzierung',s:'Risiken',lvl:5,afb:'AFB III',task:'Risiken der ausgewählten Finanzierungsformen erkennen',
+html:()=>`<p class="lead">Du hast deinen Finanzierungsmix ausgewertet. Prüfe jetzt die Risiken der ausgewählten Finanzierungsformen.</p>
+<div class="q result-mini" aria-label="Kompakte Ergebnisübersicht aus Stufe 6"><div class="result-mini-head"><h3>Dein Ergebnis aus Stufe 6</h3><span class="tag">Zum Nachschauen</span></div><div id="riskSummary"></div></div>
+<div class="q"><h3><span class="qn">!</span>Welche Risiken hat deine Finanzierung?</h3><p class="sub">Klicke bei jeder Form alle Contra-Argumente an, die <b>zutreffen</b>. Nicht alles, was dort steht, stimmt.</p><div id="risk"></div>
+<button class="btn am" data-act="rcheck">Prüfen</button> <span class="fb" id="rmsg"></span></div><div id="fin"></div>`,
+upd:()=>{const m=mixSummary(),d=m.d,used=m.rows.filter(r=>r.amt>0);
+ $('#riskSummary').innerHTML=compactFinancingOverview();
+ const sel6=S.risk||{};
+ $('#risk').innerHTML=used.map(r=>`<div style="margin:12px 0"><b>${esc(r.f.name)}</b> <span class="hint">(${pct(r.pc)} deines Bedarfs)</span><div class="chips">${r.f.contra.map(([t,ok],i)=>{const on=(sel6[r.f.id]||[]).includes(i);let c=on?'on':'';if(S.rcheck){c=on&&ok?'right':on&&!ok?'wrong':!on&&ok?'miss':'';}return `<button type="button" class="cp ${c}" data-act="chip" data-f="${r.f.id}" data-i="${i}">${S.rcheck&&on&&ok?'✓ ':S.rcheck&&on&&!ok?'✗ ':''}${t}</button>`;}).join('')}</div></div>`).join('');
+ const bad=riskErrors(used);const rm=$('#rmsg');if(!S.rcheck){rm.textContent='';rm.className='fb';}else{rm.textContent=bad===0?'✓ alles richtig':`✗ ${bad} Fehler – gestrichelt = fehlt noch, durchgestrichen = trifft nicht zu`;rm.className='fb '+(bad===0?'ok':'no');}
+ let fin='';if(S.rcheck&&bad===0&&used.length)fin+=`<div class="done-box"><b>Pflichtteil abgeschlossen!</b> Du hast die Risiken richtig eingeschätzt. Den Zusatzumsatz kannst du anschließend freiwillig bearbeiten.</div>`;
+ if(m.trag.cls!=='ok'||m.gap>0)fin+=`<div class="note"><b>${m.trag.cls!=='ok'?'Deine Finanzierung ist '+(m.trag.cls==='warn'?'nur knapp tragfähig':'nicht tragfähig'):'Dein Finanzierungsbedarf ist nicht ganz gedeckt'}${m.gap>0&&m.trag.cls!=='ok'?' und es fehlen '+eur(m.gap):''}.</b> Falls du möchtest, kannst du nach dieser Stufe freiwillig prüfen, ob Zusatzumsätze durch Werbung oder Vorverkauf helfen.</div>`;
+ $('#fin').innerHTML=fin;},
+chk:()=>{const us=mixSummary().rows.filter(r=>r.amt>0);return(S.rcheck&&us.length&&riskErrors(us)===0)?[]:['Klicke die zutreffenden Contra-Argumente an und drücke „Prüfen“, bis alles richtig ist.'];}};
+
+function verdict(after,before,z,newFb,d){
+ const gA=after.gap||0,ok=(after.trag.cls==='ok'||newFb===0)&&gA===0,warn=after.trag.cls==='warn'&&newFb>0&&gA===0;
+ const head=gA>0?`Noch nicht gedeckt: Es fehlen auch mit den Zusatzumsätzen noch ${eur(gA)}.`:newFb===0?'Tragbar: Deine Zusatzumsätze decken den gesamten Finanzierungsbedarf.':after.trag.cls==='ok'?'Tragbar: Mit den Zusatzumsätzen ist deine Finanzierung tragfähig.':warn?'Knapp: Mit den Zusatzumsätzen ist deine Finanzierung gerade so tragfähig.':'Nicht tragbar: Auch mit den Zusatzumsätzen reicht dein Überschuss nicht für die Finanzierung.';
+ const body=z.total<=0?' Du hast keine Zusatzumsätze angesetzt, deshalb hat sich nichts verändert.':` Die Zusatzumsätze von ${eur(z.total)} senken den externen Finanzierungsbedarf von ${eur(d.fb)} auf ${eur(newFb)} und die monatliche Belastung von ${eur(before.monthly)} auf ${eur(after.monthly)} (Überschuss: ${eur(after.ueb)}).`;
+ const tip=ok?'':gA>0?' Überlege, ob du mehr Eigenmittel einsetzt, eine größere Community aufbaust (mehr Crowdfunding) oder eine andere Mischung wählst.':' Überlege, ob du mehr Eigenmittel einsetzt, eine andere Mischung wählst oder deine Kosten senken kannst.';
+ return `<div class="done-box${ok?'':' bad'}"><b>${head}</b>${body}${tip}</div>`;}
+function zusatz(){const vv=S.vv||{},wb=S.wb||{};
+ const vOk=vv.ok1==='ja'&&vv.ok2==='ja',vUm=vOk?n(vv.preis)*n(vv.anz):0;
+ const tkp=(wb.tkp===undefined||wb.tkp==='')?5:n(wb.tkp),mon=3;
+ const wMon=n(wb.reich)*30/1000*tkp,wOk=wb.ok==='ja'&&n(wb.reich)>0,wUm=wOk?wMon*mon:0;
+ return {vOk,vUm,wOk,wMon,wUm,mon,tkp,total:vUm+wUm};}
+const YN=[['','– wählen –'],['ja','ja'],['nein','nein']];
+P[8]={t:'Zusatzumsatz (optional)',s:'Zusatzumsatz · optional',lvl:5,afb:'AFB III',task:'OPTIONAL · Vorverkauf und Werbung abschätzen und einrechnen',
+html:()=>`<div class="optional-notice"><span class="optional-pill">Freiwillige Zusatzaufgabe</span><p>Der Pflichtteil ist mit den Risiken auf Stufe 7 abgeschlossen. Du kannst diese Zusatzaufgabe bearbeiten, musst es aber nicht.</p></div><p class="lead">Nicht nur Kredite und Beteiligungen decken den Kapitalbedarf: Auch <b>Umsätze</b> helfen – durch einen ${T('vorverkauf','Vorverkauf')} an Kunden oder durch ${T('werbefin','Werbung')}. Prüfe, ob das zu <b>deinem Produkt</b> passt und wie viel Geld du damit zusätzlich einnehmen könntest.</p>
+<div class="q"><h3><span class="qn">1</span>Kunden-Vorverkauf</h3><p class="sub">Kunden bezahlen im Voraus, z. B. mit Gutscheinen, Vorbestellungen oder Jahreskarten.</p>
+<div class="grid2"><label>Was würdest du vorab verkaufen?${txt('vv.txt','z. B. Frühstücks-Gutscheinkarte')}</label><label>Preis pro Vorbestellung${money('vv.preis')}</label>
+<label>Wie viele Vorbesteller erwartest du?${num('vv.anz')}</label><span></span>
+<label>Kannst du dein Produkt schon vor dem Start verkaufen?${sel('vv.ok1',YN)}</label><label>Kannst du später sicher liefern, was du vorab verkaufst?${sel('vv.ok2',YN)}</label></div><div id="vvr"></div></div>
+<div class="q"><h3><span class="qn">2</span>Werbung</h3><p class="sub">Werbepartner bezahlen dafür, dass viele Menschen ihre Werbung bei dir sehen (z. B. Bildschirm, Banner, Sponsor in deiner App). Bezahlt wird oft pro 1.000 Kontakte (${T('tkp','TKP')}).</p>
+<div class="grid2"><label>Welche Werbung wäre bei dir möglich?${txt('wb.txt','z. B. Werbebildschirm am Automaten')}</label><label>Wie viele Menschen sehen sie pro Tag?${num('wb.reich')}</label>
+<label>Preis pro 1.000 Kontakte (Annahme)${sel('wb.tkp',[[3,'3 €'],[5,'5 €'],[8,'8 €'],[12,'12 €']],'',(S.wb&&S.wb.tkp!==undefined&&S.wb.tkp!=='')?S.wb.tkp:5)}</label><span></span>
+<label>Passt Werbung zu deinem Produkt, ohne Kunden zu stören?${sel('wb.ok',YN)}</label></div><div id="wbr"></div><p class="hint">Achtung Datenschutz: Persönliche Daten von Kunden dürfen nur mit Einwilligung genutzt werden (DSGVO).</p></div>
+<div class="q"><h3><span class="qn">3</span>Zusatzumsätze einrechnen</h3><p class="sub">Umsatz ist nicht Gewinn: Was du vorab verkaufst, musst du später liefern. Rechne vorsichtig.</p><div id="zsum"></div>
+<button class="btn am" data-act="zu">Zusatzumsätze in meine Finanzierung einrechnen</button><div id="zov"></div></div>`,
+upd:()=>{const z=zusatz(),d=D(),vv=S.vv||{},wb=S.wb||{},cm=commLevel(),lim={'groß':300,'mittel':100,'klein':20}[cm]||100;
+ $('#vvr').innerHTML=(vv.ok1&&vv.ok2)?(z.vOk?`<div class="res">Umsatz durch Vorverkauf: <b>${eur(z.vUm)}</b> (${fmt(n(vv.anz))} × ${eur(n(vv.preis))})${n(vv.anz)>lim?` · <span class="tag a">Realistisch? Bei deiner Community ${cm?'('+cm+') ':''}sind eher bis zu ${lim} Vorbesteller zu erwarten.</span>`:''}</div>`:`<div class="res"><b>Für dein Produkt ist ein Vorverkauf nicht sinnvoll</b> – du kannst es nicht vorab verkaufen oder sicher liefern. Er zählt mit 0 €.</div>`):'';
+ $('#wbr').innerHTML=wb.ok?(z.wOk?`<div class="res">Einnahmen: ${fmt(n(wb.reich))} Personen × 30 Tage ÷ 1.000 × ${eur(z.tkp)} = <b>${eur(z.wMon)} pro Monat</b>, in den ersten 3 Monaten <b>${eur(z.wUm)}</b>${n(wb.reich)<200?' · <span class="tag a">Bei so wenig Reichweite zahlen Werbepartner meist kaum.</span>':''}</div>`:`<div class="res"><b>Werbung ist bei deinem Produkt nicht sinnvoll</b> (oder keine Reichweite angegeben). Sie zählt mit 0 €.</div>`):'';
+ $('#zsum').innerHTML=`<div class="kpis"><div class="kpi"><small>Vorverkauf</small><b>${eur(z.vUm)}</b></div><div class="kpi"><small>Werbung</small><b>${eur(z.wUm)}</b></div><div class="kpi ok"><small>Zusatzumsatz gesamt</small><b>${eur(z.total)}</b></div></div>`;
+ if(!S.zuOk){$('#zov').innerHTML='';return;}
+ const before=mixSummary(),gB=before.gap,newFb=Math.max(0,d.fb-z.total),used=Math.min(z.total,d.fb),gA=Math.max(0,gB-z.total),fF=d.fb-gB,after=mixSummary({fb:newFb,extra:used,gap:gA,scale:fF>0?Math.max(0,newFb-gA)/fF:0}),cf=z.total>0?Math.min(1,d.fb/z.total):0;
+ const row=(l,a,b)=>`<tr><td>${l}</td><td>${a}</td><td><b>${b}</b></td></tr>`;
+ $('#zov').innerHTML=`<h3 style="margin-top:18px">Deine Finanzierung im Überblick</h3>`+companyLine()+sbar([{v:d.em,l:'Eigenmittel',col:'#dfe6ef'},{v:z.vUm*cf,l:'Vorverkauf',col:'#f6a800'},{v:z.wUm*cf,l:'Werbung',col:'#fbd77a'},...after.rows.map((r,i)=>({v:r.amt,l:r.f.name,col:SC[i%3],tc:SCT[i%3]})),{v:gA,l:'fehlt noch',col:'#fde3a6'}])+
+ `<div class="scroll"><table><tr><th></th><th>ohne Zusatzumsatz</th><th>mit Zusatzumsatz</th></tr>`+row('Externer Finanzierungsbedarf',eur(d.fb),eur(newFb))+(gB>0?row('Davon noch nicht gedeckt',eur(gB),eur(gA)):'')+row('Kosten der Finanzierung',eur(before.cost),eur(after.cost))+row('Monatliche Belastung',eur(before.monthly),eur(after.monthly))+row('Tragfähigkeit',esc(before.trag.txt),esc(after.trag.txt))+row('Eigenkapital und EK-ähnliches Geld',pct(before.eqQuote,1),pct(after.eqQuote,1))+`</table></div>`+
+ `<p class="note">${z.total>d.fb?'Deine Zusatzumsätze würden den Finanzierungsbedarf sogar übersteigen. ':''}Zuerst füllen die Zusatzumsätze eine Lücke im Mix, danach werden die Beträge deiner Finanzierungsformen im gleichen Verhältnis kleiner.</p>${verdict(after,before,z,newFb,d)}`;},
+chk:()=>[]};
+
+function riskErrors(used){let bad=0;const s=S.risk||{};used.forEach(r=>r.f.contra.forEach(([t,ok],i)=>{const on=(s[r.f.id]||[]).includes(i);if(on!==!!ok)bad++;}));return bad;}
+
+/* ============ Steuerung ============ */
+const tip=$('#tip');
+function showTip(b){const g=G[b.dataset.k];if(!g)return;tip.innerHTML=`<b>${g[0]}</b><br>${g[1]}`;tip.style.display='block';const r=b.getBoundingClientRect(),w=tip.offsetWidth,h=tip.offsetHeight;let x=Math.max(8,Math.min(r.left+r.width/2-w/2,innerWidth-w-8)),y=r.bottom+8;if(y+h>innerHeight-8)y=r.top-h-8;tip.style.left=x+'px';tip.style.top=Math.max(8,y)+'px';}
+const hideTip=()=>{tip.style.display='none';};
+document.addEventListener('mouseover',e=>{const t=e.target.closest&&e.target.closest('.term');if(t){const b=t.querySelector('.ib');if(b)showTip(b);}});
+document.addEventListener('mouseout',e=>{const t=e.target.closest&&e.target.closest('.term');if(t&&!t.contains(e.relatedTarget))hideTip();});
+document.addEventListener('focusin',e=>{if(e.target.classList&&e.target.classList.contains('ib'))showTip(e.target);});
+document.addEventListener('focusout',e=>{if(e.target.classList&&e.target.classList.contains('ib'))hideTip();});
+window.addEventListener('scroll',hideTip,{passive:true});
+
+document.addEventListener('input',e=>{const t=e.target,p=t.dataset&&t.dataset.b;if(!p||t.type==='checkbox')return;set(p,t.value);save();update();});
+document.addEventListener('change',e=>{const t=e.target,p=t.dataset&&t.dataset.b;if(p&&t.type!=='checkbox'){set(p,t.value);if(/^m\.\d+$/.test(p)&&t.value&&t.value!==CASES[+p.split('.')[1]][1])bumpErr(2);save();update();}
+ if(t.dataset&&t.dataset.act==='short'){const id=t.dataset.id,a=S.short||[];if(t.checked){if(a.length>=3)showMsg(['Du kannst höchstens 3 Formen auswählen.']);else if(!a.includes(id))a.push(id);S.short=a;}else S.short=a.filter(x=>x!==id);S.cuts=null;S.ordOk=S.ordOk;save();update();}});
+/* Sortieren per Ziehen */
+let dragO=null;
+document.addEventListener('dragstart',e=>{const li=e.target.closest&&e.target.closest('li[data-o]');if(li){dragO=+li.dataset.o;e.dataTransfer.effectAllowed='move';try{e.dataTransfer.setData('text/plain','x');}catch(_){}}});
+document.addEventListener('dragover',e=>{if(e.target.closest&&e.target.closest('li[data-o]'))e.preventDefault();});
+document.addEventListener('drop',e=>{const li=e.target.closest&&e.target.closest('li[data-o]');if(li&&dragO!==null){e.preventDefault();moveOrd(dragO,+li.dataset.o);dragO=null;}});
+function moveOrd(a,b){if(b<0||b>3)return;const o=ord().slice(),[x]=o.splice(a,1);o.splice(b,0,x);S.ord=o;S.ordOk=true;save();update();}
+/* Balken-Griffe */
+let drag=null;
+function setCut(i,c){const k=S.short.length,cuts=cutsArr(),prev=i>0?cuts[i-1]:0,next=i<k-2?cuts[i+1]:100,capA=capOf(FB[S.short[i]]),capB=capOf(FB[S.short[i+1]]);const lo=i<k-2?Math.max(prev,next-capB):prev,hi=Math.min(next,prev+capA);if(lo>hi)return;const want=Math.round(c/5)*5;c=Math.max(lo,Math.min(hi,want));
+ const cr=S.short.indexOf('crowd');S.cwarn=cr>=0&&((cr===i&&want>hi)||(cr===i+1&&i<k-2&&want<lo)||(cr===k-1&&i===k-2&&100-c>capB));
+ if(c===cuts[i]&&S.cuts){save();update();return;}cuts[i]=c;S.cuts=cuts;save();update();}
+document.addEventListener('pointerdown',e=>{const h=e.target.closest&&e.target.closest('.hd');if(!h)return;drag=+h.dataset.i;try{h.setPointerCapture(e.pointerId);}catch(_){}e.preventDefault();});
+document.addEventListener('pointermove',e=>{if(drag===null)return;const bar=$('#mixbar');if(!bar)return;const d=D(),ep=d.kb?d.em/d.kb*100:0,fp=100-ep;if(fp<=0)return;const x=(e.clientX-bar.getBoundingClientRect().left)/bar.offsetWidth*100;setCut(drag,(x-ep)/fp*100);});
+document.addEventListener('pointerup',()=>{drag=null;});
+document.addEventListener('keydown',e=>{const h=e.target.closest&&e.target.closest('.hd');if(!h)return;const i=+h.dataset.i,c=cutsArr()[i];if(e.key==='ArrowLeft'){e.preventDefault();setCut(i,c-5);}if(e.key==='ArrowRight'){e.preventDefault();setCut(i,c+5);}});
+
+document.addEventListener('click',e=>{const ib=e.target.closest&&e.target.closest('.ib');if(ib){e.preventDefault();showTip(ib);return;}hideTip();
+ const b=e.target.closest&&e.target.closest('button[data-act]');if(!b)return;const a=b.dataset.act;
+ if(a==='go'){const i=+b.dataset.i;if(i<=S.max)go(i);}
+ else if(a==='back')go(S.cur-1);else if(a==='next')next();
+ else if(a==='up')moveOrd(+b.dataset.i,+b.dataset.i-1);else if(a==='down')moveOrd(+b.dataset.i,+b.dataset.i+1);
+ else if(a==='ordok'){S.ordOk=true;save();update();}
+ else if(a==='chip'){S.risk=S.risk||{};const f=b.dataset.f,i=+b.dataset.i,arr=S.risk[f]||[];S.risk[f]=arr.includes(i)?arr.filter(x=>x!==i):arr.concat(i);S.rcheck=false;save();update();}
+ else if(a==='rcheck'){S.rcheck=true;const us=mixSummary().rows.filter(r=>r.amt>0);if(riskErrors(us)>0)bumpErr(7);save();update();}
+ else if(a==='demo'){Object.assign(S,{name:'Beispiel-Team',firma:'Frühstück am Gleis',gk:2500,inv:18000,lk:6000,em:3000});S.prof={wachstum:'mittel',sicherheit:'nein',netz:'ja',follower:'5000'};save();render();}
+ else if(a==='unlock'){S.max=P.length-1;save();nav();}
+ else if(a==='tofollower'){S.max=Math.max(S.max,3);save();go(3);setTimeout(()=>{const el=document.querySelector('select[data-b="prof.follower"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.focus();}},60);}
+ else if(a==='skip7'){if(!P[7].chk().length){S.max=Math.max(S.max,8);save();go(8);}else showMsg(P[7].chk());}
+ else if(a==='zu'){S.zuOk=true;save();update();}
+ else if(a==='reset'){if(confirm('Wirklich alle Eingaben löschen?')){S={cur:0,max:0,short:[]};save();render();}}});
+
+function showMsg(arr){$('#msg').innerHTML=arr.length?`<div class="alert"><b>Noch offen:</b><ul>${arr.map(a=>`<li>${a}</li>`).join('')}</ul></div>`:'';if(arr.length)$('#msg').scrollIntoView({behavior:'smooth',block:'center'});}
+function nav(){
+ $('#stepper').innerHTML=P.map((p,i)=>`<button class="st ${i===S.cur?'cur':''} ${i>S.max?'lock':''} ${i<S.max?'done':''}" ${i>S.max?'disabled':''} data-act="go" data-i="${i}">${i===0?'Start':i+'. '+p.s}</button>`).join('');
+ $('#prog i').style.width=(S.cur/(P.length-1)*100)+'%';
+ const last=S.cur===P.length-1;
+ $('#pager').innerHTML=`<button class="btn sec" data-act="back" ${S.cur===0?'disabled':''}>← Zurück</button>${last?'<span></span>':`<button class="btn" data-act="next">${S.cur===7?'Optional: Zusatzumsatz →':'Weiter →'}</button>`}`;}
+function head(){const p=P[S.cur];$('#sh').innerHTML=`<div class="kicker">${S.cur===0?'Start':S.cur===8?'Optionale Zusatzaufgabe':`Stufe ${S.cur} von ${P.length-2}`}${p.lvl?` · Niveau ${'●'.repeat(p.lvl)}${'○'.repeat(5-p.lvl)} · ${p.afb}`:''}</div><h1>${p.t}</h1>`;}
+function update(){const u=P[S.cur].upd;if(u)u();}
+function render(keep){head();nav();$('#page').innerHTML=P[S.cur].html();showMsg([]);update();hideTip();if(!keep)window.scrollTo({top:0,behavior:'smooth'});}
+function go(i){S.cur=Math.max(0,Math.min(P.length-1,i));save();render();}
+function next(){const miss=P[S.cur].chk();if(miss.length){showMsg(miss);return;}S.max=Math.max(S.max,S.cur+1);save();go(S.cur+1);}
+render(true);
+</script>
+</body>
+</html>
